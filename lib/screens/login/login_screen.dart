@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../../providers/login_provider.dart';
 import '../shell/main_shell.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -151,8 +152,6 @@ class _LoginScreenState extends State<LoginScreen>
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildInputModeTabs(login),
-              const SizedBox(height: 24),
               _buildCredentialField(login),
               const SizedBox(height: 20),
               if (login.authMode == AuthMode.password) ...[
@@ -161,6 +160,11 @@ class _LoginScreenState extends State<LoginScreen>
               ],
               _buildRememberForgotRow(login),
               const SizedBox(height: 24),
+              // ─── API Error Banner ─────────────────────────────
+              if (login.apiError != null) ...[
+                _buildApiErrorBanner(login.apiError!),
+                const SizedBox(height: 16),
+              ],
               _buildSubmitButton(login),
               const SizedBox(height: 20),
               _buildSignUpRow(),
@@ -171,79 +175,13 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  // ─── Tabs ────────────────────────────────────────────────────
-  Widget _buildInputModeTabs(LoginProvider login) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.inputBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border, width: 1),
-      ),
-      padding: const EdgeInsets.all(4),
-      child: Row(
-        children: [
-          _buildTab(
-            label: 'Mobile Number',
-            isActive: login.inputMode == LoginInputMode.mobile,
-            onTap: () => login.setInputMode(LoginInputMode.mobile),
-          ),
-          _buildTab(
-            label: 'Email Address',
-            isActive: login.inputMode == LoginInputMode.email,
-            onTap: () => login.setInputMode(LoginInputMode.email),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTab({
-    required String label,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: isActive ? AppColors.cardBg : Colors.transparent,
-            borderRadius: BorderRadius.circular(9),
-            boxShadow: isActive
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : [],
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-              color: isActive ? AppColors.textPrimary : AppColors.textSecondary,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   // ─── Credential Field ─────────────────────────────────────────
   Widget _buildCredentialField(LoginProvider login) {
-    final isMobile = login.inputMode == LoginInputMode.mobile;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isMobile ? 'MOBILE NUMBER' : 'EMAIL ADDRESS',
+          'MOBILE NUMBER',
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -255,15 +193,12 @@ class _LoginScreenState extends State<LoginScreen>
         TextFormField(
           controller: _credentialController,
           focusNode: _credentialFocus,
-          keyboardType: isMobile
-              ? TextInputType.phone
-              : TextInputType.emailAddress,
+          keyboardType: TextInputType.phone,
           onChanged: login.setCredential,
           decoration: InputDecoration(
-            hintText:
-                isMobile ? '+91 98765 43210' : 'tailor@savilerow.com',
-            prefixIcon: Icon(
-              isMobile ? Icons.phone_outlined : Icons.alternate_email_rounded,
+            hintText: '+91 98765 43210',
+            prefixIcon: const Icon(
+              Icons.phone_outlined,
               color: AppColors.textHint,
               size: 18,
             ),
@@ -357,7 +292,10 @@ class _LoginScreenState extends State<LoginScreen>
         const Spacer(),
         GestureDetector(
           onTap: () {
-            // TODO: Navigate to forgot password
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+            );
           },
           child: Text(
             'Forgot Password?',
@@ -441,6 +379,38 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                 ],
               ),
+      ),
+    );
+  }
+
+  // ─── API Error Banner ─────────────────────────────────────────
+  Widget _buildApiErrorBanner(String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFEE2E2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFFCA5A5), width: 1),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.error_outline_rounded,
+              color: AppColors.error, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFFB91C1C),
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

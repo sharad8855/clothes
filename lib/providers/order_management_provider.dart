@@ -1,117 +1,144 @@
 import 'package:flutter/material.dart';
-
-enum OrderStatus { inProgress, pending, ready, delivered }
-
-class OrderItem {
-  final String id;
-  final String customerName;
-  final String itemDescription;
-  final String date;
-  final OrderStatus status;
-  final bool isHighPriority;
-  final IconData garmentIcon;
-  final String? aiSuggestion;
-  final String? assignedStaff;
-  final List<String> assignedAvatarInitials;
-
-  const OrderItem({
-    required this.id,
-    required this.customerName,
-    required this.itemDescription,
-    required this.date,
-    required this.status,
-    required this.garmentIcon,
-    this.isHighPriority = false,
-    this.aiSuggestion,
-    this.assignedStaff,
-    this.assignedAvatarInitials = const [],
-  });
-}
+import '../models/order_list_response.dart';
+import '../models/order_legacy_model.dart';
+import '../services/auth_service.dart';
 
 class OrderManagementProvider extends ChangeNotifier {
   String _searchQuery = '';
   String get searchQuery => _searchQuery;
 
+  // Real data states
+  List<OrderListItem> _orders = [];
+  bool _isLoading = false;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  int _currentPage = 1;
+  final int _limit = 10;
+  int _totalCount = 0;
+
+  List<OrderListItem> get orders => _orders;
+  bool get isLoading => _isLoading;
+  bool get isLoadingMore => _isLoadingMore;
+  bool get hasMore => _hasMore;
+  int get totalCount => _totalCount;
+
   double get dailyEfficiency => 94.0;
-  int get readyItemsCount => 3;
+  int get readyItemsCount => _orders.where((o) => o.orderStatus.toLowerCase() == 'ready').length;
 
-  final List<OrderItem> _allOrders = [
-    OrderItem(
-      id: '#ORD-8829',
-      customerName: 'Alexander Rossi',
-      itemDescription: 'Three-piece Tuxedo',
-      date: 'Oct 12, 2023',
-      status: OrderStatus.pending,
-      garmentIcon: Icons.dry_cleaning_rounded,
-      assignedStaff: 'Julian Thorne',
-    ),
-    OrderItem(
-      id: '#ORD-8830',
-      customerName: 'Julianne Moore',
-      itemDescription: 'Wool Overcoat',
-      date: 'Oct 15, 2023',
-      status: OrderStatus.inProgress,
-      garmentIcon: Icons.content_cut_rounded,
-      assignedStaff: 'Elena Moretti',
-    ),
-    OrderItem(
-      id: '#ORD-8831',
-      customerName: 'Sebastian Vane',
-      itemDescription: 'Linen Summer Suit',
-      date: 'Oct 08, 2023',
-      status: OrderStatus.ready,
-      garmentIcon: Icons.check_circle_outline_rounded,
-      assignedStaff: 'Arthur Vance',
-    ),
-  ];
-
-  List<OrderItem> get filteredOrders {
-    if (_searchQuery.isEmpty) return _allOrders;
+  List<OrderListItem> get filteredOrders {
+    if (_searchQuery.isEmpty) return _orders;
     final q = _searchQuery.toLowerCase();
-    return _allOrders.where((o) =>
+    return _orders.where((o) =>
       o.customerName.toLowerCase().contains(q) ||
-      o.id.toLowerCase().contains(q) ||
-      o.itemDescription.toLowerCase().contains(q)
+      o.billNumber.toLowerCase().contains(q) ||
+      o.firstItemName.toLowerCase().contains(q)
     ).toList();
   }
 
-  OrderItem get featuredOrder => _allOrders.first;
-  List<OrderItem> get listOrders => filteredOrders.skip(1).toList();
+  // Fetch initial orders or refresh
+  Future<void> fetchOrders({bool refresh = false}) async {
+    if (refresh) {
+      _currentPage = 1;
+      _hasMore = true;
+      // We don't clear the list immediately to avoid flickering if refresh is called, 
+      // but if initial load, we show loader.
+      if (_orders.isEmpty) {
+        _isLoading = true;
+        notifyListeners();
+      }
+    } else {
+      if (_isLoading || !_hasMore) return;
+      _isLoading = true;
+      notifyListeners();
+    }
+
+    try {
+      final response = await AuthService.getOrdersList(
+        page: _currentPage,
+        limit: _limit,
+      );
+
+      if (refresh) {
+        _orders = response.data;
+      } else {
+        _orders.addAll(response.data);
+      }
+
+      _totalCount = response.totalCount;
+      _hasMore = _currentPage < response.totalPages;
+      _currentPage++;
+    } catch (e) {
+      debugPrint("Error fetching orders: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Load more for infinite scroll
+  Future<void> loadMore() async {
+    if (_isLoadingMore || !_hasMore) return;
+
+    _isLoadingMore = true;
+    notifyListeners();
+
+    try {
+      final response = await AuthService.getOrdersList(
+        page: _currentPage,
+        limit: _limit,
+      );
+
+      _orders.addAll(response.data);
+      _totalCount = response.totalCount;
+      _hasMore = _currentPage < response.totalPages;
+      _currentPage++;
+    } catch (e) {
+      debugPrint("Error loading more orders: $e");
+    } finally {
+      _isLoadingMore = false;
+      notifyListeners();
+    }
+  }
 
   void setSearchQuery(String query) {
     _searchQuery = query;
     notifyListeners();
   }
 
+  // Helper for status formatting
+  String statusLabel(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending': return 'Pending';
+      case 'confirmed': return 'Confirmed';
+      case 'ready': return 'Ready';
+      case 'delivered': return 'Delivered';
+      default: return status;
+    }
+  }
+
+  Color statusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending': return const Color(0xFFB45309);
+      case 'confirmed': return const Color(0xFF2563EB);
+      case 'ready': return const Color(0xFF6366F1);
+      case 'delivered': return const Color(0xFF64748B);
+      default: return const Color(0xFF64748B);
+    }
+  }
+
+  Color statusBgColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending': return const Color(0xFFFEF3C7);
+      case 'confirmed': return const Color(0xFFDBEAFE);
+      case 'ready': return const Color(0xFFE0E7FF);
+      case 'delivered': return const Color(0xFFF1F5F9);
+      default: return const Color(0xFFF1F5F9);
+    }
+  }
+
   void addOrder(OrderItem order) {
-    _allOrders.insert(0, order); // Add to top of the list
+    // Note: This is a legacy method to keep AddOrderScreen working.
+    debugPrint("Adding legacy order: ${order.id}");
     notifyListeners();
-  }
-
-  String statusLabel(OrderStatus status) {
-    switch (status) {
-      case OrderStatus.inProgress: return 'In Progress';
-      case OrderStatus.pending: return 'Pending';
-      case OrderStatus.ready: return 'Ready';
-      case OrderStatus.delivered: return 'Delivered';
-    }
-  }
-
-  Color statusColor(OrderStatus status) {
-    switch (status) {
-      case OrderStatus.inProgress: return const Color(0xFF5B4FCF);
-      case OrderStatus.pending: return const Color(0xFFF59E0B);
-      case OrderStatus.ready: return const Color(0xFF10B981);
-      case OrderStatus.delivered: return const Color(0xFF6B7280);
-    }
-  }
-
-  Color statusBgColor(OrderStatus status) {
-    switch (status) {
-      case OrderStatus.inProgress: return const Color(0xFFEDE9FE);
-      case OrderStatus.pending: return const Color(0xFFFEF3C7);
-      case OrderStatus.ready: return const Color(0xFFD1FAE5);
-      case OrderStatus.delivered: return const Color(0xFFF3F4F6);
-    }
   }
 }

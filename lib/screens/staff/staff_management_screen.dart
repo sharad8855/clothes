@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../providers/home_provider.dart';
+import '../../providers/order_management_provider.dart';
 import 'add_staff_screen.dart';
 import '../shell/widgets/app_drawer.dart';
 
@@ -26,8 +29,21 @@ class ArtisanModel {
   bool get isOverCapacity => assignedOrders >= maxCapacity;
 }
 
-class StaffManagementScreen extends StatelessWidget {
+class StaffManagementScreen extends StatefulWidget {
   const StaffManagementScreen({super.key});
+
+  @override
+  State<StaffManagementScreen> createState() => _StaffManagementScreenState();
+}
+
+class _StaffManagementScreenState extends State<StaffManagementScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HomeProvider>().fetchStatistics();
+    });
+  }
 
   static const List<ArtisanModel> _artisans = [
     ArtisanModel(
@@ -97,7 +113,7 @@ class StaffManagementScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _buildAddStaffButton(context),
             const SizedBox(height: 32),
-            _buildSummaryCards(),
+            _buildSummaryCards(context),
             const SizedBox(height: 32),
             _buildArtisanList(context),
             const SizedBox(height: 16),
@@ -205,7 +221,10 @@ class StaffManagementScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCards() {
+  Widget _buildSummaryCards(BuildContext context) {
+    final homeProvider = Provider.of<HomeProvider>(context);
+    final orderProvider = Provider.of<OrderManagementProvider>(context);
+    
     return Column(
       spacing: 16,
       children: [
@@ -305,7 +324,7 @@ class StaffManagementScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '48 Orders',
+                '${homeProvider.totalOrders} Orders',
                 style: GoogleFonts.inter(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
@@ -344,7 +363,7 @@ class StaffManagementScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '94%',
+                '${orderProvider.dailyEfficiency.toInt()}%',
                 style: GoogleFonts.inter(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,

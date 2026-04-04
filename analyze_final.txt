@@ -1,0 +1,22 @@
+﻿Analyzing lib...                                                
+
+   info - The local variable '_a' starts with an underscore - lib\screens\gallery\gallery_screen.dart:270:31 - no_leading_underscores_for_local_identifiers
+
+flutter : 1 issue found. 
+(ran in 8.3s)
+At line:1 char:1
++ flutter analyze lib/ 
+--no-pub 2>&1 | Out-File 
+-FilePath "analyze_fina 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (1  
+   issue found. (ran in   
+  8.3s):String) [], Re    
+moteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 

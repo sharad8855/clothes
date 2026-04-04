@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/session_manager.dart';
 import '../../../providers/home_provider.dart';
-import '../../orders/order_history_screen.dart';
 import '../../analytics/analytics_screen.dart';
+import '../../login/login_screen.dart';
+import '../../orders/order_history_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -165,7 +167,7 @@ class AppDrawer extends StatelessWidget {
                     color: const Color(0xFFDC2626),
                   ),
                 ),
-                onTap: () {},
+                onTap: () => _handleLogout(context),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
             ),
@@ -173,6 +175,17 @@ class AppDrawer extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _handleLogout(BuildContext context) async {
+    await SessionManager.instance.clearSession();
+    if (context.mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (route) => false, // Remove all previous routes
+      );
+    }
   }
 
   void _handleRoute(BuildContext context, int index) {

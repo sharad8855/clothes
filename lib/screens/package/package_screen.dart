@@ -11,14 +11,11 @@ class PackageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => PackageProvider(),
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBg,
-        appBar: _buildAppBar(context),
-        body: const _PackageScreenBody(),
-        bottomNavigationBar: const _BottomNavBar(),
-      ),
+    return Scaffold(
+      backgroundColor: AppColors.scaffoldBg,
+      appBar: _buildAppBar(context),
+      body: const _PackageScreenBody(),
+      bottomNavigationBar: const _BottomNavBar(),
     );
   }
 
@@ -179,6 +176,8 @@ class _ClientProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedCustomer = context.watch<PackageProvider>().selectedCustomer;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -196,8 +195,14 @@ class _ClientProfileCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 22,
-            backgroundImage: const NetworkImage(
-              'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
+            backgroundColor: AppColors.inputBg,
+            child: Text(
+              selectedCustomer?.initials ?? '?',
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primaryDark,
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -206,7 +211,7 @@ class _ClientProfileCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Julian Vane-Tempest',
+                  selectedCustomer?.fullName ?? 'Unknown Customer',
                   style: GoogleFonts.inter(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -214,7 +219,9 @@ class _ClientProfileCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Client since Oct 2021 • 12 Orders',
+                  selectedCustomer != null 
+                    ? '${selectedCustomer.countryCode} ${selectedCustomer.phoneNumber}'
+                    : 'No contact information',
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     color: AppColors.textSecondary,
@@ -489,6 +496,7 @@ class _SmartSuggestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<PackageProvider>();
+    final selectedCustomer = provider.selectedCustomer;
     if (provider.isSmartSuggestApplied) return const SizedBox.shrink();
 
     return Container(
@@ -548,7 +556,7 @@ class _SmartSuggestCard extends StatelessWidget {
                 height: 1.5,
               ),
               children: [
-                const TextSpan(text: "Based on Julian's previous 4 orders, he prefers the "),
+                TextSpan(text: "Based on ${selectedCustomer?.fullName ?? 'customer'}'s previous orders, they prefer the "),
                 TextSpan(
                   text: "Slim Fit silhouette",
                   style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: const Color(0xFF7C3AED)),

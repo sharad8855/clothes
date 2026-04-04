@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 enum FitType { slim, regular }
 enum PriorityLevel { standard, vip }
@@ -71,11 +72,20 @@ class AddCustomerProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // Mock API call
-    await Future.delayed(const Duration(milliseconds: 1500));
+    try {
+      final success = await AuthService.createCustomer(
+        fullName: _fullName,
+        email: _emailAddress,
+        phone: _phoneNumber,
+      );
 
-    _isLoading = false;
-    notifyListeners();
-    return true;
+      _isLoading = false;
+      notifyListeners();
+      return success;
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
+    }
   }
 }

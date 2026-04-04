@@ -1,25 +1,13 @@
 import 'package:flutter/foundation.dart';
-
-/// Login input mode: Mobile number or Email address
-enum LoginInputMode { mobile, email }
+import '../models/user_model.dart';
+import '../services/auth_service.dart';
+import '../core/session_manager.dart';
 
 /// Authentication mode: Password or OTP
 enum AuthMode { password, otp }
 
 /// State for the Login Screen
 class LoginProvider extends ChangeNotifier {
-  // ─── Tab state ───────────────────────────────────────────────
-  LoginInputMode _inputMode = LoginInputMode.mobile;
-  LoginInputMode get inputMode => _inputMode;
-
-  void setInputMode(LoginInputMode mode) {
-    if (_inputMode == mode) return;
-    _inputMode = mode;
-    _credential = '';
-    _credentialError = null;
-    notifyListeners();
-  }
-
   // ─── Auth mode (Password vs OTP) ─────────────────────────────
   AuthMode _authMode = AuthMode.password;
   AuthMode get authMode => _authMode;
@@ -29,6 +17,7 @@ class LoginProvider extends ChangeNotifier {
         _authMode == AuthMode.password ? AuthMode.otp : AuthMode.password;
     _password = '';
     _passwordError = null;
+    _apiError = null;
     notifyListeners();
   }
 
@@ -42,6 +31,7 @@ class LoginProvider extends ChangeNotifier {
   void setCredential(String value) {
     _credential = value;
     _credentialError = null;
+    _apiError = null;
     notifyListeners();
   }
 
@@ -58,6 +48,7 @@ class LoginProvider extends ChangeNotifier {
   void setPassword(String value) {
     _password = value;
     _passwordError = null;
+    _apiError = null;
     notifyListeners();
   }
 
@@ -75,6 +66,14 @@ class LoginProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ─── API / network error message ─────────────────────────────
+  String? _apiError;
+  String? get apiError => _apiError;
+
+  // ─── Logged-in user (set after successful login) ─────────────
+  UserModel? _loggedInUser;
+  UserModel? get loggedInUser => _loggedInUser;
+
   // ─── Loading state ───────────────────────────────────────────
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -82,22 +81,13 @@ class LoginProvider extends ChangeNotifier {
   // ─── Validation ──────────────────────────────────────────────
   bool _validate() {
     bool valid = true;
-
     if (_credential.trim().isEmpty) {
-      _credentialError = _inputMode == LoginInputMode.mobile
-          ? 'Please enter your mobile number'
-          : 'Please enter your email address';
+      _credentialError = 'Please enter your mobile number';
       valid = false;
-    } else if (_inputMode == LoginInputMode.mobile) {
+    } else {
       final digitsOnly = _credential.replaceAll(RegExp(r'\D'), '');
       if (digitsOnly.length < 10) {
         _credentialError = 'Enter a valid 10-digit mobile number';
-        valid = false;
-      }
-    } else {
-      final emailRegex = RegExp(r'^[\w\.\-]+@[\w\-]+\.\w{2,}$');
-      if (!emailRegex.hasMatch(_credential.trim())) {
-        _credentialError = 'Enter a valid email address';
         valid = false;
       }
     }
@@ -118,19 +108,54 @@ class LoginProvider extends ChangeNotifier {
 
   // ─── Submit ──────────────────────────────────────────────────
   /// Returns true on success, false on failure.
+  /// On failure, sets [apiError], [credentialError] or [passwordError].
   Future<bool> submit() async {
     if (!_validate()) return false;
 
     _isLoading = true;
+    _apiError = null;
     notifyListeners();
 
-    // Simulate network call — replace with real API later
-    await Future.delayed(const Duration(milliseconds: 1500));
+    try {
+      // Only phone + password is supported by the API right now.
+      // OTP mode will hit the same endpoint once OTP sending is wired up.
+      final authResponse = await AuthService.loginWithPassword(
+        phone: _credential.trim(),
+        password: _password,
+      );
 
-    _isLoading = false;
+      // Persist tokens for future sessions
+      await SessionManager.instance.saveSession(
+        accessToken: authResponse.accessToken,
+        refreshToken: authResponse.refreshToken,
+        user: authResponse.user,
+      );
+
+      _loggedInUser = authResponse.user;
+
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } on AuthException catch (e) {
+      _apiError = e.message;
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _apiError = 'Unexpected error. Please try again.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  // ─── Logout ──────────────────────────────────────────────────
+  Future<void> logout() async {
+    await SessionManager.instance.clearSession();
+    _loggedInUser = null;
+    _credential = '';
+    _password = '';
+    _apiError = null;
     notifyListeners();
-
-    // TODO: Replace with real auth result
-    return true;
   }
 }

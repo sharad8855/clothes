@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/order_management_provider.dart';
+import '../../models/order_legacy_model.dart';
 
 class AddOrderScreen extends StatefulWidget {
   const AddOrderScreen({super.key});

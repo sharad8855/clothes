@@ -1,25 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/app_colors.dart';
+import '../../providers/clients_provider.dart';
+import '../../providers/package_provider.dart';
+import '../../models/customer_list_response.dart';
 import '../package/package_screen.dart';
-
-// Mock customer data model
-class CustomerSummary {
-  final String id;
-  final String name;
-  final String phone;
-  final String lastOrder;
-  final bool isVip;
-
-  const CustomerSummary({
-    required this.id,
-    required this.name,
-    required this.phone,
-    required this.lastOrder,
-    required this.isVip,
-  });
-}
 
 class SelectCustomerScreen extends StatefulWidget {
   const SelectCustomerScreen({super.key});
@@ -29,62 +16,33 @@ class SelectCustomerScreen extends StatefulWidget {
 }
 
 class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   String _selectedCustomerId = '';
-  String _searchQuery = '';
 
-  // Mock customers list
-  final List<CustomerSummary> _customers = const [
-    CustomerSummary(
-      id: 'C001',
-      name: 'Julian Vane-Tempest',
-      phone: '+44 7700 900542',
-      lastOrder: 'Bespoke Suit • Nov 2023',
-      isVip: true,
-    ),
-    CustomerSummary(
-      id: 'C002',
-      name: 'Alexander Sterling',
-      phone: '+44 7911 123456',
-      lastOrder: 'Dress Shirt • Oct 2023',
-      isVip: false,
-    ),
-    CustomerSummary(
-      id: 'C003',
-      name: 'Edward Blackwell',
-      phone: '+44 7800 654321',
-      lastOrder: 'Waistcoat • Sep 2023',
-      isVip: true,
-    ),
-    CustomerSummary(
-      id: 'C004',
-      name: 'Charles Whitmore',
-      phone: '+44 7700 987654',
-      lastOrder: 'Trouser Set • Aug 2023',
-      isVip: false,
-    ),
-    CustomerSummary(
-      id: 'C005',
-      name: 'Frederick Montague',
-      phone: '+44 7911 456789',
-      lastOrder: 'Three-Piece Suit • Jul 2023',
-      isVip: true,
-    ),
-  ];
-
-  List<CustomerSummary> get _filteredCustomers {
-    if (_searchQuery.isEmpty) return _customers;
-    return _customers
-        .where((c) =>
-            c.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-            c.phone.contains(_searchQuery))
-        .toList();
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    
+    // Initial fetch
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ClientsProvider>().fetchCustomers(refresh: true);
+    });
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      context.read<ClientsProvider>().loadMore();
+    }
   }
 
   @override
@@ -92,15 +50,25 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
       appBar: _buildAppBar(context),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(),
-          _buildSearchBar(),
-          const SizedBox(height: 8),
-          _buildSectionLabel('All Customers'),
-          Expanded(child: _buildCustomerList()),
-        ],
+      body: Consumer<ClientsProvider>(
+        builder: (context, provider, child) {
+          final customers = provider.filteredCustomers;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              _buildSearchBar(provider),
+              const SizedBox(height: 8),
+              _buildSectionLabel('All Customers', provider.totalCount),
+              Expanded(
+                child: provider.isLoading && customers.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildCustomerList(customers, provider),
+              ),
+            ],
+          );
+        },
       ),
       bottomNavigationBar: _selectedCustomerId.isNotEmpty
           ? _buildProceedBar(context)
@@ -169,7 +137,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(ClientsProvider provider) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
@@ -186,7 +154,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
         ),
         child: TextFormField(
           controller: _searchController,
-          onChanged: (val) => setState(() => _searchQuery = val),
+          onChanged: provider.setSearchQuery,
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -195,12 +163,12 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
           decoration: InputDecoration(
             hintText: 'Search by name or phone...',
             prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textHint, size: 20),
-            suffixIcon: _searchQuery.isNotEmpty
+            suffixIcon: provider.searchQuery.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textHint),
                     onPressed: () {
                       _searchController.clear();
-                      setState(() => _searchQuery = '');
+                      provider.setSearchQuery('');
                     },
                   )
                 : null,
@@ -215,7 +183,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
     );
   }
 
-  Widget _buildSectionLabel(String label) {
+  Widget _buildSectionLabel(String label, int totalCount) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
@@ -236,7 +204,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              '${_filteredCustomers.length}',
+              '$totalCount',
               style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -249,8 +217,8 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
     );
   }
 
-  Widget _buildCustomerList() {
-    if (_filteredCustomers.isEmpty) {
+  Widget _buildCustomerList(List<CustomerListItem> customers, ClientsProvider provider) {
+    if (customers.isEmpty && !provider.isLoading) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -271,11 +239,23 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
     }
 
     return ListView.separated(
+      controller: _scrollController,
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
-      itemCount: _filteredCustomers.length,
+      itemCount: customers.length + 1,
       separatorBuilder: (context, idx) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
-        final customer = _filteredCustomers[index];
+        if (index == customers.length) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Center(
+              child: provider.isLoadingMore
+                  ? const CircularProgressIndicator()
+                  : const SizedBox.shrink(),
+            ),
+          );
+        }
+
+        final customer = customers[index];
         final isSelected = _selectedCustomerId == customer.id;
 
         return GestureDetector(
@@ -312,7 +292,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      customer.name.split(' ').map((w) => w[0]).take(2).join(),
+                      customer.initials,
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -327,39 +307,17 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            customer.name,
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.primaryDark,
-                            ),
-                          ),
-                          if (customer.isVip) ...[
-                            const SizedBox(width: 6),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFF7ED),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                '👑 VIP',
-                                style: GoogleFonts.inter(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFFD97706),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
+                      Text(
+                        customer.fullName,
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primaryDark,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        customer.phone,
+                        '${customer.countryCode} ${customer.phoneNumber}',
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           color: AppColors.textSecondary,
@@ -368,13 +326,17 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.history_rounded, size: 11, color: AppColors.textHint),
+                          const Icon(Icons.mail_outline_rounded, size: 11, color: AppColors.textHint),
                           const SizedBox(width: 4),
-                          Text(
-                            customer.lastOrder,
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              color: AppColors.textHint,
+                          Expanded(
+                            child: Text(
+                              customer.email ?? 'No email',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                fontSize: 10,
+                                color: AppColors.textHint,
+                              ),
                             ),
                           ),
                         ],
@@ -404,7 +366,8 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
   }
 
   Widget _buildProceedBar(BuildContext context) {
-    final selected = _customers.firstWhere((c) => c.id == _selectedCustomerId);
+    final provider = context.read<ClientsProvider>();
+    final selected = provider.filteredCustomers.firstWhere((c) => c.id == _selectedCustomerId);
 
     return Container(
       padding: EdgeInsets.fromLTRB(20, 16, 20, 16 + MediaQuery.of(context).padding.bottom),
@@ -444,7 +407,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        selected.name,
+                        selected.fullName,
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -482,6 +445,9 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
+                // Set the selected customer in PackageProvider
+                context.read<PackageProvider>().setSelectedCustomer(selected);
+                
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const PackageScreen()),

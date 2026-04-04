@@ -44,7 +44,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
       'badge': 'PROCESS',
       'title': 'The Fitting Room: Stage II',
       'subtitle': 'Adjusting shoulder pitch • Basted fitting',
-      'image': 'https://images.unsplash.com/photo-1550605929-e58f278d655f?auto=format&fit=crop&w=800&q=80',
+      'image': 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&w=800&q=80',
     },
     {
       'badge': 'MATERIAL',
@@ -267,7 +267,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
         itemCount: _filters.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (context, index) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final isSelected = _selectedFilterIndex == index;
           return GestureDetector(

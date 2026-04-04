@@ -3,12 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/app_colors.dart';
-import '../../models/order_model.dart';
 import '../../providers/home_provider.dart';
-import '../shell/widgets/app_drawer.dart';
-import 'notifications_screen.dart';
+import '../../models/order_list_response.dart';
 import '../customer/customer_detail_screen.dart';
 import '../order/select_customer_screen.dart';
+import '../orders/order_details_screen.dart';
+import '../shell/widgets/app_drawer.dart';
+import 'notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,6 +37,13 @@ class _HomeScreenState extends State<HomeScreen>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOut));
     _animController.forward();
+
+    // Fetch data on load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final home = context.read<HomeProvider>();
+      home.fetchStatistics();
+      home.fetchFinancialSummary();
+    });
   }
 
   @override
@@ -408,9 +416,9 @@ class _HomeScreenState extends State<HomeScreen>
       children: [
         Expanded(
           child: _StatCard(
-            value: '${home.totalClients}',
-            label: 'Total clients',
-            icon: Icons.people_outline_rounded,
+            value: '${home.totalOrders}',
+            label: 'Total Orders',
+            icon: Icons.assignment_rounded,
             iconColor: const Color(0xFF6366F1),
             iconBg: const Color(0xFFEEF2FF),
           ),
@@ -429,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen>
         Expanded(
           child: _StatCard(
             value: home.completedOrders.toString().padLeft(2, '0'),
-            label: 'Completed',
+            label: 'Delivered',
             icon: Icons.check_circle_outline_rounded,
             iconColor: const Color(0xFF10B981),
             iconBg: const Color(0xFFECFDF5),
@@ -819,139 +827,168 @@ class _StatCard extends StatelessWidget {
 }
 
 class _OrderTile extends StatelessWidget {
-  final OrderModel order;
+  final OrderListItem order;
 
   const _OrderTile({required this.order});
 
   Color get _statusColor {
-    switch (order.status) {
-      case OrderStatus.completed:
-        return const Color(0xFF10B981);
-      case OrderStatus.delayed:
-        return const Color(0xFFEF4444);
-      case OrderStatus.inProgress:
-        return const Color(0xFF6366F1);
-      case OrderStatus.pending:
-        return const Color(0xFFF59E0B);
-      case OrderStatus.cancelled:
-        return const Color(0xFF9CA3AF);
+    switch (order.orderStatus.toLowerCase()) {
+      case 'confirmed':
+      case 'completed':
+        return const Color(0xFF10B981); // Green
+      case 'delayed':
+        return const Color(0xFFEF4444); // Red
+      case 'pending':
+      case 'in progress':
+      case 'in_progress':
+        return const Color(0xFF6366F1); // Indigo/Blue
+      default:
+        return const Color(0xFF94A3B8);
     }
   }
 
   Color get _statusBg {
-    switch (order.status) {
-      case OrderStatus.completed:
+    switch (order.orderStatus.toLowerCase()) {
+      case 'confirmed':
+      case 'completed':
         return const Color(0xFFECFDF5);
-      case OrderStatus.delayed:
+      case 'delayed':
         return const Color(0xFFFEF2F2);
-      case OrderStatus.inProgress:
+      case 'pending':
+      case 'in progress':
+      case 'in_progress':
         return const Color(0xFFEEF2FF);
-      case OrderStatus.pending:
-        return const Color(0xFFFFFBEB);
-      case OrderStatus.cancelled:
-        return const Color(0xFFF3F4F6);
+      default:
+        return const Color(0xFFF1F5F9);
+    }
+  }
+
+  String get _displayName {
+    switch (order.orderStatus.toLowerCase()) {
+      case 'confirmed':
+        return 'Completed';
+      case 'pending':
+        return 'In Progress';
+      default:
+        return order.orderStatus[0].toUpperCase() + order.orderStatus.substring(1);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x05000000),
-            blurRadius: 10,
-            offset: Offset(0, 2),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const OrderDetailsScreen(),
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Avatar
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [_statusColor.withValues(alpha: 0.7), _statusColor],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(12),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.cardBg,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x05000000),
+              blurRadius: 10,
+              offset: Offset(0, 2),
             ),
-            child: Center(
-              child: Text(
-                order.customerInitials,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Avatar Circle
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: _statusColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(14),
               ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  order.customerName,
-                  style: GoogleFonts.inter(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  order.garmentType,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '₹${order.amount.toStringAsFixed(0)}',
-                style: GoogleFonts.inter(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: _statusBg,
-                  borderRadius: BorderRadius.circular(6),
-                ),
+              child: Center(
                 child: Text(
-                  order.status.label,
+                  _getInitials(order.customerName),
                   style: GoogleFonts.inter(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
                     color: _statusColor,
                   ),
                 ),
               ),
-            ],
-          ),
-        ],
+            ),
+            const SizedBox(width: 14),
+            // Customer and Product
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    order.customerName,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    order.firstItemName,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Price and Status
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '₹${order.grandTotal}',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _statusBg,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    _displayName,
+                    style: GoogleFonts.inter(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: _statusColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
-}
 
+  String _getInitials(String name) {
+    if (name.isEmpty) return '??';
+    final parts = name.split(' ');
+    if (parts.length > 1) {
+      return (parts[0][0] + (parts[1].isNotEmpty ? parts[1][0] : '')).toUpperCase();
+    }
+    return parts[0].isNotEmpty ? parts[0][0].toUpperCase() : '?';
+  }
+}
 class _FinancialChip extends StatelessWidget {
   final String label;
   final String value;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/customer_list_response.dart';
 
 enum GarmentType { suit, tuxedo, overcoat, shirt }
 enum LapelType { notch, peak, shawl }
@@ -6,6 +7,14 @@ enum VentStyle { single, double, none }
 enum ButtonCount { one, two, three, doubleBreasted }
 
 class PackageProvider extends ChangeNotifier {
+  CustomerListItem? _selectedCustomer;
+  CustomerListItem? get selectedCustomer => _selectedCustomer;
+
+  void setSelectedCustomer(CustomerListItem customer) {
+    _selectedCustomer = customer;
+    notifyListeners();
+  }
+
   GarmentType _selectedGarment = GarmentType.suit;
   GarmentType get selectedGarment => _selectedGarment;
 

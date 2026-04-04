@@ -262,20 +262,35 @@ class CustomerVerifyScreen extends StatelessWidget {
   Widget _buildSaveCustomerButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
-        final success = await provider.saveCustomer();
-        if (success && context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Customer saved successfully!',
-                style: GoogleFonts.inter(),
+        try {
+          final success = await provider.saveCustomer();
+          if (success && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Customer saved successfully!',
+                  style: GoogleFonts.inter(),
+                ),
+                backgroundColor: AppColors.success,
+                behavior: SnackBarBehavior.floating,
               ),
-              backgroundColor: AppColors.success,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-          // Pop all the way back to Home — Customer flow is complete
-          Navigator.popUntil(context, (route) => route.isFirst);
+            );
+            // Pop all the way back to Home — Customer flow is complete
+            Navigator.popUntil(context, (route) => route.isFirst);
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Error: $e',
+                  style: GoogleFonts.inter(),
+                ),
+                backgroundColor: AppColors.error,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
         }
       },
       style: ElevatedButton.styleFrom(
