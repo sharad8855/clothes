@@ -18,7 +18,7 @@ class SelectCustomerScreen extends StatefulWidget {
 class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
-  String _selectedCustomerId = '';
+  CustomerListItem? _selectedCustomer;
 
   @override
   void initState() {
@@ -70,7 +70,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
           );
         },
       ),
-      bottomNavigationBar: _selectedCustomerId.isNotEmpty
+      bottomNavigationBar: _selectedCustomer != null
           ? _buildProceedBar(context)
           : null,
     );
@@ -256,10 +256,10 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
         }
 
         final customer = customers[index];
-        final isSelected = _selectedCustomerId == customer.id;
+        final isSelected = _selectedCustomer?.id == customer.id;
 
         return GestureDetector(
-          onTap: () => setState(() => _selectedCustomerId = customer.id),
+          onTap: () => setState(() => _selectedCustomer = customer),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.all(16),
@@ -366,8 +366,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
   }
 
   Widget _buildProceedBar(BuildContext context) {
-    final provider = context.read<ClientsProvider>();
-    final selected = provider.filteredCustomers.firstWhere((c) => c.id == _selectedCustomerId);
+    final selected = _selectedCustomer!;
 
     return Container(
       padding: EdgeInsets.fromLTRB(20, 16, 20, 16 + MediaQuery.of(context).padding.bottom),
@@ -422,7 +421,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                   ),
                 ),
                 TextButton(
-                  onPressed: () => setState(() => _selectedCustomerId = ''),
+                  onPressed: () => setState(() => _selectedCustomer = null),
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     minimumSize: Size.zero,

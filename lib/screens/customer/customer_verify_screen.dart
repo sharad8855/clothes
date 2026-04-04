@@ -23,8 +23,6 @@ class CustomerVerifyScreen extends StatelessWidget {
               _buildHeader(),
               const SizedBox(height: 28),
               _buildContactCard(),
-              const SizedBox(height: 16),
-              _buildPreferencesCard(),
               const SizedBox(height: 32),
               _buildEditDetailsButton(context),
               const SizedBox(height: 16),
@@ -158,58 +156,6 @@ class CustomerVerifyScreen extends StatelessWidget {
           _buildInfoRow('PHONE', phone),
           const SizedBox(height: 16),
           _buildInfoRow('EMAIL', email),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPreferencesCard() {
-    final isVip = provider.priorityLevel == PriorityLevel.vip;
-    final fitStr = provider.typicalFit == FitType.slim ? 'Savile Slim' : 'Classic Regular';
-    final notes = provider.preferences.isEmpty
-        ? '"Prefers slightly wider lapels. Specifically requested double-vented jacket."'
-        : '"${provider.preferences}"';
-
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF3F0FF),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.texture_rounded, color: AppColors.primaryDark, size: 18),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Preferences',
-                style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.primaryDark),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          _buildInfoRow('PRIORITY', isVip ? '👑 VIP Client' : '⭐ Standard Client'),
-          const SizedBox(height: 16),
-          _buildInfoRow('TYPICAL FIT', fitStr),
-          const SizedBox(height: 16),
-          _buildInfoRow('WORKSHOP NOTES', notes),
         ],
       ),
     );

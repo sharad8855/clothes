@@ -6,6 +6,8 @@ import '../../providers/order_management_provider.dart';
 import '../../models/order_list_response.dart';
 import '../shell/widgets/app_drawer.dart';
 import 'order_details_screen.dart';
+import '../../providers/profile_provider.dart';
+import '../profile/profile_screen.dart';
 
 class OrderManagementScreen extends StatefulWidget {
   const OrderManagementScreen({super.key});
@@ -88,14 +90,6 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_orders_main',
-        onPressed: () {},
-        backgroundColor: const Color(0xFF8B5CF6),
-        elevation: 6,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
-      ),
     );
   }
 
@@ -119,17 +113,7 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
           color: const Color(0xFF1E3A8A),
         ),
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: CircleAvatar(
-            radius: 16,
-            backgroundImage: const NetworkImage(
-              'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
-            ),
-          ),
-        ),
-      ],
+
     );
   }
 

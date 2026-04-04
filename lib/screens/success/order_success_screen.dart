@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/app_colors.dart';
 import '../../providers/order_success_provider.dart';
+import '../../providers/package_provider.dart';
 import '../orders/order_details_screen.dart';
 
 class OrderSuccessScreen extends StatelessWidget {
@@ -42,13 +43,24 @@ class OrderSuccessScreen extends StatelessWidget {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 16),
-          child: Center(
-            child: CircleAvatar(
-              radius: 18,
-              backgroundImage: const NetworkImage(
-                'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
-              ),
-            ),
+          child: Consumer<PackageProvider>(
+            builder: (context, packageProvider, _) {
+              final customer = packageProvider.selectedCustomer;
+              return Center(
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: AppColors.inputBg,
+                  child: Text(
+                    customer?.initials ?? '?',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryDark,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ],
@@ -119,33 +131,39 @@ class _TypographySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          'Order Successfully\nPlaced',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.inter(
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
-            color: AppColors.primaryDark,
-            height: 1.2,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'The bespoke crafting process for Julian Thorne\'s order has been initiated in your workshop queue.',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              color: AppColors.textSecondary,
-              height: 1.5,
+    return Consumer<PackageProvider>(
+      builder: (context, packageProvider, _) {
+        final customerName =
+            packageProvider.selectedCustomer?.fullName ?? 'the customer';
+        return Column(
+          children: [
+            Text(
+              'Order Successfully\nPlaced',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: AppColors.primaryDark,
+                height: 1.2,
+              ),
             ),
-          ),
-        ),
-      ],
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'The bespoke crafting process for $customerName\'s order has been initiated in your workshop queue.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -186,13 +204,18 @@ class _OrderSummarySheet extends StatelessWidget {
           const SizedBox(height: 20),
           _SummaryRow(
             label: 'CUSTOMER',
-            child: Text(
-              'Julian Thorne',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryDark,
-              ),
+            child: Consumer<PackageProvider>(
+              builder: (context, packageProvider, _) {
+                return Text(
+                  packageProvider.selectedCustomer?.fullName ??
+                      'Unknown Customer',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primaryDark,
+                  ),
+                );
+              },
             ),
           ),
           const SizedBox(height: 20),

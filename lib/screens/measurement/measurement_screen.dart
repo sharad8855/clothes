@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/app_colors.dart';
 import '../../providers/measurement_provider.dart';
+import '../../providers/package_provider.dart';
 import '../order/assign_staff_wizard_screen.dart';
 
 class MeasurementScreen extends StatelessWidget {
@@ -158,6 +159,8 @@ class _ProfileSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedCustomer = context.watch<PackageProvider>().selectedCustomer;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -177,8 +180,14 @@ class _ProfileSummaryCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundImage: const NetworkImage(
-                  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
+                backgroundColor: AppColors.inputBg,
+                child: Text(
+                  selectedCustomer?.initials ?? '?',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primaryDark,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -186,7 +195,7 @@ class _ProfileSummaryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Julian Thorne',
+                    selectedCustomer?.fullName ?? 'Unknown Customer',
                     style: GoogleFonts.inter(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
@@ -194,7 +203,9 @@ class _ProfileSummaryCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Client ID: #88219',
+                    selectedCustomer != null
+                        ? '${selectedCustomer.countryCode} ${selectedCustomer.phoneNumber}'
+                        : 'No contact information',
                     style: GoogleFonts.inter(
                       fontSize: 11,
                       color: AppColors.textSecondary,
@@ -204,10 +215,6 @@ class _ProfileSummaryCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _ProfileDetailRow(label: 'Style Profile', value: 'Classic Tailored'),
-          const SizedBox(height: 8),
-          _ProfileDetailRow(label: 'Last Visit', value: '24 Oct 2023'),
         ],
       ),
     );

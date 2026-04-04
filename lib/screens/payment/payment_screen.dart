@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/app_colors.dart';
 import '../../providers/payment_provider.dart';
+import '../../providers/package_provider.dart';
 import '../success/order_success_screen.dart';
 
 class PaymentScreen extends StatelessWidget {
@@ -178,74 +179,91 @@ class _OrderSummaryCard extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Row(
+            child: Consumer<PackageProvider>(
+              builder: (context, packageProvider, _) {
+                final product = packageProvider.selectedProduct;
+                final imageUrl = product?.primaryImageUrl;
+
+                return Column(
                   children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryDark,
-                        borderRadius: BorderRadius.circular(12),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                              'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=150&q=80'),
-                          fit: BoxFit.cover,
+                    Row(
+                      children: [
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: AppColors.inputBg,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: imageUrl != null && imageUrl.isNotEmpty
+                                ? Image.network(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => const Icon(
+                                        Icons.checkroom,
+                                        color: AppColors.textHint),
+                                  )
+                                : const Icon(Icons.checkroom,
+                                    color: AppColors.textHint),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product?.name ?? 'Unknown Product',
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.primaryDark,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                product != null
+                                    ? 'SKU: ${product.sku} • ${product.currency}'
+                                    : 'No product details',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Bespoke Two-Piece Suit',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.primaryDark,
-                            ),
+                    const SizedBox(height: 20),
+                    const Divider(height: 1, color: AppColors.border),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Total Amount',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textPrimary,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Fine Italian Wool • Charcoal Grey',
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              color: AppColors.textSecondary,
-                            ),
+                        ),
+                        Text(
+                          packageProvider.estPriceFormatted,
+                          style: GoogleFonts.inter(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primaryDark,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-                const SizedBox(height: 20),
-                const Divider(height: 1, color: AppColors.border),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Total Amount',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    Text(
-                      '\$1,895.00',
-                      style: GoogleFonts.inter(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.primaryDark,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                );
+              },
             ),
           ),
         ],

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/app_colors.dart';
+import '../../providers/package_provider.dart';
 import '../fabric/fabric_screen.dart';
 
 class AssignStaffWizardScreen extends StatefulWidget {
@@ -119,40 +121,53 @@ class _AssignStaffWizardScreenState extends State<AssignStaffWizardScreen> {
                 ),
               ],
             ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundImage: const NetworkImage(
-                    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Julian Thorne',
+            child: Consumer<PackageProvider>(
+              builder: (context, packageProvider, _) {
+                final customer = packageProvider.selectedCustomer;
+                return Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: AppColors.inputBg,
+                      child: Text(
+                        customer?.initials ?? '?',
                         style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: AppColors.primaryDark,
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Client ID: #88219',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textSecondary,
-                        ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            customer?.fullName ?? 'Unknown Customer',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primaryDark,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            customer != null
+                                ? '${customer.countryCode} ${customer.phoneNumber}'
+                                : 'No contact information',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           const SizedBox(height: 32),

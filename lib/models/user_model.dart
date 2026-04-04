@@ -6,6 +6,7 @@ class UserModel {
   final String email;
   final String phone;
   final String status;
+  final String? profileImage;
 
   const UserModel({
     required this.id,
@@ -14,6 +15,7 @@ class UserModel {
     required this.email,
     required this.phone,
     required this.status,
+    this.profileImage,
   });
 
   String get fullName => '$firstName $lastName'.trim();
@@ -32,6 +34,7 @@ class UserModel {
       email: json['email'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
       status: json['status'] as String? ?? '',
+      profileImage: json['profile_image'] as String? ?? json['profile_pic'] as String?,
     );
   }
 
@@ -42,6 +45,7 @@ class UserModel {
         'email': email,
         'phone': phone,
         'status': status,
+        'profile_image': profileImage,
       };
 }
 

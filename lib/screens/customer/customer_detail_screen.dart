@@ -30,21 +30,14 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildProfileSection(provider),
-                        const SizedBox(height: 24),
                         _buildFullNameField(provider),
-                        const SizedBox(height: 12),
-                        _buildAIAssistantBadge(),
                         const SizedBox(height: 24),
                         _buildContactDetailsCard(provider),
-                        const SizedBox(height: 24),
-                        _buildWorkshopNotesCard(provider),
                         const SizedBox(height: 100),
                       ],
                     ),
                   ),
                   _buildBottomButton(provider),
-                  _buildFloatingChatButton(),
                 ],
               ),
             );
@@ -79,42 +72,6 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
               fontSize: 11,
               fontWeight: FontWeight.w500,
               color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProfileSection(AddCustomerProvider provider) {
-    return Center(
-      child: Stack(
-        children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: AppColors.inputBg,
-            backgroundImage: provider.imagePath != null
-                ? null
-                : null,
-            child: provider.imagePath == null
-                ? const Icon(Icons.person, size: 50, color: AppColors.textHint)
-                : null,
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: GestureDetector(
-              onTap: provider.pickImage,
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryDark,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
-                ),
-                child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
-              ),
             ),
           ),
         ],
@@ -169,31 +126,6 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildAIAssistantBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF3E8FF),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.auto_awesome, size: 16, color: Color(0xFF8B5CF6)),
-          const SizedBox(width: 8),
-          Text(
-            'AI Assistant Active — Suggestions Enabled',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF8B5CF6),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -274,137 +206,6 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     );
   }
 
-  Widget _buildWorkshopNotesCard(AddCustomerProvider provider) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3F0FF),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.sticky_note_2_rounded, size: 18, color: AppColors.primaryDark),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Workshop Notes',
-                style: GoogleFonts.inter(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primaryDark,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          TextFormField(
-            initialValue: provider.preferences,
-            onChanged: provider.setPreferences,
-            maxLines: 4,
-            style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
-            decoration: InputDecoration(
-              hintText: 'e.g. Prefers slightly wider lapels...',
-              filled: true,
-              fillColor: AppColors.inputBg,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
-              contentPadding: const EdgeInsets.all(16),
-              hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textHint),
-            ),
-          ),
-          const SizedBox(height: 16),
-          _buildFitTypeRow(provider),
-          const SizedBox(height: 12),
-          _buildPriorityRow(provider),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFitTypeRow(AddCustomerProvider provider) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildToggleChip(
-            label: 'Savile Slim',
-            isSelected: provider.typicalFit == FitType.slim,
-            onTap: () => provider.setTypicalFit(FitType.slim),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _buildToggleChip(
-            label: 'Classic Regular',
-            isSelected: provider.typicalFit == FitType.regular,
-            onTap: () => provider.setTypicalFit(FitType.regular),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPriorityRow(AddCustomerProvider provider) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildToggleChip(
-            label: '⭐ Standard',
-            isSelected: provider.priorityLevel == PriorityLevel.standard,
-            onTap: () => provider.setPriorityLevel(PriorityLevel.standard),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _buildToggleChip(
-            label: '👑 VIP',
-            isSelected: provider.priorityLevel == PriorityLevel.vip,
-            onTap: () => provider.setPriorityLevel(PriorityLevel.vip),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildToggleChip({required String label, required bool isSelected, required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryDark : AppColors.inputBg,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.white : AppColors.textSecondary,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildBottomButton(AddCustomerProvider provider) {
     return Positioned(
       bottom: 0,
@@ -447,29 +248,6 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildFloatingChatButton() {
-    return Positioned(
-      bottom: 100,
-      right: 20,
-      child: Container(
-        width: 54,
-        height: 54,
-        decoration: BoxDecoration(
-          color: AppColors.primaryLight,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primaryLight.withValues(alpha: 0.4),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 24),
       ),
     );
   }

@@ -122,14 +122,6 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_staff_main',
-        onPressed: () {},
-        backgroundColor: const Color(0xFF8B5CF6),
-        elevation: 6,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 28),
-      ),
     );
   }
 
@@ -153,17 +145,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
           color: const Color(0xFF1E3A8A),
         ),
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: CircleAvatar(
-            radius: 16,
-            backgroundImage: const NetworkImage(
-              'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
-            ),
-          ),
-        ),
-      ],
+
     );
   }
 
