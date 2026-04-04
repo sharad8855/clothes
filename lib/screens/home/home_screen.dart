@@ -9,6 +9,10 @@ import '../customer/customer_detail_screen.dart';
 import '../order/select_customer_screen.dart';
 import '../orders/order_details_screen.dart';
 import '../shell/widgets/app_drawer.dart';
+import '../../providers/profile_provider.dart';
+import '../../providers/order_management_provider.dart';
+import '../profile/profile_screen.dart';
+import '../orders/order_management_screen.dart';
 import 'notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -43,6 +47,8 @@ class _HomeScreenState extends State<HomeScreen>
       final home = context.read<HomeProvider>();
       home.fetchStatistics();
       home.fetchFinancialSummary();
+      context.read<ProfileProvider>().fetchProfile();
+      context.read<OrderManagementProvider>().fetchOrders(refresh: true);
     });
   }
 
@@ -72,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen>
                     _buildSliverHeader(home),
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -93,10 +99,12 @@ class _HomeScreenState extends State<HomeScreen>
                             // Recent Activity
                             _buildSectionHeader(
                               'Recent Boutique Activity',
-                              onSeeAll: () {},
+                              onSeeAll: () {
+                                context.read<HomeProvider>().setNavIndex(1); // 1 corresponds to OrderManagementScreen in MainShell IndexedStack
+                              },
                             ),
                             const SizedBox(height: 12),
-                            _buildRecentOrders(home),
+                            _buildRecentOrders(),
                             const SizedBox(height: 20),
                             // Financial Overview
                             _buildFinancialOverview(home),
@@ -172,13 +180,18 @@ class _HomeScreenState extends State<HomeScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Hello, ${home.tailorName}',
-                        style: GoogleFonts.inter(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
-                        ),
+                      Consumer<ProfileProvider>(
+                        builder: (context, profileProvider, child) {
+                          final firstName = profileProvider.userProfile?.firstName ?? home.tailorName;
+                          return Text(
+                            'Hello, $firstName',
+                            style: GoogleFonts.inter(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
+                          );
+                        }
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -191,6 +204,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ],
                   ),
                 ),
+                
                 // Notification bell
                 GestureDetector(
                   onTap: () {
@@ -556,16 +570,33 @@ class _HomeScreenState extends State<HomeScreen>
   // ═══════════════════════════════════════════════════════════════
   // RECENT ORDERS LIST
   // ═══════════════════════════════════════════════════════════════
-  Widget _buildRecentOrders(HomeProvider home) {
-    return Column(
-      children: home.recentOrders
-          .map(
-            (order) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: _OrderTile(order: order),
-            ),
-          )
-          .toList(),
+  Widget _buildRecentOrders() {
+    return Consumer<OrderManagementProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading && provider.orders.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+          );
+        }
+        if (provider.orders.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: Text('No recent activity')),
+          );
+        }
+        final recentOrders = provider.orders.take(4).toList();
+        return Column(
+          children: recentOrders
+              .map(
+                (order) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _OrderTile(order: order),
+                ),
+              )
+              .toList(),
+        );
+      },
     );
   }
 
@@ -905,7 +936,7 @@ class _OrderTile extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: _statusColor.withValues(alpha: 0.15),
+                color: _statusColor,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(
@@ -914,7 +945,7 @@ class _OrderTile extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: _statusColor,
+                    color: Colors.white,
                   ),
                 ),
               ),

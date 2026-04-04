@@ -5,6 +5,7 @@ import '../models/user_model.dart';
 import '../models/order_statistics_model.dart';
 import '../models/financial_summary_model.dart';
 import '../models/order_list_response.dart';
+import '../models/product_model.dart';
 
 /// Handles all HTTP communication with the Bespoke Atelier backend.
 class AuthService {
@@ -381,6 +382,108 @@ class AuthService {
       final message = body['message'] as String? ??
           body['error'] as String? ??
           'Failed to retrieve orders (${response.statusCode})';
+      throw AuthException(message);
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException('Network error: $e');
+    }
+  }
+  // ─── User Profile ──────────────────────────────────────────────────────────
+  static Future<UserModel> getUserProfile(String userId) async {
+    try {
+      final headers = await getAuthHeaders();
+      final response = await http
+          .get(
+            Uri.parse('$_baseUrl/auth/api/users/$userId'),
+            headers: headers,
+          )
+          .timeout(const Duration(seconds: 30));
+
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return UserModel.fromJson(body);
+      }
+
+      final message = body['message'] as String? ??
+          body['error'] as String? ??
+          'Failed to retrieve profile (${response.statusCode})';
+      throw AuthException(message);
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException('Network error: $e');
+    }
+  }
+
+  // ─── Upload Profile Image ─────────────────────────────────────────────────
+  static Future<String> uploadProfileImage(String userId, String filePath) async {
+    try {
+      final headers = await getAuthHeaders();
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$_baseUrl/auth/api/public/user/$userId/upload'),
+      );
+      
+      request.headers.addAll({
+        'Accept': 'application/json',
+        ...headers,
+      });
+
+      request.files.add(
+        await http.MultipartFile.fromPath('file', filePath),
+      );
+
+      var streamedResponse = await request.send().timeout(const Duration(seconds: 60));
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // usually it returns the url or the updated user object.
+        // let's try to parse the body to find a url, or just return success
+        try {
+          final body = jsonDecode(response.body) as Map<String, dynamic>;
+          // Assuming the api returns a url in 'url', 'image_url', 'profile_image', etc.
+          final url = body['url'] ?? body['profile_image'] ?? '';
+          return url.toString();
+        } catch (_) {
+          return 'success';
+        }
+      }
+
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final message = body['message'] as String? ??
+          body['error'] as String? ??
+          'Failed to upload image (${response.statusCode})';
+      throw AuthException(message);
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException('Network error: $e');
+    }
+  }
+
+  // ─── Get Products ──────────────────────────────────────────────────────────
+  static Future<ProductListResponse> getProducts({
+    int page = 1,
+    int limit = 50,
+  }) async {
+    try {
+      final headers = await getAuthHeaders();
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/auth/api/product/client/$clientId/get-products'),
+            headers: headers,
+            body: jsonEncode({'page': page, 'limit': limit}),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ProductListResponse.fromJson(body);
+      }
+
+      final message = body['message'] as String? ??
+          body['error'] as String? ??
+          'Failed to fetch products (${response.statusCode})';
       throw AuthException(message);
     } catch (e) {
       if (e is AuthException) rethrow;

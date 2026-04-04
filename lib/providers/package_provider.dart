@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/customer_list_response.dart';
-
-enum GarmentType { suit, tuxedo, overcoat, shirt }
-enum LapelType { notch, peak, shawl }
-enum VentStyle { single, double, none }
-enum ButtonCount { one, two, three, doubleBreasted }
+import '../models/product_model.dart';
+import '../services/auth_service.dart';
 
 class PackageProvider extends ChangeNotifier {
+  // ── Customer Selection ────────────────────────────────────────────────────
   CustomerListItem? _selectedCustomer;
   CustomerListItem? get selectedCustomer => _selectedCustomer;
 
@@ -15,118 +13,57 @@ class PackageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  GarmentType _selectedGarment = GarmentType.suit;
-  GarmentType get selectedGarment => _selectedGarment;
+  // ── Product List (from API) ───────────────────────────────────────────────
+  List<Product> _products = [];
+  List<Product> get products => _products;
 
-  LapelType _selectedLapel = LapelType.notch;
-  LapelType get selectedLapel => _selectedLapel;
+  bool _isLoadingProducts = false;
+  bool get isLoadingProducts => _isLoadingProducts;
 
-  VentStyle _selectedVent = VentStyle.double;
-  VentStyle get selectedVent => _selectedVent;
+  String? _productsError;
+  String? get productsError => _productsError;
 
-  ButtonCount _selectedButton = ButtonCount.two;
-  ButtonCount get selectedButton => _selectedButton;
+  Future<void> fetchProducts() async {
+    if (_isLoadingProducts) return;
+    _isLoadingProducts = true;
+    _productsError = null;
+    notifyListeners();
 
-  bool _isSmartSuggestApplied = false;
-  bool get isSmartSuggestApplied => _isSmartSuggestApplied;
+    try {
+      final response = await AuthService.getProducts(page: 1, limit: 50);
+      _products = response.data.where((p) => p.isActive).toList();
+    } catch (e) {
+      _productsError = e.toString();
+    } finally {
+      _isLoadingProducts = false;
+      notifyListeners();
+    }
+  }
 
-  // Smart suggest package info
-  final String suggestPackageName = "Savile Slim Fit Package";
-  final double craftsmanshipMarkup = 450.0;
-  final String craftsmanshipName = "Full Canvas";
+  // ── Product Selection ─────────────────────────────────────────────────────
+  Product? _selectedProduct;
+  Product? get selectedProduct => _selectedProduct;
 
-  void setGarmentType(GarmentType type) {
-    _selectedGarment = type;
-    if (_isSmartSuggestApplied) _isSmartSuggestApplied = false;
+  void setSelectedProduct(Product product) {
+    _selectedProduct = product;
     notifyListeners();
   }
 
-  void setLapelType(LapelType type) {
-    _selectedLapel = type;
-    notifyListeners();
-  }
-
-  void setVentStyle(VentStyle style) {
-    _selectedVent = style;
-    notifyListeners();
-  }
-
-  void setButtonCount(ButtonCount count) {
-    _selectedButton = count;
-    notifyListeners();
-  }
-
-  void applySmartSuggest() {
-    _isSmartSuggestApplied = true;
-    _selectedGarment = GarmentType.suit;
-    _selectedLapel = LapelType.notch;
-    _selectedVent = VentStyle.double;
-    _selectedButton = ButtonCount.two;
-    notifyListeners();
-  }
-
-  double get estBasePrice {
-    double base = 0;
-    switch (_selectedGarment) {
-      case GarmentType.suit:
-        base = 1445.00; 
-        break;
-      case GarmentType.tuxedo:
-        base = 1800.00;
-        break;
-      case GarmentType.overcoat:
-        base = 1650.00;
-        break;
-      case GarmentType.shirt:
-        base = 350.00;
-        break;
-    }
-    
-    // Always adding craftsmanship logic as per the mock for Two-Piece suit
-    if (_selectedGarment == GarmentType.suit) {
-       base += craftsmanshipMarkup;
-    }
-    
-    return base; 
-  }
-
-  String get garmentName {
-    switch (_selectedGarment) {
-      case GarmentType.suit: return "Two-Piece Suit";
-      case GarmentType.tuxedo: return "Tuxedo";
-      case GarmentType.overcoat: return "Overcoat";
-      case GarmentType.shirt: return "Bespoke Shirt";
-    }
-  }
-
-  String get lapelName {
-    switch (_selectedLapel) {
-      case LapelType.notch: return "Notch Lapel (Default)";
-      case LapelType.peak: return "Peak Lapel";
-      case LapelType.shawl: return "Shawl Lapel";
-    }
-  }
-
-  String get ventName {
-    switch (_selectedVent) {
-      case VentStyle.double: return "Double Side Vents";
-      case VentStyle.single: return "Single Center Vent";
-      case VentStyle.none: return "No Vents";
-    }
-  }
-
-  String get buttonName {
-    switch (_selectedButton) {
-      case ButtonCount.one: return "1 Button Single Breasted";
-      case ButtonCount.two: return "2 Button Single Breasted";
-      case ButtonCount.three: return "3 Button Single Breasted";
-      case ButtonCount.doubleBreasted: return "Double Breasted";
-    }
-  }
+  // ── Computed Price / Summary ──────────────────────────────────────────────
+  double get estBasePrice => _selectedProduct?.displayPrice ?? 0;
 
   String get estPriceFormatted {
     final val = estBasePrice;
+    if (val == 0) return '₹0.00';
     final formatter = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
-    return '\$${val.toStringAsFixed(2).replaceAllMapped(formatter, (m) => '${m[1]},')}';
+    return '₹${val.toStringAsFixed(2).replaceAllMapped(formatter, (m) => '${m[1]},')}';
+  }
+
+  String get selectedProductName => _selectedProduct?.name ?? 'None selected';
+
+  String get selectedCategoryName {
+    final cats = _selectedProduct?.productCategory;
+    if (cats == null || cats.isEmpty) return '';
+    return cats.first.name;
   }
 }

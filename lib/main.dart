@@ -9,6 +9,7 @@ import 'providers/home_provider.dart';
 import 'providers/order_management_provider.dart';
 import 'providers/clients_provider.dart';
 import 'providers/package_provider.dart';
+import 'providers/profile_provider.dart';
 import 'screens/login/login_screen.dart';
 import 'screens/shell/main_shell.dart';
 
@@ -45,6 +46,7 @@ class BespokeAtelierApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => OrderManagementProvider()),
         ChangeNotifierProvider(create: (_) => ClientsProvider()),
         ChangeNotifierProvider(create: (_) => PackageProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: MaterialApp(
         title: 'The Bespoke Atelier',

@@ -246,17 +246,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           color: const Color(0xFF1E3A8A),
         ),
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: CircleAvatar(
-            radius: 16,
-            backgroundImage: const NetworkImage(
-              'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
-            ),
-          ),
-        ),
-      ],
+
     );
   }
 
