@@ -13,8 +13,7 @@ import 'providers/profile_provider.dart';
 import 'providers/staff_provider.dart';
 import 'providers/fabric_provider.dart';
 import 'providers/measurement_provider.dart';
-import 'screens/login/login_screen.dart';
-import 'screens/shell/main_shell.dart';
+import 'screens/splash/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,8 +57,8 @@ class BespokeAtelierApp extends StatelessWidget {
         title: 'The Bespoke Atelier',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
-        // If the user was already logged in (token saved), skip the login screen
-        home: startLoggedIn ? const MainShell() : const LoginScreen(),
+        // The splash screen will handle the redirection after the branding timer
+        home: SplashScreen(startLoggedIn: startLoggedIn),
       ),
     );
   }
