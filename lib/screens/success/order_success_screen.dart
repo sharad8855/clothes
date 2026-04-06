@@ -7,9 +7,15 @@ import '../../providers/order_success_provider.dart';
 import '../../providers/package_provider.dart';
 import '../orders/order_details_screen.dart';
 
-class OrderSuccessScreen extends StatelessWidget {
-  const OrderSuccessScreen({super.key});
+class OrderSuccessScreen extends StatefulWidget {
+  final String orderId;
+  const OrderSuccessScreen({super.key, required this.orderId});
 
+  @override
+  State<OrderSuccessScreen> createState() => _OrderSuccessScreenState();
+}
+
+class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -17,7 +23,7 @@ class OrderSuccessScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBg,
         appBar: _buildAppBar(context),
-        body: const _OrderSuccessScreenBody(),
+        body: _OrderSuccessScreenBody(orderId: widget.orderId),
       ),
     );
   }
@@ -69,7 +75,8 @@ class OrderSuccessScreen extends StatelessWidget {
 }
 
 class _OrderSuccessScreenBody extends StatelessWidget {
-  const _OrderSuccessScreenBody();
+  final String orderId;
+  const _OrderSuccessScreenBody({required this.orderId});
 
   @override
   Widget build(BuildContext context) {
@@ -77,18 +84,18 @@ class _OrderSuccessScreenBody extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          SizedBox(height: 16),
-          _HeroCheckmark(),
-          SizedBox(height: 32),
-          _TypographySection(),
-          SizedBox(height: 32),
-          _OrderSummarySheet(),
-          SizedBox(height: 32),
-          _ActionButtons(),
-          SizedBox(height: 60),
-          _AiTipCard(),
-          SizedBox(height: 32),
+        children: [
+          const SizedBox(height: 16),
+          const _HeroCheckmark(),
+          const SizedBox(height: 32),
+          const _TypographySection(),
+          const SizedBox(height: 32),
+          const _OrderSummarySheet(),
+          const SizedBox(height: 32),
+          _ActionButtons(orderId: orderId),
+          const SizedBox(height: 60),
+          const _AiTipCard(),
+          const SizedBox(height: 32),
         ],
       ),
     );
@@ -297,7 +304,8 @@ class _SummaryRow extends StatelessWidget {
 }
 
 class _ActionButtons extends StatelessWidget {
-  const _ActionButtons();
+  final String orderId;
+  const _ActionButtons({required this.orderId});
 
   @override
   Widget build(BuildContext context) {
@@ -309,7 +317,7 @@ class _ActionButtons extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const OrderDetailsScreen()),
+                MaterialPageRoute(builder: (_) => OrderDetailsScreen(orderId: orderId)),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -340,7 +348,9 @@ class _ActionButtons extends StatelessWidget {
         const SizedBox(height: 16),
         TextButton(
           onPressed: () {
-            // Drop entire modal/screen stack back to root (home screen) safely!
+            // Clear current order state
+            context.read<PackageProvider>().clearAll();
+            // Drop entire modal/screen stack back to root (home screen)
             Navigator.popUntil(context, (route) => route.isFirst);
           },
           child: Text(

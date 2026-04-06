@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/app_colors.dart';
 import '../../providers/package_provider.dart';
+import '../../providers/staff_provider.dart';
 import '../fabric/fabric_screen.dart';
 
 class AssignStaffWizardScreen extends StatefulWidget {
@@ -14,15 +15,13 @@ class AssignStaffWizardScreen extends StatefulWidget {
 }
 
 class _AssignStaffWizardScreenState extends State<AssignStaffWizardScreen> {
-  String? _selectedStaff;
-
-  final List<Map<String, String>> _staffList = [
-    {'name': 'Julian Thorne', 'role': 'Master Tailor', 'load': '3 orders'},
-    {'name': 'Elena Moretti', 'role': 'Pattern Cutter', 'load': '1 order'},
-    {'name': 'Arthur Vance', 'role': 'Fabric Specialist', 'load': '5 orders'},
-    {'name': 'Marcus Lin', 'role': 'Finishing', 'load': '2 orders'},
-    {'name': 'Sarah Jenkins', 'role': 'Tailor', 'load': '4 orders'},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<StaffProvider>().fetchStaff();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,103 +180,126 @@ class _AssignStaffWizardScreenState extends State<AssignStaffWizardScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          ..._staffList.map((staff) {
-            final isSelected = _selectedStaff == staff['name'];
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedStaff = staff['name'];
-                });
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFFF3E8FF) : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isSelected ? AppColors.primary : Colors.transparent,
-                    width: 2,
+          Consumer2<StaffProvider, PackageProvider>(
+            builder: (context, staffProvider, packageProvider, _) {
+              if (staffProvider.isLoading) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 40),
+                    child: CircularProgressIndicator(color: AppColors.primary),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                );
+              }
+
+              if (staffProvider.error != null) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: Text(
+                      'Error: ${staffProvider.error}',
+                      style: GoogleFonts.inter(color: Colors.red),
                     ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
+                  ),
+                );
+              }
+
+              final staffList = staffProvider.staffList;
+              if (staffList.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: Text(
+                      'No staff members found.',
+                      style: GoogleFonts.inter(color: AppColors.textSecondary),
+                    ),
+                  ),
+                );
+              }
+
+              return Column(
+                children: staffList.map((staff) {
+                  final isSelected = packageProvider.selectedStaff?.id == staff.id;
+                  return GestureDetector(
+                    onTap: () {
+                      packageProvider.setSelectedStaff(isSelected ? null : staff);
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary : const Color(0xFFF1F5F9),
-                        borderRadius: BorderRadius.circular(10),
+                        color: isSelected ? const Color(0xFFF3E8FF) : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected ? AppColors.primary : Colors.transparent,
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      child: Icon(
-                        Icons.person_pin_rounded,
-                        color: isSelected ? Colors.white : AppColors.textSecondary,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
                         children: [
-                          Text(
-                            staff['name']!,
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: isSelected ? AppColors.primary : const Color(0xFFF1F5F9),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              Icons.person_pin_rounded,
+                              color: isSelected ? Colors.white : AppColors.textSecondary,
+                              size: 20,
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            spacing: 8,
-                            children: [
-                              Text(
-                                staff['role']!,
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary,
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  staff.user.fullName,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.textPrimary,
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                width: 4,
-                                height: 4,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.textSecondary,
-                                  shape: BoxShape.circle,
+                                const SizedBox(height: 2),
+                                Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: 8,
+                                  children: [
+                                    Text(
+                                      staff.service?.serviceName ?? 'Artisan',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                    // Load isn't in this specific API, but we could add it back if we have another endpoint
+                                  ],
                                 ),
-                              ),
-                              Text(
-                                'Current load: ${staff['load']}',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFFF59E0B),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
+                          ),
+                          Icon(
+                            isSelected ? Icons.check_circle_rounded : Icons.circle_outlined,
+                            color: isSelected ? AppColors.primary : const Color(0xFFCBD5E1),
                           ),
                         ],
                       ),
                     ),
-                    Icon(
-                      isSelected ? Icons.check_circle_rounded : Icons.circle_outlined,
-                      color: isSelected ? AppColors.primary : const Color(0xFFCBD5E1),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
+                  );
+                }).toList(),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -305,14 +327,12 @@ class _AssignStaffWizardScreenState extends State<AssignStaffWizardScreen> {
           ),
           const Spacer(),
           ElevatedButton(
-            onPressed: _selectedStaff == null
-                ? null
-                : () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const FabricScreen()),
-                    );
-                  },
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const FabricScreen()),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryDark,
               disabledBackgroundColor: const Color(0xFFE2E8F0),
@@ -333,7 +353,7 @@ class _AssignStaffWizardScreenState extends State<AssignStaffWizardScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: _selectedStaff == null ? const Color(0xFF94A3B8) : Colors.white,
+                        color: Colors.white,
                       ),
                     ),
                     Text(
@@ -341,16 +361,16 @@ class _AssignStaffWizardScreenState extends State<AssignStaffWizardScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: _selectedStaff == null ? const Color(0xFF94A3B8) : Colors.white,
+                        color: Colors.white,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(width: 12),
-                Icon(
+                const Icon(
                   Icons.arrow_forward_ios_rounded,
                   size: 16,
-                  color: _selectedStaff == null ? const Color(0xFF94A3B8) : Colors.white,
+                  color: Colors.white,
                 ),
               ],
             ),

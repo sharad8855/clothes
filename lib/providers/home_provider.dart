@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import '../models/order_model.dart';
 import '../models/order_statistics_model.dart';
 import '../models/financial_summary_model.dart';
 import '../models/order_list_response.dart';
+import '../models/customer_list_response.dart';
 import '../services/auth_service.dart';
+import '../core/session_manager.dart';
 
 class HomeProvider extends ChangeNotifier {
   // ─── Tailor Info ─────────────────────────────────────────────
@@ -17,6 +20,25 @@ class HomeProvider extends ChangeNotifier {
   void dismissInsightsBanner() {
     _showInsightsBanner = false;
     notifyListeners();
+  }
+
+  // ─── Customer Cache ──────────────────────────────────────────
+  final Map<String, String> _customerNames = {};
+
+  String getCustomerName(String customerId) {
+    return _customerNames[customerId] ?? 'Unknown Customer';
+  }
+
+  Future<void> _preloadCustomerNames() async {
+    try {
+      final responseMap = await AuthService.getAllCustomers(page: 1, limit: 100);
+      final response = CustomerListResponse.fromJson(responseMap);
+      for (var customer in response.data) {
+        _customerNames[customer.id] = customer.fullName;
+      }
+    } catch (e) {
+      if (kDebugMode) print('Error preloading customers: $e');
+    }
   }
 
   // ─── Orders ───────────────────────────────────────────────────
@@ -58,7 +80,7 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
-  // ─── Financial Summary ────────────────────────────────────────
+  // ─── Financial Summary (KPI Reporting) ─────────────────────────────────────
   FinancialSummary? _financialSummary;
   FinancialSummary? get financialSummary => _financialSummary;
 
@@ -73,8 +95,22 @@ class HomeProvider extends ChangeNotifier {
 
   Future<void> fetchRecentOrders() async {
     try {
-      final response = await AuthService.getOrdersList(page: 1, limit: 10);
+      final user = await SessionManager.instance.getUser();
+      final response = await AuthService.getOrdersList(
+        page: 1, 
+        limit: 10,
+        userId: user?.id,
+      );
       _realRecentOrders = response.data;
+      
+      // Auto-populate names from cache
+      for (var order in _realRecentOrders) {
+        final cachedName = _customerNames[order.customerId];
+        if (cachedName != null) {
+          order.setCachedCustomerName(cachedName);
+        }
+      }
+
       notifyListeners();
     } catch (e) {
       if (kDebugMode) print('Error fetching recent orders: $e');
@@ -95,8 +131,6 @@ class HomeProvider extends ChangeNotifier {
 
   double get revenueProgress {
     if (monthlyRevenue == 0) return 0.0;
-    // Progress relative to target or relative to revenue? 
-    // Usually achieved/target. Target is hardcoded for now.
     return (totalCollected / monthlyTarget).clamp(0.0, 1.0);
   }
 
@@ -125,6 +159,7 @@ class HomeProvider extends ChangeNotifier {
       fetchStatistics(),
       fetchFinancialSummary(),
       fetchRecentOrders(),
+      _preloadCustomerNames(),
     ]);
     
     // Simulated delay for other things

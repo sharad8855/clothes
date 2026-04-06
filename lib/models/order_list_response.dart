@@ -48,6 +48,9 @@ class OrderListItem {
   final DateTime updatedAt;
   final List<OrderItemDetail> orderItems;
   final CreatedByUser createdByUser;
+  final OrderCustomer? customer;
+  final DateTime dueDate;
+  final String? notes;
 
   OrderListItem({
     required this.orderId,
@@ -63,7 +66,16 @@ class OrderListItem {
     required this.updatedAt,
     required this.orderItems,
     required this.createdByUser,
+    this.customer,
+    required this.dueDate,
+    this.notes,
   });
+
+  String? _cachedCustomerName;
+
+  void setCachedCustomerName(String name) {
+    _cachedCustomerName = name;
+  }
 
   factory OrderListItem.fromJson(Map<String, dynamic> json) {
     return OrderListItem(
@@ -82,11 +94,24 @@ class OrderListItem {
           .map((item) => OrderItemDetail.fromJson(item))
           .toList(),
       createdByUser: CreatedByUser.fromJson(json['created_by_user'] ?? {}),
+      customer: json['customer'] != null
+          ? OrderCustomer.fromJson(json['customer'])
+          : null,
+      dueDate: DateTime.parse(json['due_date'] ?? json['order_date'] ?? DateTime.now().toIso8601String()),
+      notes: json['notes'] as String?,
     );
   }
 
   // UI Helpers
-  String get customerName => "${createdByUser.firstName} ${createdByUser.lastName}";
+  String get customerName {
+    if (_cachedCustomerName != null && _cachedCustomerName!.isNotEmpty) {
+      return _cachedCustomerName!;
+    }
+    if (customer != null) {
+      return "${customer!.firstName} ${customer!.lastName}".trim();
+    }
+    return "${createdByUser.firstName} ${createdByUser.lastName}".trim();
+  }
   
   String get firstItemName {
     if (orderItems.isEmpty) return 'No items';
@@ -194,6 +219,32 @@ class CreatedByUser {
       id: json['id'] ?? '',
       firstName: json['first_name'] ?? '',
       lastName: json['last_name'] ?? '',
+    );
+  }
+}
+
+class OrderCustomer {
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String phoneNumber;
+  final String email;
+
+  OrderCustomer({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.phoneNumber,
+    required this.email,
+  });
+
+  factory OrderCustomer.fromJson(Map<String, dynamic> json) {
+    return OrderCustomer(
+      id: json['id'] ?? '',
+      firstName: json['first_name'] ?? '',
+      lastName: json['last_name'] ?? '',
+      phoneNumber: json['phone_number'] ?? '',
+      email: json['email'] ?? '',
     );
   }
 }

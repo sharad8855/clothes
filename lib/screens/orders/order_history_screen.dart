@@ -1,8 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import '../../providers/order_management_provider.dart';
+import '../../models/order_list_response.dart';
+import '../../core/app_colors.dart';
+import 'order_details_screen.dart';
 
-class OrderHistoryScreen extends StatelessWidget {
+class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
+
+  @override
+  State<OrderHistoryScreen> createState() => _OrderHistoryScreenState();
+}
+
+class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OrderManagementProvider>().fetchOrders(refresh: true);
+    });
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      context.read<OrderManagementProvider>().loadMore();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,26 +67,32 @@ class OrderHistoryScreen extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSearchBar(),
-            const SizedBox(height: 24),
-            _buildLoyaltyInsightsCard(),
-            const SizedBox(height: 32),
-            _buildSectionHeader(),
-            const SizedBox(height: 16),
-            _buildOrderList(),
-            const SizedBox(height: 80),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () => context.read<OrderManagementProvider>().fetchOrders(refresh: true),
+        color: AppColors.primary,
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSearchBar(context),
+              const SizedBox(height: 24),
+              _buildLoyaltyInsightsCard(),
+              const SizedBox(height: 32),
+              _buildSectionHeader(context),
+              const SizedBox(height: 16),
+              _buildOrderList(context),
+              const SizedBox(height: 80),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(BuildContext context) {
     return Container(
       height: 52,
       decoration: BoxDecoration(
@@ -66,6 +106,7 @@ class OrderHistoryScreen extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
+              onChanged: (value) => context.read<OrderManagementProvider>().setSearchQuery(value),
               style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -121,7 +162,7 @@ class OrderHistoryScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '3 long-term clients haven\'t placed an order in over 6 months. AI suggests a bespoke outreach campaign.',
+            'Active engagement plan: Personal follow-up for high-value orders and AI-suggested bespoke loyalty rewards.',
             style: GoogleFonts.inter(
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -158,7 +199,8 @@ class OrderHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader() {
+  Widget _buildSectionHeader(BuildContext context) {
+    final provider = context.watch<OrderManagementProvider>();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -174,7 +216,7 @@ class OrderHistoryScreen extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(bottom: 2),
           child: Text(
-            'SHOWING 24 ORDERS',
+            'SHOWING ${provider.totalCount} ORDERS',
             style: GoogleFonts.inter(
               fontSize: 10,
               fontWeight: FontWeight.w800,
@@ -187,157 +229,160 @@ class OrderHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderList() {
-    const orders = [
-      {
-        'name': 'Julian Thorne',
-        'id': '#ORD-8821',
-        'date': 'Oct 12, 2023',
-        'amount': '£2,850.00',
-        'status': 'DELIVERED',
-        'statusColor': Color(0xFF10B981),
-        'statusBg': Color(0xFFD1FAE5),
-        'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-      },
-      {
-        'name': 'Marcus Vane',
-        'id': '#ORD-8845',
-        'date': 'Oct 28, 2023',
-        'amount': '£3,120.00',
-        'status': 'READY',
-        'statusColor': Color(0xFF3B82F6),
-        'statusBg': Color(0xFFDBEAFE),
-        'avatar': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
-      },
-      {
-        'name': 'Elena Rossi',
-        'id': '#ORD-8859',
-        'date': 'Nov 02, 2023',
-        'amount': '£1,950.00',
-        'status': 'IN PROGRESS',
-        'statusColor': Color(0xFF7C3AED),
-        'statusBg': Color(0xFFEDE9FE),
-        'avatar': 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
-      },
-      {
-        'name': 'Sebastian More',
-        'id': '#ORD-8862',
-        'date': 'Nov 05, 2023',
-        'amount': '£840.00',
-        'status': 'PENDING',
-        'statusColor': Color(0xFF475569),
-        'statusBg': Color(0xFFF1F5F9),
-        'avatar': '', // Missing avatar mapping check fallback
-      },
-    ];
+  Widget _buildOrderList(BuildContext context) {
+    return Consumer<OrderManagementProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading && provider.orders.isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(40.0),
+              child: CircularProgressIndicator(color: Color(0xFF7C3AED)),
+            ),
+          );
+        }
 
-    return Column(
-      children: orders.map((o) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 16),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+        if (provider.orders.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(40.0),
+              child: Text(
+                'No orders found matching your search.',
+                style: GoogleFonts.inter(color: Colors.grey),
               ),
-            ],
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Avatar
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0F172A),
-                  shape: BoxShape.circle,
-                  image: o['avatar'] != ''
-                      ? DecorationImage(
-                          image: NetworkImage(o['avatar'] as String),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
+            ),
+          );
+        }
+
+        final filteredOrders = provider.filteredOrders;
+
+        return Column(
+          children: [
+            ...filteredOrders.map((order) => _buildOrderCard(context, order)),
+            if (provider.isLoadingMore)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED), strokeWidth: 2)),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildOrderCard(BuildContext context, OrderListItem order) {
+    final provider = context.read<OrderManagementProvider>();
+    final statusText = provider.statusLabel(order.orderStatus);
+    final statusColor = provider.statusColor(order.orderStatus);
+    final statusBg = provider.statusBgColor(order.orderStatus);
+    final formattedDate = DateFormat('MMM dd, yyyy').format(order.orderDate);
+
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OrderDetailsScreen(orderId: order.orderId),
+        ),
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Avatar / Placeholder
+            Container(
+              width: 48,
+              height: 48,
+              decoration: const BoxDecoration(
+                color: Color(0xFF0F172A),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  order.customerName.isNotEmpty 
+                      ? order.customerName.substring(0, 1).toUpperCase() 
+                      : '?',
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
                 ),
-                child: o['avatar'] == ''
-                    ? Center(
-                        child: Text(
-                          'SM',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      )
-                    : null,
               ),
-              const SizedBox(width: 16),
-              // Name and Data
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      o['name'] as String,
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF0F172A),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${o['id']} • ${o['date']}',
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF64748B),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Currency and Status
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+            ),
+            const SizedBox(width: 16),
+            // Name and Data
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    o['amount'] as String,
+                    order.customerName,
                     style: GoogleFonts.inter(
                       fontSize: 15,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                       color: const Color(0xFF0F172A),
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: o['statusBg'] as Color,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      o['status'] as String,
-                      style: GoogleFonts.inter(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        color: o['statusColor'] as Color,
-                        letterSpacing: 0.5,
-                      ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '#${order.billNumber.replaceAll('INV', '')} • $formattedDate',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF64748B),
                     ),
                   ),
                 ],
               ),
-            ],
-          ),
-        );
-      }).toList(),
+            ),
+            // Currency and Status
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '£${order.grandTotal}',
+                  style: GoogleFonts.inter(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0F172A),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: statusBg,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    statusText.toUpperCase(),
+                    style: GoogleFonts.inter(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      color: statusColor,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

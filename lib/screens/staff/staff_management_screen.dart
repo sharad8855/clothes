@@ -3,31 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/order_management_provider.dart';
+import '../../providers/staff_provider.dart';
+import '../../models/business_staff_response.dart';
 import 'add_staff_screen.dart';
 import '../shell/widgets/app_drawer.dart';
-
-class ArtisanModel {
-  final String name;
-  final String title;
-  final String avatarUrl;
-  final int assignedOrders;
-  final int maxCapacity;
-  final Color statusDotColor;
-  final List<String> skills;
-
-  const ArtisanModel({
-    required this.name,
-    required this.title,
-    required this.avatarUrl,
-    required this.assignedOrders,
-    required this.maxCapacity,
-    required this.statusDotColor,
-    required this.skills,
-  });
-
-  double get capacityPercentage => assignedOrders / maxCapacity;
-  bool get isOverCapacity => assignedOrders >= maxCapacity;
-}
 
 class StaffManagementScreen extends StatefulWidget {
   const StaffManagementScreen({super.key});
@@ -42,61 +21,9 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HomeProvider>().fetchStatistics();
+      context.read<StaffProvider>().fetchStaff();
     });
   }
-
-  static const List<ArtisanModel> _artisans = [
-    ArtisanModel(
-      name: 'Julian Thorne',
-      title: 'MASTER CUTTER',
-      avatarUrl:
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-      assignedOrders: 8,
-      maxCapacity: 10, // 80%
-      statusDotColor: Color(0xFF10B981), // Green
-      skills: ['BESPOKE', 'SUITS'],
-    ),
-    ArtisanModel(
-      name: 'Elena Moretti',
-      title: 'SENIOR TAILOR',
-      avatarUrl:
-          'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
-      assignedOrders: 12,
-      maxCapacity: 13, // ~92%
-      statusDotColor: Color(0xFF10B981), // Green
-      skills: ['EVENINGWEAR', 'SILK'],
-    ),
-    ArtisanModel(
-      name: 'Marcus Lin',
-      title: 'APPRENTICE',
-      avatarUrl:
-          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
-      assignedOrders: 3,
-      maxCapacity: 12, // 25%
-      statusDotColor: Color(0xFFF59E0B), // Orange
-      skills: ['ALTERATIONS'],
-    ),
-    ArtisanModel(
-      name: 'Sarah Jenkins',
-      title: 'LEAD SEAMSTRESS',
-      avatarUrl:
-          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80',
-      assignedOrders: 15,
-      maxCapacity: 15, // OVER CAPACITY
-      statusDotColor: Color(0xFF10B981), // Green
-      skills: ['BRIDAL', 'DRAPING'],
-    ),
-    ArtisanModel(
-      name: 'Arthur Vance',
-      title: 'SENIOR CUTTER',
-      avatarUrl:
-          'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=150&q=80',
-      assignedOrders: 5,
-      maxCapacity: 12, // ~41% (visual 40%)
-      statusDotColor: Color(0xFF94A3B8), // Gray
-      skills: ['HERITAGE', 'OUTERWEAR'],
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -104,23 +31,53 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
       backgroundColor: const Color(0xFFF8F9FC),
       drawer: const AppDrawer(),
       appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildPageHeader(),
-            const SizedBox(height: 16),
-            _buildAddStaffButton(context),
-            const SizedBox(height: 32),
-            _buildSummaryCards(context),
-            const SizedBox(height: 32),
-            _buildArtisanList(context),
-            const SizedBox(height: 16),
-            _buildOnboardButton(),
-            const SizedBox(height: 100),
-          ],
-        ),
+      body: Consumer<StaffProvider>(
+        builder: (context, staffProvider, child) {
+          if (staffProvider.isLoading && staffProvider.staffList.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(color: Color(0xFF7C3AED)),
+            );
+          }
+
+          if (staffProvider.error != null && staffProvider.staffList.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Error: ${staffProvider.error}'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => staffProvider.fetchStaff(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => staffProvider.fetchStaff(),
+            color: const Color(0xFF7C3AED),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildPageHeader(),
+                  const SizedBox(height: 16),
+                  _buildAddStaffButton(context),
+                  const SizedBox(height: 32),
+                  _buildSummaryCards(context, staffProvider),
+                  const SizedBox(height: 32),
+                  _buildArtisanList(context, staffProvider.staffList),
+                  const SizedBox(height: 16),
+                  _buildOnboardButton(),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -145,7 +102,6 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
           color: const Color(0xFF1E3A8A),
         ),
       ),
-
     );
   }
 
@@ -203,16 +159,16 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
     );
   }
 
-  Widget _buildSummaryCards(BuildContext context) {
+  Widget _buildSummaryCards(BuildContext context, StaffProvider staffProvider) {
     final homeProvider = Provider.of<HomeProvider>(context);
     final orderProvider = Provider.of<OrderManagementProvider>(context);
     
     return Column(
-      spacing: 16,
       children: [
         // Total Artisans
         Container(
           width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 16),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: const Color(0xFFF1F5F9),
@@ -230,10 +186,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                     color: Color(0xFF0F172A),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE0E7FF),
                       borderRadius: BorderRadius.circular(12),
@@ -261,7 +214,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                '12',
+                '${staffProvider.staffList.length}',
                 style: GoogleFonts.inter(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
@@ -275,6 +228,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
         // Current Workload
         Container(
           width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 16),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: const Color(0xFFF3E8FF),
@@ -289,11 +243,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                   color: const Color(0xFF8B5CF6),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
-                  Icons.check_box_rounded,
-                  size: 14,
-                  color: Colors.white,
-                ),
+                child: const Icon(Icons.check_box_rounded, size: 14, color: Colors.white),
               ),
               const SizedBox(height: 16),
               Text(
@@ -329,11 +279,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.insights_rounded,
-                size: 24,
-                color: Color(0xFF0F172A),
-              ),
+              const Icon(Icons.insights_rounded, size: 24, color: Color(0xFF0F172A)),
               const SizedBox(height: 16),
               Text(
                 'Efficiency Rate',
@@ -360,26 +306,27 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
     );
   }
 
-  Widget _buildArtisanList(BuildContext context) {
+  Widget _buildArtisanList(BuildContext context, List<BusinessStaff> staffList) {
     return Column(
-      spacing: 20,
-      children: _artisans
-          .map((artisan) => _buildArtisanCard(context, artisan))
+      children: staffList
+          .map((staff) => _buildArtisanCard(context, staff))
           .toList(),
     );
   }
 
-  Widget _buildArtisanCard(BuildContext context, ArtisanModel artisan) {
-    // Math logic purely for mockup visuals based on the user image logic:
-    // Capacity progress logic
-    final capacityVal = artisan.assignedOrders == 5 && artisan.maxCapacity == 12
-        ? 40
-        : (artisan.capacityPercentage * 100).toInt();
-    final capString = artisan.isOverCapacity
-        ? "OVER CAPACITY"
-        : "Capacity: $capacityVal%";
+  Widget _buildArtisanCard(BuildContext context, BusinessStaff staff) {
+    const int maxCapacity = 20; // Default capacity limit
+    final int assigned = staff.assignedOrderCount;
+    final double capacityFactor = (assigned / maxCapacity).clamp(0.0, 1.0);
+    final int capacityPercentage = (capacityFactor * 100).toInt();
+    final bool isOverCapacity = assigned >= maxCapacity;
+    
+    // UI mapping for roles
+    final String role = staff.service?.serviceName.toUpperCase() ?? "STAFF ARTISAN";
+    final Color roleColor = _getRoleColor(role);
 
     return Container(
+      margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -395,7 +342,6 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Row 1: Profile, Name, Title, Edit
           Row(
             children: [
               Stack(
@@ -407,9 +353,15 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF0F172A),
                       borderRadius: BorderRadius.circular(16),
-                      image: DecorationImage(
-                        image: NetworkImage(artisan.avatarUrl),
-                        fit: BoxFit.cover,
+                    ),
+                    child: Center(
+                      child: Text(
+                        staff.user.firstName.substring(0, 1).toUpperCase(),
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                   ),
@@ -420,7 +372,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                       width: 14,
                       height: 14,
                       decoration: BoxDecoration(
-                        color: artisan.statusDotColor,
+                        color: const Color(0xFF10B981), // Active status
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 2),
                       ),
@@ -434,7 +386,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      artisan.name,
+                      staff.user.fullName,
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -443,11 +395,11 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      artisan.title,
+                      role,
                       style: GoogleFonts.inter(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF8B5CF6), // Purple Title
+                        color: roleColor,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -460,16 +412,11 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                   color: const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
-                  Icons.edit_rounded,
-                  color: Color(0xFF64748B),
-                  size: 16,
-                ),
+                child: const Icon(Icons.edit_rounded, color: Color(0xFF64748B), size: 16),
               ),
             ],
           ),
           const SizedBox(height: 20),
-          // Row 2: Capacity Box
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -491,7 +438,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                       ),
                     ),
                     Text(
-                      artisan.assignedOrders.toString().padLeft(2, '0'),
+                      assigned.toString().padLeft(2, '0'),
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -511,66 +458,57 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-                    Container(
-                      width:
-                          MediaQuery.of(context).size.width *
-                          0.65 *
-                          (artisan.capacityPercentage > 1.0
-                              ? 1.0
-                              : artisan.capacityPercentage),
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: artisan.isOverCapacity
-                            ? const Color(0xFF8B5CF6)
-                            : const Color(0xFF1E3A8A),
-                        borderRadius: BorderRadius.circular(4),
+                    FractionallySizedBox(
+                      widthFactor: capacityFactor,
+                      child: Container(
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: isOverCapacity ? Colors.red : const Color(0xFF1E3A8A),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  capString,
+                  isOverCapacity ? "OVER CAPACITY" : "Capacity: $capacityPercentage%",
                   style: GoogleFonts.inter(
                     fontSize: 9,
                     fontWeight: FontWeight.w600,
-                    color: artisan.isOverCapacity
-                        ? const Color(0xFF8B5CF6)
-                        : const Color(0xFF94A3B8),
+                    color: isOverCapacity ? Colors.red : const Color(0xFF94A3B8),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 16),
-          // Row 3: Skills
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: artisan.skills.map((skill) {
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
+          if (staff.service != null) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE0E7FF),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                staff.service!.serviceName.toUpperCase(),
+                style: GoogleFonts.inter(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF4F46E5),
                 ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE0E7FF),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  skill,
-                  style: GoogleFonts.inter(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF4F46E5),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
+              ),
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  Color _getRoleColor(String role) {
+    if (role.contains('MASTER') || role.contains('SENIOR')) return const Color(0xFF8B5CF6);
+    if (role.contains('APPRENTICE')) return const Color(0xFFF59E0B);
+    return const Color(0xFF64748B);
   }
 
   Widget _buildOnboardButton() {
@@ -582,20 +520,12 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
       ),
-      // Mimicing dashed border with a simple solid border for standard flutter (or we can use a custom painter, but plain border works for the requested layout structure proxy)
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE2E8F0),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.add_rounded,
-              color: Color(0xFF94A3B8),
-              size: 24,
-            ),
+            decoration: const BoxDecoration(color: Color(0xFFE2E8F0), shape: BoxShape.circle),
+            child: const Icon(Icons.add_rounded, color: Color(0xFF94A3B8), size: 24),
           ),
           const SizedBox(height: 12),
           Text(

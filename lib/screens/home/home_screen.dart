@@ -5,14 +5,11 @@ import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../../providers/home_provider.dart';
 import '../../models/order_list_response.dart';
-import '../customer/customer_detail_screen.dart';
 import '../order/select_customer_screen.dart';
 import '../orders/order_details_screen.dart';
 import '../shell/widgets/app_drawer.dart';
 import '../../providers/profile_provider.dart';
 import '../../providers/order_management_provider.dart';
-import '../profile/profile_screen.dart';
-import '../orders/order_management_screen.dart';
 import 'notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -412,7 +409,7 @@ class _HomeScreenState extends State<HomeScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const CustomerDetailScreen(),
+                  builder: (context) => const SelectCustomerScreen(),
                 ),
               );
             },
@@ -912,7 +909,7 @@ class _OrderTile extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const OrderDetailsScreen(),
+            builder: (context) => OrderDetailsScreen(orderId: order.orderId),
           ),
         );
       },
@@ -956,7 +953,7 @@ class _OrderTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                   Text(
                     order.customerName,
                     style: GoogleFonts.inter(
                       fontSize: 14,

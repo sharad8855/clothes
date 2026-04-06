@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package_provider.dart';
 
 enum PaymentMethod { card, paypal, bank, payLater }
 
@@ -31,18 +32,49 @@ class PaymentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> processPayment() async {
-    if (_isProcessing) return false;
+  Future<String?> processPayment({
+    required PackageProvider packageProvider,
+    required Map<String, dynamic> measurementData,
+    required String fabricType,
+    required String fabricPattern,
+    required List<String> fabricModifiers,
+  }) async {
+    if (_isProcessing) return null;
 
     _isProcessing = true;
     notifyListeners();
 
-    // Mock an order placement/payment processing backend delay
-    await Future.delayed(const Duration(seconds: 3));
+    try {
+      String methodStr;
+      switch (_selectedMethod) {
+        case PaymentMethod.card:
+          methodStr = 'credit card';
+          break;
+        case PaymentMethod.bank:
+          methodStr = 'bank transfer';
+          break;
+        case PaymentMethod.payLater:
+          methodStr = 'cash';
+          break;
+        default:
+          methodStr = 'cash';
+      }
 
-    _isProcessing = false;
-    notifyListeners();
-    
-    return true; // Simulate success
+      final result = await packageProvider.placeOrder(
+        measurementData: measurementData,
+        fabricType: fabricType,
+        fabricPattern: fabricPattern,
+        fabricModifiers: fabricModifiers,
+        paymentMethod: methodStr,
+      );
+
+      _isProcessing = false;
+      notifyListeners();
+      return result;
+    } catch (e) {
+      _isProcessing = false;
+      notifyListeners();
+      rethrow;
+    }
   }
 }

@@ -11,14 +11,11 @@ class FabricScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => FabricProvider(),
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBg,
-        appBar: _buildAppBar(context),
-        body: const _FabricScreenBody(),
-        bottomNavigationBar: const _BottomNavBar(),
-      ),
+    return Scaffold(
+      backgroundColor: AppColors.scaffoldBg,
+      appBar: _buildAppBar(context),
+      body: const _FabricScreenBody(),
+      bottomNavigationBar: const _BottomNavBar(),
     );
   }
 

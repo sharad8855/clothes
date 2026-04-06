@@ -300,14 +300,12 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
     final statusBgColor = provider.statusBgColor(order.orderStatus);
 
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const OrderDetailsScreen(),
-          ),
-        );
-      },
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OrderDetailsScreen(orderId: order.orderId),
+        ),
+      ),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -350,14 +348,18 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            order.customerName,
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF0F172A),
+                          Expanded(
+                            child: Text(
+                              order.customerName,
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF0F172A),
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,
@@ -453,12 +455,15 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
                     ),
                   ),
                   const SizedBox(width: 6),
-                  Text(
-                    '${order.createdByUser.firstName} ${order.createdByUser.lastName}',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF0F172A),
+                  Expanded(
+                    child: Text(
+                      '${order.createdByUser.firstName} ${order.createdByUser.lastName}',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF0F172A),
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   const Spacer(),

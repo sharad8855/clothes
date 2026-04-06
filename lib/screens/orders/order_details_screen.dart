@@ -1,40 +1,122 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../core/app_colors.dart';
+import '../../models/order_list_response.dart';
+import '../../models/order_timeline_response.dart';
+import '../../services/auth_service.dart';
+import 'package:intl/intl.dart';
 
-class OrderDetailsScreen extends StatelessWidget {
-  const OrderDetailsScreen({super.key});
+class OrderDetailsScreen extends StatefulWidget {
+  final String orderId;
+  const OrderDetailsScreen({super.key, required this.orderId});
+
+  @override
+  State<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
+}
+
+class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
+  OrderListItem? _order;
+  List<OrderTimelineItem> _timeline = [];
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchOrderDetails();
+  }
+
+  Future<void> _fetchOrderDetails() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+      
+      // Fetch both details and timeline in parallel
+      final results = await Future.wait([
+        AuthService.getOrderDetails(widget.orderId),
+        AuthService.getOrderTimeline(widget.orderId),
+      ]);
+
+      setState(() {
+        _order = results[0] as OrderListItem;
+        _timeline = results[1] as List<OrderTimelineItem>;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Error: $_error', textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _fetchOrderDetails,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_order == null) {
+      return const Scaffold(body: Center(child: Text('Order not found')));
+    }
+
+    final order = _order!;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FC),
-      appBar: _buildAppBar(context),
+      appBar: _buildAppBar(context, order),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: const [
-            _CustomerProfileCard(),
-            SizedBox(height: 24),
-            _GarmentConfigurationCard(),
-            SizedBox(height: 24),
-            _ProductionProgressCard(),
-            SizedBox(height: 24),
+          children: [
+            _CustomerProfileCard(customer: order.customer),
+            const SizedBox(height: 24),
+            _GarmentConfigurationCard(order: order),
+            const SizedBox(height: 24),
+            _ProductionProgressCard(
+              status: order.orderStatus, 
+              date: order.orderDate,
+              timeline: _timeline,
+            ),
+            const SizedBox(height: 24),
+            // Measurements depend on items - if items exist, look for measurements
             _MeasurementsGridCard(),
-            SizedBox(height: 24),
-            _PaymentSummaryCard(),
-            SizedBox(height: 24),
-            _SpecialRequestsCard(),
-            SizedBox(height: 100), // Safe area bottom padding
+            const SizedBox(height: 32),
+            _SpecialRequestsCard(order: order),
+            const SizedBox(height: 48),
+            _PaymentSummaryCard(order: order),
+            const SizedBox(height: 100), // Safe area bottom padding
           ],
         ),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
+  PreferredSizeWidget _buildAppBar(BuildContext context, OrderListItem order) {
     return AppBar(
       backgroundColor: const Color(0xFFF8F9FC),
       elevation: 0,
@@ -44,7 +126,7 @@ class OrderDetailsScreen extends StatelessWidget {
         onPressed: () => Navigator.pop(context),
       ),
       title: Text(
-        'Order #8824',
+        'Order #${order.billNumber.replaceAll('INV', '')}',
         style: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w800,
@@ -92,7 +174,8 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _CustomerProfileCard extends StatelessWidget {
-  const _CustomerProfileCard();
+  final OrderCustomer? customer;
+  const _CustomerProfileCard({this.customer});
 
   @override
   Widget build(BuildContext context) {
@@ -154,75 +237,76 @@ class _CustomerProfileCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Expanded(
-                          child: Text(
-                            'Julian Thorne',
-                            style: GoogleFonts.inter(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.primaryDark,
+                          Expanded(
+                            child: Text(
+                              customer != null ? '${customer!.firstName} ${customer!.lastName}'.trim() : 'Guest Customer',
+                              style: GoogleFonts.inter(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.primaryDark,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
                           ),
+                          if (customer != null && customer!.email.contains('elite'))
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            'ELITE\nMEMBER',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.inter(
-                              fontSize: 8,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'ELITE\nMEMBER',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'j.thorne@atelier-bespoke.com',
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const Icon(Icons.phone_rounded, size: 12, color: Color(0xFF8B5CF6)),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            '+44 20\n7946 0128',
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF8B5CF6),
-                            ),
-                          ),
-                        ),
-                        const Icon(Icons.location_on_rounded, size: 12, color: Color(0xFF8B5CF6)),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            'Mayfair,\nLondon',
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF8B5CF6),
-                            ),
-                          ),
-                        ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                customer?.email ?? 'No email provided',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  const Icon(Icons.phone_rounded, size: 12, color: Color(0xFF8B5CF6)),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      customer?.phoneNumber ?? 'N/A',
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF8B5CF6),
+                      ),
+                    ),
+                  ),
+                  const Icon(Icons.location_on_rounded, size: 12, color: Color(0xFF8B5CF6)),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      'Address\non File', // API doesn't return full address string easily here
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF8B5CF6),
+                      ),
+                    ),
+                  ),
                       ],
                     ),
                   ],
@@ -237,7 +321,8 @@ class _CustomerProfileCard extends StatelessWidget {
 }
 
 class _GarmentConfigurationCard extends StatelessWidget {
-  const _GarmentConfigurationCard();
+  final OrderListItem order;
+  const _GarmentConfigurationCard({required this.order});
 
   @override
   Widget build(BuildContext context) {
@@ -272,47 +357,47 @@ class _GarmentConfigurationCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                'Three-piece Navy Suit',
-                style: GoogleFonts.inter(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primaryDark,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'FABRIC SELECTION',
-                style: GoogleFonts.inter(
-                  fontSize: 8,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textHint,
-                  letterSpacing: 1.0,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEDE9FE),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Icon(Icons.texture_rounded, size: 10, color: Color(0xFF8B5CF6)),
-                  ),
-                  const SizedBox(width: 8),
                   Text(
-                    'Italian Loro Piana Wool (Super 150s)',
+                    order.firstItemName,
                     style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primaryDark,
                     ),
                   ),
-                ],
-              ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'FABRIC SELECTION',
+                    style: GoogleFonts.inter(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textHint,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEDE9FE),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Icon(Icons.texture_rounded, size: 10, color: Color(0xFF8B5CF6)),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        order.orderItems.isNotEmpty ? (order.orderItems.first.product.sku ?? 'Custom Selection') : 'Default Fabric',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -392,10 +477,34 @@ class _GarmentConfigurationCard extends StatelessWidget {
 }
 
 class _ProductionProgressCard extends StatelessWidget {
-  const _ProductionProgressCard();
+  final String status;
+  final DateTime date;
+  final List<OrderTimelineItem> timeline;
+
+  const _ProductionProgressCard({
+    required this.status,
+    required this.date,
+    required this.timeline,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Define the fixed steps the user requested
+    final steps = [
+      {'id': 'pending', 'label': 'Pending', 'icon': Icons.pending_actions_rounded},
+      {'id': 'confirmed', 'label': 'Confirmed', 'icon': Icons.check_circle_outline_rounded},
+      {'id': 'cancelled', 'label': 'Cancelled', 'icon': Icons.cancel_outlined},
+    ];
+
+    // Determine current status index
+    int currentStepIndex = -1;
+    final currentStatus = status.toLowerCase();
+    
+    if (currentStatus == 'pending') currentStepIndex = 0;
+    else if (currentStatus == 'confirmed') currentStepIndex = 1;
+    else if (currentStatus == 'cancelled') currentStepIndex = 2;
+    else if (currentStatus == 'completed') currentStepIndex = 1; // Treat completed as past confirmed
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -415,35 +524,50 @@ class _ProductionProgressCard extends StatelessWidget {
             ],
           ),
           child: Column(
-            children: [
-              _TimelineStep(
-                title: 'Order Placed',
-                subtitle: 'Oct 12, 2023',
-                status: _StepStatus.completed,
-                isFirst: true,
-              ),
-              _TimelineStep(
-                title: 'Measurement Taken',
-                subtitle: 'Oct 14, 2023',
-                status: _StepStatus.completed,
-              ),
-              _TimelineStep(
-                title: 'Fabric Sourcing',
-                subtitle: 'Oct 20, 2023',
-                status: _StepStatus.completed,
-              ),
-              _TimelineStep(
-                title: 'Cutting & Stitching',
-                subtitle: 'Estimated completion: Oct 30',
-                status: _StepStatus.active,
-              ),
-              _TimelineStep(
-                title: 'First Fitting',
-                subtitle: 'Scheduled: Nov 05',
-                status: _StepStatus.pending,
-                isLast: true,
-              ),
-            ],
+            children: List.generate(steps.length, (index) {
+              final step = steps[index];
+              final stepId = step['id'] as String;
+              
+              // Find if this step is in history
+              final historyEntry = timeline.firstWhere(
+                (h) => h.status.toLowerCase() == stepId,
+                orElse: () => OrderTimelineItem(
+                  id: '', orderId: '', status: '', 
+                  timestamp: DateTime.now(), createdBy: '', 
+                  createdAt: DateTime.now(), updatedAt: DateTime.now()
+                ),
+              );
+
+              bool isCompleted = false;
+              bool isActive = false;
+              String subtitle = 'Schedule Pending';
+
+              // Logic for status rendering
+              if (historyEntry.id.isNotEmpty) {
+                isCompleted = true;
+                subtitle = DateFormat('MMM dd, yyyy • HH:mm').format(historyEntry.timestamp);
+              } else if (index <= currentStepIndex) {
+                 // Even if not in timeline API yet, if main status says it's confirmed, pending is completed
+                 isCompleted = true;
+                 subtitle = index == currentStepIndex ? 'Current Status' : 'Completed';
+              } else if (index == currentStepIndex + 1 && currentStatus != 'cancelled') {
+                 isActive = true;
+                 subtitle = 'Next Phase';
+              }
+
+              // Special case for Cancelled - only show if it happened or if we are there
+              if (stepId == 'cancelled' && currentStatus != 'cancelled' && historyEntry.id.isEmpty) {
+                return const SizedBox.shrink();
+              }
+
+              return _TimelineStep(
+                title: step['label'] as String,
+                subtitle: subtitle,
+                status: isCompleted ? _StepStatus.completed : (isActive ? _StepStatus.active : _StepStatus.pending),
+                isFirst: index == 0,
+                isLast: index == steps.length - 1 || (stepId == 'confirmed' && currentStatus != 'cancelled' && !steps.any((s) => s['id'] == 'cancelled' && status.toLowerCase() == 'cancelled')),
+              );
+            }).where((w) => w is! SizedBox).toList(),
           ),
         ),
       ],
@@ -716,7 +840,8 @@ class _MeasureSquare extends StatelessWidget {
 }
 
 class _PaymentSummaryCard extends StatelessWidget {
-  const _PaymentSummaryCard();
+  final OrderListItem order;
+  const _PaymentSummaryCard({required this.order});
 
   @override
   Widget build(BuildContext context) {
@@ -752,7 +877,7 @@ class _PaymentSummaryCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '£2,850.00',
+                    '\$${order.grandTotal}',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
@@ -766,7 +891,7 @@ class _PaymentSummaryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Amount Paid',
+                    'Status',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -774,11 +899,11 @@ class _PaymentSummaryCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '£1,500.00',
+                    order.paymentStatus.toUpperCase(),
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
+                      color: order.paymentStatus.toLowerCase() == 'paid' ? Colors.green : Colors.orange,
                     ),
                   ),
                 ],
@@ -845,7 +970,8 @@ class _PaymentSummaryCard extends StatelessWidget {
 }
 
 class _SpecialRequestsCard extends StatelessWidget {
-  const _SpecialRequestsCard();
+  final OrderListItem order;
+  const _SpecialRequestsCard({required this.order});
 
   @override
   Widget build(BuildContext context) {
@@ -879,7 +1005,7 @@ class _SpecialRequestsCard extends StatelessWidget {
             ),
           ),
           child: Text(
-            '"Add hidden inner pocket on the left breast lining for travel documents."',
+            order.notes ?? "No special requests specified.",
             style: GoogleFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.w500,

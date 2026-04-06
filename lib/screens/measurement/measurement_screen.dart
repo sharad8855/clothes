@@ -12,16 +12,13 @@ class MeasurementScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => MeasurementProvider(),
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBg,
-        appBar: _buildAppBar(context),
-        body: const _MeasurementScreenBody(),
-        bottomNavigationBar: const _BottomNavBar(),
-        floatingActionButton: _buildFloatingChatButton(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      ),
+    return Scaffold(
+      backgroundColor: AppColors.scaffoldBg,
+      appBar: _buildAppBar(context),
+      body: const _MeasurementScreenBody(),
+      bottomNavigationBar: const _BottomNavBar(),
+      floatingActionButton: _buildFloatingChatButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -129,25 +126,37 @@ class _MeasurementScreenBody extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          _ProfileSummaryCard(),
-          SizedBox(height: 20),
-          _AutoFillCard(),
-          SizedBox(height: 24),
-          _MeasurementGuideCard(),
-          SizedBox(height: 32),
-          _SectionHeader(title: 'Upper Body'),
-          SizedBox(height: 16),
-          _UpperBodyInputs(),
-          SizedBox(height: 32),
-          _SectionHeader(title: 'Lower Body'),
-          SizedBox(height: 16),
-          _LowerBodyInputs(),
-          SizedBox(height: 24),
-          _FittingNotesInput(),
-          SizedBox(height: 24),
-          _CustomizeDetailsInput(),
-          SizedBox(height: 60), // padding for the FAB and Bottom Nav
+        children: [
+          const _ProfileSummaryCard(),
+          const SizedBox(height: 20),
+          const _GenderAndUnitSelector(),
+          const SizedBox(height: 20),
+          const _AutoFillCard(),
+          const SizedBox(height: 24),
+          const _MeasurementGuideCard(),
+          const SizedBox(height: 32),
+          const _SectionHeader(title: 'Upper Body'),
+          const SizedBox(height: 16),
+          const _UpperBodyInputs(),
+          const SizedBox(height: 32),
+          const _SectionHeader(title: 'Lower Body'),
+          const SizedBox(height: 16),
+          const _LowerBodyInputs(),
+          const SizedBox(height: 32),
+          const _SectionHeader(title: 'Legs & Height'),
+          const SizedBox(height: 16),
+          const _LegInputs(),
+          const SizedBox(height: 32),
+          const _SectionHeader(title: 'Custom Measurements'),
+          const SizedBox(height: 16),
+          const _CustomMeasurementsSection(),
+          const SizedBox(height: 24),
+          const _FittingNotesInput(),
+          const SizedBox(height: 24),
+          const _CustomizeDetailsInput(),
+          const SizedBox(height: 24),
+          const _ExtraOptionsInput(),
+          const SizedBox(height: 100), // padding for the FAB and Bottom Nav
         ],
       ),
     );
@@ -306,7 +315,7 @@ class _AutoFillCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: provider.isExtracting ? null : provider.startAIExtraction,
+              onPressed: provider.isExtracting ? null : () => _simulateAI(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF8B5CF6),
                 foregroundColor: Colors.white,
@@ -428,10 +437,12 @@ class _UpperBodyInputs extends StatelessWidget {
     return Column(
       children: [
         _MeasurementInput(label: 'Chest', controller: provider.chestController),
+        _MeasurementInput(label: 'Bust (Optional)', controller: provider.bustController),
         _MeasurementInput(label: 'Shoulder', controller: provider.shoulderController),
-        _MeasurementInput(label: 'Sleeve', controller: provider.sleeveController),
+        _MeasurementInput(label: 'Sleeve Length', controller: provider.sleeveController),
+        _MeasurementInput(label: 'Arm Length', controller: provider.armLengthController),
         _MeasurementInput(label: 'Neck', controller: provider.neckController),
-        _MeasurementInput(label: 'Length', controller: provider.lengthController),
+        _MeasurementInput(label: 'Front Length', controller: provider.lengthController),
       ],
     );
   }
@@ -449,6 +460,109 @@ class _LowerBodyInputs extends StatelessWidget {
         _MeasurementInput(label: 'Hip', controller: provider.hipController),
         _MeasurementInput(label: 'Inseam', controller: provider.inseamController),
         _MeasurementInput(label: 'Outseam', controller: provider.outseamController),
+      ],
+    );
+  }
+}
+
+class _LegInputs extends StatelessWidget {
+  const _LegInputs();
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<MeasurementProvider>();
+    return Column(
+      children: [
+        _MeasurementInput(label: 'Thigh', controller: provider.thighController),
+        _MeasurementInput(label: 'Knee', controller: provider.kneeController),
+        _MeasurementInput(label: 'Calf', controller: provider.calfController),
+        _MeasurementInput(label: 'Ankle', controller: provider.ankleController),
+        _MeasurementInput(label: 'Total Height', controller: provider.heightController),
+      ],
+    );
+  }
+}
+
+class _CustomMeasurementsSection extends StatelessWidget {
+  const _CustomMeasurementsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<MeasurementProvider>();
+    final customFields = provider.customFields ?? [];
+
+    return Column(
+      children: [
+        ...customFields.asMap().entries.map((entry) {
+          int idx = entry.key;
+          var field = entry.value;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: _MiniInput(label: 'Label', controller: field['label'], hint: 'e.g. Wrist'),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 2,
+                  child: _MiniInput(label: 'Value', controller: field['value'], hint: '00.0', isNumeric: true),
+                ),
+                IconButton(
+                  onPressed: () => provider.removeCustomField(idx),
+                  icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent, size: 20),
+                ),
+              ],
+            ),
+          );
+        }),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: provider.addCustomField,
+          icon: const Icon(Icons.add_circle_outline, size: 18),
+          label: const Text('Add Custom Measurement'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.primaryDark,
+            side: const BorderSide(color: AppColors.primaryDark),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MiniInput extends StatelessWidget {
+  final String label;
+  final TextEditingController controller;
+  final String hint;
+  final bool isNumeric;
+
+  const _MiniInput({
+    required this.label,
+    required this.controller,
+    required this.hint,
+    this.isNumeric = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.inputBg)),
+          child: TextFormField(
+            controller: controller,
+            keyboardType: isNumeric ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
+            style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
+            decoration: InputDecoration(hintText: hint, border: InputBorder.none, hintStyle: GoogleFonts.inter(color: AppColors.textHint)),
+          ),
+        ),
       ],
     );
   }
@@ -648,6 +762,69 @@ class _CustomizeDetailsInput extends StatelessWidget {
   }
 }
 
+class _ExtraOptionsInput extends StatelessWidget {
+  const _ExtraOptionsInput();
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<MeasurementProvider>();
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.add_task_rounded, size: 16, color: AppColors.primaryDark),
+              const SizedBox(width: 8),
+              Text(
+                'Extra Options & Services',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryDark,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: TextFormField(
+              controller: provider.extraOptionsController,
+              maxLines: 4,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textPrimary,
+              ),
+              decoration: InputDecoration(
+                hintText: 'e.g. Rush order requested, premium lining, matching pocket square...',
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: const EdgeInsets.all(16),
+                hintStyle: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.textHint,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _BottomNavBar extends StatelessWidget {
   const _BottomNavBar();
 
@@ -674,12 +851,22 @@ class _BottomNavBar extends StatelessWidget {
           ),
           const Spacer(),
           ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AssignStaffWizardScreen()),
-              );
-            },
+              onPressed: () async {
+                final customer = context.read<PackageProvider>().selectedCustomer;
+                if (customer == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a customer first')));
+                  return;
+                }
+                
+                await context.read<MeasurementProvider>().submitMeasurements(context, customer.id);
+                
+                if (context.mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AssignStaffWizardScreen()),
+                  );
+                }
+              },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryDark,
               foregroundColor: Colors.white,
@@ -713,4 +900,109 @@ class _BottomNavBar extends StatelessWidget {
       ),
     );
   }
+}
+
+class _GenderAndUnitSelector extends StatelessWidget {
+  const _GenderAndUnitSelector();
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<MeasurementProvider>();
+    // Use fallback values in case of hot reload state mismatch
+    final gender = (provider.gender ?? 'male').toUpperCase();
+    final unit = (provider.measurementUnit ?? 'inch').toUpperCase();
+
+    return Row(
+      children: [
+        Expanded(
+          child: _SelectorCard(
+            label: 'Gender',
+            value: gender,
+            options: const ['MALE', 'FEMALE', 'OTHER'],
+            onChanged: (val) => provider.gender = val!.toLowerCase(),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _SelectorCard(
+            label: 'Unit',
+            value: unit,
+            options: const ['INCH', 'CM'],
+            onChanged: (val) => provider.measurementUnit = val!.toLowerCase(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SelectorCard extends StatelessWidget {
+  final String label;
+  final String value;
+  final List<String> options;
+  final ValueChanged<String?> onChanged;
+
+  const _SelectorCard({
+    required this.label,
+    required this.value,
+    required this.options,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.inputBg),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+          ),
+          DropdownButton<String>(
+            value: value,
+            isExpanded: true,
+            underline: const SizedBox(),
+            icon: const Icon(Icons.keyboard_arrow_down, size: 18),
+            style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryDark),
+            items: options.map((String opt) {
+              return DropdownMenuItem<String>(
+                value: opt,
+                child: Text(opt),
+              );
+            }).toList(),
+            onChanged: onChanged,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void _simulateAI(BuildContext context) {
+  final p = context.read<MeasurementProvider>();
+  p.chestController.text = "95.5";
+  p.bustController.text = "90.0";
+  p.waistController.text = "80.0";
+  p.shoulderController.text = "42.0";
+  p.sleeveController.text = "62.0";
+  p.armLengthController.text = "58.0";
+  p.neckController.text = "38.0";
+  p.hipController.text = "90.0";
+  p.thighController.text = "55.0";
+  p.kneeController.text = "38.0";
+  p.calfController.text = "35.0";
+  p.ankleController.text = "22.0";
+  p.heightController.text = "175.0";
+  p.notesController.text = "Extracted via AI Analysis";
+  
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('AI auto-filled measurements detected!')),
+  );
 }

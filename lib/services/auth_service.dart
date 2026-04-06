@@ -6,12 +6,14 @@ import '../models/order_statistics_model.dart';
 import '../models/financial_summary_model.dart';
 import '../models/order_list_response.dart';
 import '../models/product_model.dart';
+import '../models/business_staff_response.dart';
+import '../models/order_timeline_response.dart';
 
 /// Handles all HTTP communication with the Bespoke Atelier backend.
 class AuthService {
   static const String _baseUrl =
       'https://platform-development-dev.157.20.214.214.nip.io';
-      
+
   /// Hardcoded Client ID for backend API integrations
   static const String clientId = 'c00c143d-71c3-42d9-b1bd-45f2f6f1297c';
 
@@ -55,7 +57,8 @@ class AuthService {
         return AuthResponse.fromJson(body);
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Login failed (${response.statusCode})';
       throw AuthException(message);
@@ -84,10 +87,11 @@ class AuthService {
       final body = jsonDecode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return true; 
+        return true;
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Failed to send OTP (${response.statusCode})';
       throw AuthException(message);
@@ -112,10 +116,7 @@ class AuthService {
               'Accept': 'application/json',
               'client-id': clientId,
             },
-            body: jsonEncode({
-              'phone': cleanPhone,
-              'otp': otp,
-            }),
+            body: jsonEncode({'phone': cleanPhone, 'otp': otp}),
           )
           .timeout(const Duration(seconds: 30));
 
@@ -127,7 +128,8 @@ class AuthService {
         throw const AuthException('Missing reset token in response');
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Invalid OTP (${response.statusCode})';
       throw AuthException(message);
@@ -166,7 +168,8 @@ class AuthService {
         return body['success'] == true;
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Password reset failed (${response.statusCode})';
       throw AuthException(message);
@@ -188,7 +191,9 @@ class AuthService {
       final headers = await getAuthHeaders();
       final response = await http
           .post(
-            Uri.parse('$_baseUrl/auth/api/business/client/$clientId/business/3f46574b-0fa7-41b5-ba42-fa2aa75e6800/invite-staff'),
+            Uri.parse(
+              '$_baseUrl/auth/api/business/client/$clientId/business/257c88b2-8cff-482a-b297-51a9910a3413/invite-staff',
+            ),
             headers: headers,
             body: jsonEncode({
               'name': name,
@@ -202,10 +207,11 @@ class AuthService {
       final body = jsonDecode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return true; 
+        return true;
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Failed to invite staff (${response.statusCode})';
       throw AuthException(message);
@@ -221,7 +227,9 @@ class AuthService {
       final headers = await getAuthHeaders();
       final response = await http
           .get(
-            Uri.parse('$_baseUrl/auth/api/order/client/$clientId/order/statistics'),
+            Uri.parse(
+              '$_baseUrl/auth/api/order/client/$clientId/order/statistics',
+            ),
             headers: headers,
           )
           .timeout(const Duration(seconds: 30));
@@ -233,7 +241,8 @@ class AuthService {
         return OrderStatistics.fromJson(data);
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Failed to retrieve statistics (${response.statusCode})';
       throw AuthException(message);
@@ -248,12 +257,16 @@ class AuthService {
     try {
       final headers = await getAuthHeaders();
       final now = DateTime.now();
-      final startDate = "${now.year}-${now.month.toString().padLeft(2, '0')}-01";
-      final endDate = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+      final startDate =
+          "${now.year}-${now.month.toString().padLeft(2, '0')}-01";
+      final endDate =
+          "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
 
       final response = await http
           .get(
-            Uri.parse('https://reporting.baapmarket.in/api/ecommerce/kpi-dealer-summary?client_id=$clientId&start_date=$startDate&end_date=$endDate'),
+            Uri.parse(
+              'https://reporting.baapmarket.in/api/ecommerce/kpi-dealer-summary?client_id=$clientId&start_date=$startDate&end_date=$endDate',
+            ),
             headers: headers,
           )
           .timeout(const Duration(seconds: 30));
@@ -264,7 +277,8 @@ class AuthService {
         return FinancialSummary.fromJson(body);
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Failed to retrieve financial summary (${response.statusCode})';
       throw AuthException(message);
@@ -283,7 +297,9 @@ class AuthService {
   }) async {
     final nameParts = fullName.trim().split(' ');
     final firstName = nameParts.first;
-    final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '.';
+    final lastName = nameParts.length > 1
+        ? nameParts.sublist(1).join(' ')
+        : '.';
     final cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
 
     try {
@@ -309,7 +325,8 @@ class AuthService {
         return body['success'] == true;
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Failed to create customer (${response.statusCode})';
       throw AuthException(message);
@@ -328,12 +345,11 @@ class AuthService {
       final headers = await getAuthHeaders();
       final response = await http
           .post(
-            Uri.parse('$_baseUrl/auth/api/order/client/$clientId/get-all/customer'),
+            Uri.parse(
+              '$_baseUrl/auth/api/order/client/$clientId/get-all/customer',
+            ),
             headers: headers,
-            body: jsonEncode({
-              'page': page,
-              'limit': limit,
-            }),
+            body: jsonEncode({'page': page, 'limit': limit}),
           )
           .timeout(const Duration(seconds: 30));
 
@@ -343,7 +359,8 @@ class AuthService {
         return body;
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Failed to retrieve customers (${response.statusCode})';
       throw AuthException(message);
@@ -357,10 +374,12 @@ class AuthService {
   static Future<OrderListResponse> getOrdersList({
     int page = 1,
     int limit = 10,
+    String? userId,
   }) async {
     final bodyData = {
       'page': page,
       'limit': limit,
+      if (userId != null) 'user_id': userId,
     };
 
     try {
@@ -379,7 +398,8 @@ class AuthService {
         return OrderListResponse.fromJson(body);
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Failed to retrieve orders (${response.statusCode})';
       throw AuthException(message);
@@ -388,15 +408,13 @@ class AuthService {
       throw AuthException('Network error: $e');
     }
   }
+
   // ─── User Profile ──────────────────────────────────────────────────────────
   static Future<UserModel> getUserProfile(String userId) async {
     try {
       final headers = await getAuthHeaders();
       final response = await http
-          .get(
-            Uri.parse('$_baseUrl/auth/api/users/$userId'),
-            headers: headers,
-          )
+          .get(Uri.parse('$_baseUrl/auth/api/users/$userId'), headers: headers)
           .timeout(const Duration(seconds: 30));
 
       final body = jsonDecode(response.body) as Map<String, dynamic>;
@@ -405,7 +423,8 @@ class AuthService {
         return UserModel.fromJson(body);
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Failed to retrieve profile (${response.statusCode})';
       throw AuthException(message);
@@ -416,24 +435,24 @@ class AuthService {
   }
 
   // ─── Upload Profile Image ─────────────────────────────────────────────────
-  static Future<String> uploadProfileImage(String userId, String filePath) async {
+  static Future<String> uploadProfileImage(
+    String userId,
+    String filePath,
+  ) async {
     try {
       final headers = await getAuthHeaders();
       var request = http.MultipartRequest(
         'POST',
         Uri.parse('$_baseUrl/auth/api/public/user/$userId/upload'),
       );
-      
-      request.headers.addAll({
-        'Accept': 'application/json',
-        ...headers,
-      });
 
-      request.files.add(
-        await http.MultipartFile.fromPath('file', filePath),
+      request.headers.addAll({'Accept': 'application/json', ...headers});
+
+      request.files.add(await http.MultipartFile.fromPath('file', filePath));
+
+      var streamedResponse = await request.send().timeout(
+        const Duration(seconds: 60),
       );
-
-      var streamedResponse = await request.send().timeout(const Duration(seconds: 60));
       var response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -450,7 +469,8 @@ class AuthService {
       }
 
       final body = jsonDecode(response.body) as Map<String, dynamic>;
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Failed to upload image (${response.statusCode})';
       throw AuthException(message);
@@ -469,7 +489,9 @@ class AuthService {
       final headers = await getAuthHeaders();
       final response = await http
           .post(
-            Uri.parse('$_baseUrl/auth/api/product/client/$clientId/get-products'),
+            Uri.parse(
+              '$_baseUrl/auth/api/product/client/$clientId/get-products',
+            ),
             headers: headers,
             body: jsonEncode({'page': page, 'limit': limit}),
           )
@@ -481,9 +503,154 @@ class AuthService {
         return ProductListResponse.fromJson(body);
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Failed to fetch products (${response.statusCode})';
+      throw AuthException(message);
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException('Network error: $e');
+    }
+  }
+
+  // ─── Save Customer Measurements ──────────────────────────────────────────
+  static Future<Map<String, dynamic>> saveCustomerMeasurements({
+    required String customerId,
+    required Map<String, dynamic> measurements,
+  }) async {
+    try {
+      final headers = await getAuthHeaders();
+      final response = await http
+          .post(
+            Uri.parse(
+              '$_baseUrl/auth/api/customer-measurements/client/$clientId/customer/$customerId',
+            ),
+            headers: headers,
+            body: jsonEncode(measurements),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return body;
+      }
+
+      final message =
+          body['message'] as String? ??
+          body['error'] as String? ??
+          'Failed to save measurements (${response.statusCode})';
+      throw AuthException(message);
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException('Network error: $e');
+    }
+  }
+
+  // ─── Get Business Staff ────────────────────────────────────────────────────
+  static Future<BusinessStaffResponse> getBusinessStaff({
+    int page = 1,
+    int limit = 100,
+  }) async {
+    try {
+      final headers = await getAuthHeaders();
+      final response = await http
+          .post(
+            Uri.parse(
+              '$_baseUrl/auth/api/business/client/$clientId/business/257c88b2-8cff-482a-b297-51a9910a3413/staff',
+            ),
+            headers: headers,
+            body: jsonEncode({'page': page, 'limit': limit}),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return BusinessStaffResponse.fromJson(body);
+      }
+
+      final message =
+          body['message'] as String? ??
+          body['error'] as String? ??
+          'Failed to fetch staff (${response.statusCode})';
+      throw AuthException(message);
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException('Network error: $e');
+    }
+  }
+
+  // ─── Create Final Order ────────────────────────────────────────────────────
+  static Future<Map<String, dynamic>> createOrder(Map<String, dynamic> orderData) async {
+    try {
+      final headers = await getAuthHeaders();
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/auth/api/order/client/$clientId/order'),
+            headers: headers,
+            body: jsonEncode(orderData),
+          )
+          .timeout(const Duration(seconds: 45));
+
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return body;
+      }
+
+      final message = body['message'] as String? ??
+          body['error'] as String? ??
+          'Order creation failed (${response.statusCode})';
+      throw AuthException(message);
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException('Network error: $e');
+    }
+  }
+
+  // ─── Fetch Order Details ───────────────────────────────────────────────────
+  static Future<OrderListItem> getOrderDetails(String orderId) async {
+    try {
+      final headers = await getAuthHeaders();
+      final url = Uri.parse('$_baseUrl/auth/api/order/client/$clientId/order/$orderId');
+      
+      final response = await http.get(url, headers: headers).timeout(const Duration(seconds: 30));
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (body['success'] == true && body['data'] != null) {
+          return OrderListItem.fromJson(body['data']);
+        }
+      }
+
+      final message = body['message'] as String? ?? body['error'] as String? ?? 'Failed to fetch order details';
+      throw AuthException(message);
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException('Network error: $e');
+    }
+  }
+
+  // ─── Fetch Order Timeline ──────────────────────────────────────────────────
+  static Future<List<OrderTimelineItem>> getOrderTimeline(String orderId) async {
+    try {
+      final headers = await getAuthHeaders();
+      final url = Uri.parse('$_baseUrl/auth/api/order/client/$clientId/order/$orderId/order-timeline');
+      
+      final response = await http.get(url, headers: headers).timeout(const Duration(seconds: 30));
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (body['success'] == true && body['data'] != null) {
+          return (body['data'] as List)
+              .map((item) => OrderTimelineItem.fromJson(item))
+              .toList();
+        }
+      }
+
+      final message = body['message'] as String? ?? body['error'] as String? ?? 'Failed to fetch order timeline';
       throw AuthException(message);
     } catch (e) {
       if (e is AuthException) rethrow;

@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../../providers/payment_provider.dart';
 import '../../providers/package_provider.dart';
+import '../../providers/fabric_provider.dart';
+import '../../providers/measurement_provider.dart';
 import '../success/order_success_screen.dart';
 
 class PaymentScreen extends StatelessWidget {
@@ -624,23 +626,49 @@ class _BottomNavBar extends StatelessWidget {
   }
 
   void _confirmPayment(BuildContext context, PaymentProvider provider) async {
-    final success = await provider.processPayment();
-    if (success && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            provider.selectedMethod == PaymentMethod.payLater ? 'Order Confirmed!' : 'Payment Confirmed!',
-            style: GoogleFonts.inter(),
+    final packageProvider = context.read<PackageProvider>();
+    final fabricProvider = context.read<FabricProvider>();
+    final measurementProvider = context.read<MeasurementProvider>();
+    
+    final customerId = packageProvider.selectedCustomer?.id ?? "unknown";
+    final measurementData = measurementProvider.getMeasurementMap(customerId);
+
+    try {
+      final orderId = await provider.processPayment(
+        packageProvider: packageProvider,
+        measurementData: measurementData,
+        fabricType: fabricProvider.selectedFabricType,
+        fabricPattern: fabricProvider.selectedPrimaryPattern,
+        fabricModifiers: fabricProvider.selectedModifiers.toList(),
+      );
+
+      if (orderId != null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              provider.selectedMethod == PaymentMethod.payLater ? 'Order Confirmed!' : 'Payment Confirmed!',
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
           ),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      // Route perfectly to Order Success!
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const OrderSuccessScreen()),
-      );
+        );
+        // Route perfectly to Order Success!
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => OrderSuccessScreen(orderId: orderId)),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 }

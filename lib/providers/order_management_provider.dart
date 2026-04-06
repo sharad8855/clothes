@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/order_list_response.dart';
+import '../models/customer_list_response.dart';
 import '../models/order_legacy_model.dart';
 import '../services/auth_service.dart';
+import '../core/session_manager.dart';
 
 class OrderManagementProvider extends ChangeNotifier {
   String _searchQuery = '';
@@ -21,6 +23,26 @@ class OrderManagementProvider extends ChangeNotifier {
   bool get isLoadingMore => _isLoadingMore;
   bool get hasMore => _hasMore;
   int get totalCount => _totalCount;
+
+  // ─── Customer Cache ──────────────────────────────────────────
+  final Map<String, String> _customerNames = {};
+
+  String getCustomerName(String customerId) {
+    return _customerNames[customerId] ?? 'Unknown Customer';
+  }
+
+  Future<void> _preloadCustomerNames() async {
+    try {
+      final responseMap = await AuthService.getAllCustomers(page: 1, limit: 100);
+      final response = CustomerListResponse.fromJson(responseMap);
+      for (var customer in response.data) {
+        _customerNames[customer.id] = customer.fullName;
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error preloading customer names: $e");
+    }
+  }
 
   double get dailyEfficiency => 94.0;
   int get readyItemsCount => _orders.where((o) => o.orderStatus.toLowerCase() == 'ready').length;
@@ -53,15 +75,30 @@ class OrderManagementProvider extends ChangeNotifier {
     }
 
     try {
+      // Preload customers once on first load or refresh
+      if (_customerNames.isEmpty || refresh) {
+        await _preloadCustomerNames();
+      }
+
+      final user = await SessionManager.instance.getUser();
       final response = await AuthService.getOrdersList(
         page: _currentPage,
         limit: _limit,
+        userId: user?.id,
       );
 
       if (refresh) {
         _orders = response.data;
       } else {
         _orders.addAll(response.data);
+      }
+
+      // Pre-map names from cache
+      for (var order in response.data) {
+        final cachedName = _customerNames[order.customerId];
+        if (cachedName != null) {
+          order.setCachedCustomerName(cachedName);
+        }
       }
 
       _totalCount = response.totalCount;
@@ -83,12 +120,23 @@ class OrderManagementProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final user = await SessionManager.instance.getUser();
       final response = await AuthService.getOrdersList(
         page: _currentPage,
         limit: _limit,
+        userId: user?.id,
       );
 
       _orders.addAll(response.data);
+
+      // Pre-map names from cache
+      for (var order in response.data) {
+        final cachedName = _customerNames[order.customerId];
+        if (cachedName != null) {
+          order.setCachedCustomerName(cachedName);
+        }
+      }
+
       _totalCount = response.totalCount;
       _hasMore = _currentPage < response.totalPages;
       _currentPage++;
