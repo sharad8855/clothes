@@ -7,6 +7,7 @@ import '../../providers/clients_provider.dart';
 import '../../providers/package_provider.dart';
 import '../../models/customer_list_response.dart';
 import '../package/package_screen.dart';
+import '../customer/add_customer_screen.dart';
 
 class SelectCustomerScreen extends StatefulWidget {
   const SelectCustomerScreen({super.key});
@@ -59,6 +60,8 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
             children: [
               _buildHeader(),
               _buildSearchBar(provider),
+              const SizedBox(height: 8),
+              _buildAddCustomerButton(context),
               const SizedBox(height: 8),
               _buildSectionLabel('All Customers', provider.totalCount),
               Expanded(
@@ -473,6 +476,64 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAddCustomerButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddCustomerScreen()),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF0F9FF),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFBAE6FD)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF0EA5E9),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.add, color: Colors.white, size: 18),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Add New Customer',
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF0369A1),
+                      ),
+                    ),
+                    Text(
+                      'Create a profile for a first-time client',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: const Color(0xFF0EA5E9),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF0EA5E9)),
+            ],
+          ),
+        ),
       ),
     );
   }

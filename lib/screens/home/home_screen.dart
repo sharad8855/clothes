@@ -10,6 +10,7 @@ import '../orders/order_details_screen.dart';
 import '../shell/widgets/app_drawer.dart';
 import '../../providers/profile_provider.dart';
 import '../../providers/order_management_provider.dart';
+import '../customers/customers_screen.dart';
 import 'notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -409,7 +410,7 @@ class _HomeScreenState extends State<HomeScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const SelectCustomerScreen(),
+                  builder: (context) => const CustomersScreen(),
                 ),
               );
             },

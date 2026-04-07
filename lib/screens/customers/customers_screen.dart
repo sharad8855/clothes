@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../shell/widgets/app_drawer.dart';
 import '../../providers/clients_provider.dart';
 import '../../models/customer_list_response.dart';
+import '../customer/add_customer_screen.dart';
 
 class CustomersScreen extends StatefulWidget {
   const CustomersScreen({super.key});
@@ -126,7 +127,20 @@ class _CustomersScreenState extends State<CustomersScreen> {
           color: const Color(0xFF1E3A8A),
         ),
       ),
-
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: IconButton(
+            icon: const Icon(Icons.add_circle_rounded, color: Color(0xFF1E3A8A), size: 28),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddCustomerScreen()),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 

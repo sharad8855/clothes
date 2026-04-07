@@ -51,7 +51,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return AuthResponse.fromJson(body);
@@ -84,7 +84,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -120,7 +120,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final token = body['reset_token'] as String?;
@@ -162,7 +162,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return body['success'] == true;
@@ -204,7 +204,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -234,7 +234,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = body['data'] as Map<String, dynamic>;
@@ -271,7 +271,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return FinancialSummary.fromJson(body);
@@ -319,7 +319,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return body['success'] == true;
@@ -353,7 +353,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return body;
@@ -392,7 +392,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = json.decode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return OrderListResponse.fromJson(body);
@@ -417,7 +417,7 @@ class AuthService {
           .get(Uri.parse('$_baseUrl/auth/api/users/$userId'), headers: headers)
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return UserModel.fromJson(body);
@@ -459,7 +459,7 @@ class AuthService {
         // usually it returns the url or the updated user object.
         // let's try to parse the body to find a url, or just return success
         try {
-          final body = jsonDecode(response.body) as Map<String, dynamic>;
+          final body = _processResponse(response) as Map<String, dynamic>;
           // Assuming the api returns a url in 'url', 'image_url', 'profile_image', etc.
           final url = body['url'] ?? body['profile_image'] ?? '';
           return url.toString();
@@ -497,7 +497,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return ProductListResponse.fromJson(body);
@@ -531,7 +531,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return body;
@@ -565,7 +565,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 30));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return BusinessStaffResponse.fromJson(body);
@@ -594,7 +594,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 45));
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return body;
@@ -617,7 +617,7 @@ class AuthService {
       final url = Uri.parse('$_baseUrl/auth/api/order/client/$clientId/order/$orderId');
       
       final response = await http.get(url, headers: headers).timeout(const Duration(seconds: 30));
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (body['success'] == true && body['data'] != null) {
@@ -640,7 +640,7 @@ class AuthService {
       final url = Uri.parse('$_baseUrl/auth/api/order/client/$clientId/order/$orderId/order-timeline');
       
       final response = await http.get(url, headers: headers).timeout(const Duration(seconds: 30));
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (body['success'] == true && body['data'] != null) {
@@ -655,6 +655,30 @@ class AuthService {
     } catch (e) {
       if (e is AuthException) rethrow;
       throw AuthException('Network error: $e');
+    }
+  }
+
+  // ─── Private Helper for Defensive Parsing ──────────────────────────────────
+  static dynamic _processResponse(http.Response response) {
+    final contentType = response.headers['content-type'] ?? '';
+    if (contentType.contains('application/json')) {
+      try {
+        return jsonDecode(response.body);
+      } catch (e) {
+        print('❌ JSON Malformed in response: $e');
+        print('Raw Body: ${response.body}');
+        throw const AuthException('Server returned malformed JSON');
+      }
+    } else {
+      // Log the HTML response for debugging
+      print('❌ Non-JSON response received (Status: ${response.statusCode})');
+      print('URL: ${response.request?.url}');
+      print('Body Snippet: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}');
+      
+      throw AuthException(
+        'Server returned an invalid response (HTML). Status: ${response.statusCode}. '
+        'This often means the URL endpoint is incorrect or the service is down.'
+      );
     }
   }
 }
