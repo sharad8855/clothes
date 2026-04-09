@@ -124,14 +124,24 @@ class LoginProvider extends ChangeNotifier {
         password: _password,
       );
 
-      // Persist tokens for future sessions
+      // Save initial session to provide token for the profile fetch
       await SessionManager.instance.saveSession(
         accessToken: authResponse.accessToken,
         refreshToken: authResponse.refreshToken,
         user: authResponse.user,
       );
 
-      _loggedInUser = authResponse.user;
+      // Immediately fetch the full profile to get roles and permissions
+      final detailedUser = await AuthService.getUserProfile(authResponse.user.id);
+      
+      // Update session with the detailed user profile
+      await SessionManager.instance.saveSession(
+        accessToken: authResponse.accessToken,
+        refreshToken: authResponse.refreshToken,
+        user: detailedUser,
+      );
+
+      _loggedInUser = detailedUser;
 
       _isLoading = false;
       notifyListeners();

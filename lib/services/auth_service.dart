@@ -413,14 +413,19 @@ class AuthService {
   static Future<UserModel> getUserProfile(String userId) async {
     try {
       final headers = await getAuthHeaders();
+      // Using the exact URL structure provided for business-specific user profiles
       final response = await http
-          .get(Uri.parse('$_baseUrl/auth/api/users/$userId'), headers: headers)
+          .get(
+            Uri.parse('$_baseUrl/auth/api/users/client/$clientId/user/$userId'),
+            headers: headers,
+          )
           .timeout(const Duration(seconds: 30));
 
       final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return UserModel.fromJson(body);
+        // The API returns the profile inside a 'user' field
+        return UserModel.fromJson(body['user'] as Map<String, dynamic>);
       }
 
       final message =

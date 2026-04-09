@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../../providers/profile_provider.dart';
 import '../login/login_screen.dart';
 import '../shell/main_shell.dart';
+import '../home/hello_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   final bool startLoggedIn;
@@ -23,17 +26,45 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       duration: const Duration(milliseconds: 3000),
     )..forward();
 
-    // 3.5 second timer for branding
-    Timer(const Duration(milliseconds: 3500), () {
+    // Redirection logic
+    _handleNavigation();
+  }
+
+  Future<void> _handleNavigation() async {
+    // Wait for the branding animation to complete
+    await Future.delayed(const Duration(milliseconds: 3500));
+    
+    if (!mounted) return;
+
+    if (!widget.startLoggedIn) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+      return;
+    }
+
+    // If starting logged in, we need to ensure the profile is fetched to check roles
+    try {
+      final profile = context.read<ProfileProvider>();
+      await profile.fetchProfile();
+      
+      if (!mounted) return;
+
+      final destination = profile.userProfile?.isBusinessStaff == true
+          ? const HelloScreen()
+          : const MainShell();
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => destination),
+      );
+    } catch (e) {
+      // Fallback to login if profile fetch fails
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => 
-              widget.startLoggedIn ? const MainShell() : const LoginScreen(),
-          ),
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
       }
-    });
+    }
   }
 
   @override

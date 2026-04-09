@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../../providers/login_provider.dart';
 import '../shell/main_shell.dart';
+import '../home/hello_screen.dart';
 import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -321,9 +322,13 @@ class _LoginScreenState extends State<LoginScreen>
                 FocusScope.of(context).unfocus();
                 final success = await login.submit();
                 if (success && mounted) {
+                  final destination = login.loggedInUser?.isBusinessStaff == true
+                      ? const HelloScreen()
+                      : const MainShell();
+                      
                   Navigator.of(context).pushReplacement(
                     PageRouteBuilder(
-                      pageBuilder: (_, animation, _) => const MainShell(),
+                      pageBuilder: (_, animation, _) => destination,
                       transitionsBuilder: (_, animation, _, child) {
                         return FadeTransition(
                           opacity: animation,
