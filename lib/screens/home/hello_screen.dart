@@ -59,38 +59,7 @@ class HelloScreen extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
-        PopupMenuButton<String>(
-          icon: const Icon(Icons.menu, color: Color(0xFF191C1D)),
-          offset: const Offset(0, 40),
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          onSelected: (value) {
-            if (value == 'logout') {
-              _handleLogout(context);
-            }
-          },
-          itemBuilder: (BuildContext context) => [
-            PopupMenuItem<String>(
-              value: 'logout',
-              child: Row(
-                children: [
-                  const Icon(Icons.logout, color: Color(0xFFD50000), size: 18),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Logout',
-                    style: GoogleFonts.inter(
-                      color: const Color(0xFFD50000),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        const Icon(Icons.menu, color: Color(0xFF191C1D)),
         const SizedBox(width: 16),
         Text(
           'Staff\nPortal',
@@ -103,6 +72,11 @@ class HelloScreen extends StatelessWidget {
         ),
         const Spacer(),
         const Icon(Icons.search, color: Color(0xFF494456)),
+        const SizedBox(width: 16),
+        GestureDetector(
+          onTap: () => _handleLogout(context),
+          child: const Icon(Icons.settings_outlined, color: Color(0xFF494456)),
+        ),
         const SizedBox(width: 16),
         const CircleAvatar(
           radius: 18,
