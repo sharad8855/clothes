@@ -322,18 +322,16 @@ class _LoginScreenState extends State<LoginScreen>
                 FocusScope.of(context).unfocus();
                 final success = await login.submit();
                 if (success && mounted) {
-                  final destination = login.loggedInUser?.isBusinessStaff == true
+                  final destination =
+                      login.loggedInUser?.isBusinessStaff == true
                       ? const HelloScreen()
                       : const MainShell();
-                      
+
                   Navigator.of(context).pushReplacement(
                     PageRouteBuilder(
                       pageBuilder: (_, animation, _) => destination,
                       transitionsBuilder: (_, animation, _, child) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: child,
-                        );
+                        return FadeTransition(opacity: animation, child: child);
                       },
                       transitionDuration: const Duration(milliseconds: 400),
                     ),
@@ -342,7 +340,9 @@ class _LoginScreenState extends State<LoginScreen>
               },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          disabledBackgroundColor: AppColors.primaryLight.withValues(alpha: 0.6),
+          disabledBackgroundColor: AppColors.primaryLight.withValues(
+            alpha: 0.6,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
             side: BorderSide(
@@ -401,8 +401,11 @@ class _LoginScreenState extends State<LoginScreen>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.error_outline_rounded,
-              color: AppColors.error, size: 18),
+          const Icon(
+            Icons.error_outline_rounded,
+            color: AppColors.error,
+            size: 18,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
