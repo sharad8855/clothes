@@ -59,8 +59,39 @@ class HelloScreen extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
-        const Icon(Icons.menu, color: Color(0xFF191C1D)),
-        const SizedBox(width: 16),
+        PopupMenuButton<String>(
+          icon: const Icon(Icons.menu, color: Color(0xFF191C1D)),
+          offset: const Offset(0, 40),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 8,
+          onSelected: (value) {
+            if (value == 'logout') {
+              _handleLogout(context);
+            }
+          },
+          itemBuilder: (context) => [
+            PopupMenuItem<String>(
+              value: 'logout',
+              child: Row(
+                children: [
+                  const Icon(Icons.logout, color: Color(0xFFD50000), size: 20),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Log Out',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFD50000),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(width: 8),
         Text(
           'Staff\nPortal',
           style: GoogleFonts.manrope(
@@ -72,11 +103,6 @@ class HelloScreen extends StatelessWidget {
         ),
         const Spacer(),
         const Icon(Icons.search, color: Color(0xFF494456)),
-        const SizedBox(width: 16),
-        GestureDetector(
-          onTap: () => _handleLogout(context),
-          child: const Icon(Icons.settings_outlined, color: Color(0xFF494456)),
-        ),
         const SizedBox(width: 16),
         const CircleAvatar(
           radius: 18,
@@ -186,7 +212,7 @@ class HelloScreen extends StatelessWidget {
       mainAxisSpacing: 16,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 1.45,
+      childAspectRatio: 1.3,
       children: [
         _buildSummaryCard(Icons.inbox_outlined, '12', 'TOTAL TASKS', const Color(0xFF191C1D)),
         _buildSummaryCard(Icons.content_cut, '05', 'CUTTING STAGE', const Color(0xFF6200EE)),
@@ -198,10 +224,10 @@ class HelloScreen extends StatelessWidget {
 
   Widget _buildSummaryCard(IconData icon, String count, String label, Color iconColor) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24), // xl roundedness
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF191C1D).withOpacity(0.04),
@@ -214,19 +240,18 @@ class HelloScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, color: iconColor, size: 24),
+          Icon(icon, color: iconColor, size: 22),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 count,
                 style: GoogleFonts.manrope(
-                  fontSize: 26,
+                  fontSize: 24,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF191C1D),
                 ),
               ),
-              const SizedBox(height: 2),
               Text(
                 label,
                 style: GoogleFonts.inter(
