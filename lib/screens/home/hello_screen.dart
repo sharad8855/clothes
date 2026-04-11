@@ -609,6 +609,7 @@ class HelloScreen extends StatelessWidget {
 
   Widget _buildBottomNavigationBar(BuildContext context) {
     return Container(
+      height: 72,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -619,42 +620,63 @@ class HelloScreen extends StatelessWidget {
           ),
         ],
       ),
-      child: BottomNavigationBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF6200EE),
-        unselectedItemColor: const Color(0xFF7A7488),
-        selectedLabelStyle: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, height: 1.5),
-        unselectedLabelStyle: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, height: 1.5),
-        onTap: (index) {
-          if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const StaffOrderScreen(),
-              ),
-            );
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Padding(padding: EdgeInsets.only(bottom: 6, top: 8), child: Icon(Icons.inbox)),
+      child: Row(
+        children: [
+          _buildNavItem(
+            context: context,
+            icon: Icons.inbox,
             label: 'TASKS',
+            isActive: true,
+            onTap: () {},
           ),
-          BottomNavigationBarItem(
-            icon: Padding(padding: EdgeInsets.only(bottom: 6, top: 8), child: Icon(Icons.receipt_long_outlined)),
+          _buildNavItem(
+            context: context,
+            icon: Icons.receipt_long_outlined,
             label: 'ORDERS',
-          ),
-          BottomNavigationBarItem(
-            icon: Padding(padding: EdgeInsets.only(bottom: 6, top: 8), child: Icon(Icons.inventory_2_outlined)),
-            label: 'INVENTORY',
-          ),
-          BottomNavigationBarItem(
-            icon: Padding(padding: EdgeInsets.only(bottom: 6, top: 8), child: Icon(Icons.chat_bubble_outline)),
-            label: 'CHAT',
+            isActive: false,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const StaffOrderScreen(),
+                ),
+              );
+            },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 24,
+              color: isActive ? const Color(0xFF6200EE) : const Color(0xFF7A7488),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
+                color: isActive ? const Color(0xFF6200EE) : const Color(0xFF7A7488),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
