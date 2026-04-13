@@ -16,7 +16,7 @@ import 'providers/measurement_provider.dart';
 import 'screens/splash/splash_screen.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();  
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
