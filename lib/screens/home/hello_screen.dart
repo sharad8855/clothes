@@ -2,11 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../providers/login_provider.dart';
+import '../../providers/order_management_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../login/login_screen.dart';
 import '../staff/staff_order_screen.dart';
-class HelloScreen extends StatelessWidget {
+class HelloScreen extends StatefulWidget {
   const HelloScreen({super.key});
+
+  @override
+  State<HelloScreen> createState() => _HelloScreenState();
+}
+
+class _HelloScreenState extends State<HelloScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OrderManagementProvider>().fetchOrders(refresh: true);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -206,19 +220,27 @@ class HelloScreen extends StatelessWidget {
   }
 
   Widget _buildSummaryGrid() {
-    return GridView.count(
-      crossAxisCount: 2,
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 1.3,
-      children: [
-        _buildSummaryCard(Icons.inbox_outlined, '12', 'TOTAL TASKS', const Color(0xFF191C1D)),
-        _buildSummaryCard(Icons.content_cut, '05', 'CUTTING STAGE', const Color(0xFF6200EE)),
-        _buildSummaryCard(Icons.priority_high, '02', 'HIGH PRIORITY', const Color(0xFFD50000)),
-        _buildSummaryCard(Icons.check_circle_outline, '08', 'COMPLETED', const Color(0xFF00C853)),
-      ],
+    return Consumer<OrderManagementProvider>(
+      builder: (context, orderProvider, child) {
+        final totalCount = orderProvider.totalCount;
+        final pendingCount = orderProvider.orders.where((o) => o.orderStatus.toLowerCase() == 'pending').length;
+        final readyCount = orderProvider.readyItemsCount;
+
+        return GridView.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          childAspectRatio: 1.3,
+          children: [
+            _buildSummaryCard(Icons.inbox_outlined, totalCount.toString().padLeft(2, '0'), 'TOTAL TASKS', const Color(0xFF191C1D)),
+            _buildSummaryCard(Icons.content_cut, '05', 'IN PROGRESS', const Color(0xFF6200EE)),
+            _buildSummaryCard(Icons.priority_high, pendingCount.toString().padLeft(2, '0'), 'HIGH PRIORITY', const Color(0xFFD50000)),
+            _buildSummaryCard(Icons.check_circle_outline, readyCount.toString().padLeft(2, '0'), 'COMPLETED', const Color(0xFF00C853)),
+          ],
+        );
+      },
     );
   }
 
@@ -269,56 +291,52 @@ class HelloScreen extends StatelessWidget {
   }
 
   Widget _buildTaskList() {
-    return Column(
-      children: [
-        _buildTaskCard(
-          icon: Icons.checkroom,
-          iconBgColor: const Color(0xFFCFBDFF).withOpacity(0.3),
-          iconColor: const Color(0xFF4800B2),
-          orderId: 'ORD-0021',
-          priority: 'HIGH PRIORITY',
-          priorityColor: const Color(0xFFFFFFFF),
-          priorityBgColor: const Color(0xFFAC0000), // tertiary_container
-          title: 'Navy Silk-Wool Tuxedo',
-          client: 'Alexander Thorne',
-          badgeText: 'CUTTING',
-          badgeColor: const Color(0xFFE8DDFF),
-          badgeTextColor: const Color(0xFF22005D),
-          dueTime: 'Today, 12:00',
-        ),
-        const SizedBox(height: 16),
-        _buildTaskCard(
-          icon: Icons.layers_outlined,
-          iconBgColor: const Color(0xFFE1E3E4),
-          iconColor: const Color(0xFF494456),
-          orderId: 'ORD-0031',
-          priority: '',
-          priorityColor: Colors.transparent,
-          priorityBgColor: Colors.transparent,
-          title: 'Herringbone Tweed Overcoat',
-          client: 'Marcus Sterling',
-          badgeText: 'MEASUREMENT CHECK',
-          badgeColor: const Color(0xFFE7E8E9),
-          badgeTextColor: const Color(0xFF191C1D),
-          dueTime: 'Oct 24',
-        ),
-        const SizedBox(height: 16),
-        _buildTaskCard(
-          icon: Icons.accessibility_new_rounded,
-          iconBgColor: const Color(0xFFCFBDFF).withOpacity(0.3),
-          iconColor: const Color(0xFF6200EE),
-          orderId: 'ORD-0038',
-          priority: '',
-          priorityColor: Colors.transparent,
-          priorityBgColor: Colors.transparent,
-          title: 'White Egyptian Cotton Shirt',
-          client: 'Gregory Vance',
-          badgeText: 'PATTERN PREP',
-          badgeColor: const Color(0xFFE8DDFF),
-          badgeTextColor: const Color(0xFF22005D),
-          dueTime: 'Tomorrow',
-        ),
-      ],
+    return Consumer<OrderManagementProvider>(
+      builder: (context, orderProvider, child) {
+        if (orderProvider.isLoading && orderProvider.orders.isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (orderProvider.orders.isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Text(
+                'No tasks in queue.',
+                style: TextStyle(color: Color(0xFF7A7488)),
+              ),
+            ),
+          );
+        }
+
+        return Column(
+          children: orderProvider.orders.take(5).map((order) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: _buildTaskCard(
+                icon: order.garmentIcon,
+                iconBgColor: const Color(0xFFCFBDFF).withOpacity(0.3),
+                iconColor: const Color(0xFF4800B2),
+                orderId: order.billNumber.isNotEmpty ? order.billNumber : order.orderId.substring(0, 8),
+                priority: order.orderStatus.toLowerCase() == 'pending' ? 'HIGH PRIORITY' : '',
+                priorityColor: const Color(0xFFFFFFFF),
+                priorityBgColor: const Color(0xFFAC0000), 
+                title: order.firstItemName,
+                client: order.customerName,
+                badgeText: order.orderStatus.toUpperCase(),
+                badgeColor: order.statusBgColor,
+                badgeTextColor: order.statusTextColor,
+                dueTime: '${order.dueDate.day}/${order.dueDate.month}/${order.dueDate.year}',
+              ),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 
