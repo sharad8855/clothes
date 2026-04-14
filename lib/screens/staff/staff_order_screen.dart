@@ -1,7 +1,50 @@
 import 'package:flutter/material.dart';
+import '../../services/auth_service.dart';
 
-class StaffOrderScreen extends StatelessWidget {
+class StaffOrderScreen extends StatefulWidget {
   const StaffOrderScreen({Key? key}) : super(key: key);
+
+  @override
+  State<StaffOrderScreen> createState() => _StaffOrderScreenState();
+}
+
+class _StaffOrderScreenState extends State<StaffOrderScreen> {
+  bool _isUpdating = false;
+
+  Future<void> _updateOrderStatus() async {
+    setState(() {
+      _isUpdating = true;
+    });
+    try {
+      await AuthService.updateOrderStatus(
+        orderId: '84845570-d774-440c-9970-98c183f6ce09',
+        status: 'confirmed',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Order Status Updated Successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUpdating = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +175,37 @@ class StaffOrderScreen extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           _buildStepperBar(),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _isUpdating ? null : _updateOrderStatus,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0F1741),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+              ),
+              child: _isUpdating
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      'Confirm Order',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+            ),
+          ),
         ],
       ),
     );

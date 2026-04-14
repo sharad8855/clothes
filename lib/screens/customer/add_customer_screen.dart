@@ -15,6 +15,8 @@ class AddCustomerScreen extends StatefulWidget {
 }
 
 class _AddCustomerScreenState extends State<AddCustomerScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -25,22 +27,26 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
         body: Consumer<AddCustomerProvider>(
           builder: (context, provider, child) {
             return SafeArea(
-              child: Stack(
-                children: [
-                  SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildFullNameField(provider),
-                        const SizedBox(height: 24),
-                        _buildContactDetailsCard(provider),
-                        const SizedBox(height: 100), // padding for bottom button
-                      ],
+              child: Form(
+                key: _formKey,
+                child: Stack(
+                  children: [
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 24,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildContactDetailsCard(provider),
+                          const SizedBox(height: 100),
+                        ],
+                      ),
                     ),
-                  ),
-                  _buildBottomButton(provider),
-                ],
+                    _buildBottomButton(provider),
+                  ],
+                ),
               ),
             );
           },
@@ -78,31 +84,6 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               fontWeight: FontWeight.w600,
               color: AppColors.primaryDark,
             ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFullNameField(AddCustomerProvider provider) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'FULL NAME',
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
-            letterSpacing: 0.8,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          initialValue: provider.fullName,
-          onChanged: provider.setFullName,
-          decoration: const InputDecoration(
-            hintText: 'e.g. Sebastian Vael',
           ),
         ),
       ],
@@ -154,6 +135,31 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           ),
           const SizedBox(height: 20),
           Text(
+            'Full Name',
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            initialValue: provider.fullName,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            onChanged: provider.setFullName,
+            decoration: const InputDecoration(
+              hintText: 'e.g. Sebastian Vael',
+              prefixIcon: Icon(Icons.person_outline, size: 18),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter full name';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          Text(
             'Phone Number',
             style: GoogleFonts.inter(
               fontSize: 11,
@@ -165,9 +171,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           TextFormField(
             keyboardType: TextInputType.number,
             onChanged: provider.setPhoneNumber,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
               hintText: 'Enter 10-digit number',
               prefixIcon: const Icon(Icons.phone, size: 18),
@@ -221,7 +225,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               const SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
               )
             else ...[
               const Icon(Icons.person_add, size: 20),
@@ -241,9 +248,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
   }
 
   Future<void> _onSavePressed(AddCustomerProvider provider) async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     // Show confirmation bottom sheet first
     final shouldSave = await ConfirmCustomerBottomSheet.show(context, provider);
-    
+
     // Only proceed to save if confirmed
     if (shouldSave == true) {
       try {
