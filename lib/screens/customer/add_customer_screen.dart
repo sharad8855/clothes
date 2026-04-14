@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
@@ -14,6 +15,8 @@ class AddCustomerScreen extends StatefulWidget {
 }
 
 class _AddCustomerScreenState extends State<AddCustomerScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -24,22 +27,28 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
         body: Consumer<AddCustomerProvider>(
           builder: (context, provider, child) {
             return SafeArea(
-              child: Stack(
-                children: [
-                  SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildFullNameField(provider),
-                        const SizedBox(height: 24),
-                        _buildContactDetailsCard(provider),
-                        const SizedBox(height: 100), // padding for bottom button
-                      ],
+              child: Form(
+                key: _formKey,
+                child: Stack(
+                  children: [
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 24,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildContactDetailsCard(provider),
+                          const SizedBox(
+                            height: 100,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  _buildBottomButton(provider),
-                ],
+                    _buildBottomButton(provider),
+                  ],
+                ),
               ),
             );
           },
@@ -77,31 +86,6 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               fontWeight: FontWeight.w600,
               color: AppColors.primaryDark,
             ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFullNameField(AddCustomerProvider provider) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'FULL NAME',
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
-            letterSpacing: 0.8,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          initialValue: provider.fullName,
-          onChanged: provider.setFullName,
-          decoration: const InputDecoration(
-            hintText: 'e.g. Sebastian Vael',
           ),
         ),
       ],
@@ -153,6 +137,31 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           ),
           const SizedBox(height: 20),
           Text(
+            'Full Name',
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            initialValue: provider.fullName,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            onChanged: provider.setFullName,
+            decoration: const InputDecoration(
+              hintText: 'e.g. Sebastian Vael',
+              prefixIcon: Icon(Icons.person_outline, size: 18),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter full name';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          Text(
             'Phone Number',
             style: GoogleFonts.inter(
               fontSize: 11,
@@ -162,30 +171,26 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           ),
           const SizedBox(height: 8),
           TextFormField(
-            keyboardType: TextInputType.phone,
+            keyboardType: TextInputType.number,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             onChanged: provider.setPhoneNumber,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(10),
+            ],
             decoration: const InputDecoration(
-              hintText: '+1 (555) 000-0000',
+              hintText: '9876543210',
               prefixIcon: Icon(Icons.phone, size: 18),
             ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Email Address',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            keyboardType: TextInputType.emailAddress,
-            onChanged: provider.setEmailAddress,
-            decoration: const InputDecoration(
-              hintText: 'customer@domain.com',
-              prefixIcon: Icon(Icons.email, size: 18),
-            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter phone number';
+              }
+              if (value.length != 10) {
+                return 'Please enter a valid 10-digit number';
+              }
+              return null;
+            },
           ),
         ],
       ),
@@ -215,7 +220,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               const SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
               )
             else ...[
               const Icon(Icons.person_add, size: 20),
@@ -235,6 +243,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
   }
 
   Future<void> _onSavePressed(AddCustomerProvider provider) async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     // Show confirmation bottom sheet first
     final shouldSave = await ConfirmCustomerBottomSheet.show(context, provider);
     

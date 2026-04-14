@@ -663,6 +663,35 @@ class AuthService {
     }
   }
 
+  // ─── Update Order Status ───────────────────────────────────────────────────
+  static Future<Map<String, dynamic>> updateOrderStatus({
+    required String orderId,
+    required String status,
+  }) async {
+    try {
+      final headers = await getAuthHeaders();
+      final url = Uri.parse('$_baseUrl/auth/api/order/client/$clientId/order/$orderId');
+      
+      final response = await http.put(
+        url, 
+        headers: headers,
+        body: jsonEncode({'order_status': status}),
+      ).timeout(const Duration(seconds: 30));
+      
+      final body = _processResponse(response) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return body;
+      }
+
+      final message = body['message'] as String? ?? body['error'] as String? ?? 'Failed to update order status';
+      throw AuthException(message);
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException('Network error: $e');
+    }
+  }
+
   // ─── Private Helper for Defensive Parsing ──────────────────────────────────
   static dynamic _processResponse(http.Response response) {
     final contentType = response.headers['content-type'] ?? '';
