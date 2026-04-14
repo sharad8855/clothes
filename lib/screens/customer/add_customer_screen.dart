@@ -40,9 +40,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildContactDetailsCard(provider),
-                          const SizedBox(
-                            height: 100,
-                          ),
+                          const SizedBox(height: 100),
                         ],
                       ),
                     ),
@@ -172,25 +170,32 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           const SizedBox(height: 8),
           TextFormField(
             keyboardType: TextInputType.number,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
             onChanged: provider.setPhoneNumber,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(10),
-            ],
-            decoration: const InputDecoration(
-              hintText: '9876543210',
-              prefixIcon: Icon(Icons.phone, size: 18),
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            decoration: InputDecoration(
+              hintText: 'Enter 10-digit number',
+              prefixIcon: const Icon(Icons.phone, size: 18),
+              errorText: provider.phoneError,
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter phone number';
-              }
-              if (value.length != 10) {
-                return 'Please enter a valid 10-digit number';
-              }
-              return null;
-            },
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Email Address',
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            keyboardType: TextInputType.emailAddress,
+            onChanged: provider.setEmailAddress,
+            decoration: InputDecoration(
+              hintText: 'customer@domain.com',
+              prefixIcon: const Icon(Icons.email, size: 18),
+              errorText: provider.emailError,
+            ),
           ),
         ],
       ),
@@ -249,7 +254,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
 
     // Show confirmation bottom sheet first
     final shouldSave = await ConfirmCustomerBottomSheet.show(context, provider);
-    
+
     // Only proceed to save if confirmed
     if (shouldSave == true) {
       try {

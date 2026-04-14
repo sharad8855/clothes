@@ -21,8 +21,14 @@ class AddCustomerProvider extends ChangeNotifier {
   String _phoneNumber = '';
   String get phoneNumber => _phoneNumber;
 
+  String? _phoneError;
+  String? get phoneError => _phoneError;
+
   String _emailAddress = '';
   String get emailAddress => _emailAddress;
+
+  String? _emailError;
+  String? get emailError => _emailError;
 
   String _preferences = '';
   String get preferences => _preferences;
@@ -43,11 +49,23 @@ class AddCustomerProvider extends ChangeNotifier {
 
   void setPhoneNumber(String value) {
     _phoneNumber = value;
+    // Extract only digits for validation
+    final digitsOnly = value.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digitsOnly.length > 10) {
+      _phoneError = 'Phone number must be exactly 10 digits';
+    } else {
+      _phoneError = null;
+    }
     notifyListeners();
   }
 
   void setEmailAddress(String value) {
     _emailAddress = value;
+    if (value.isNotEmpty && !RegExp(r'^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
+      _emailError = 'Please enter a valid email address';
+    } else {
+      _emailError = null;
+    }
     notifyListeners();
   }
 
@@ -68,6 +86,21 @@ class AddCustomerProvider extends ChangeNotifier {
 
   Future<bool> saveCustomer() async {
     if (_fullName.trim().isEmpty) return false;
+
+    // Validate phone number
+    final digitsOnly = _phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digitsOnly.length != 10) {
+      _phoneError = 'Phone number must be exactly 10 digits';
+      notifyListeners();
+      return false;
+    }
+
+    // Validate email
+    if (_emailAddress.isNotEmpty && !RegExp(r'^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$').hasMatch(_emailAddress)) {
+      _emailError = 'Please enter a valid email address';
+      notifyListeners();
+      return false;
+    }
 
     _isLoading = true;
     notifyListeners();
