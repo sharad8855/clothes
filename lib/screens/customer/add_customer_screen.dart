@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
@@ -162,11 +163,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           ),
           const SizedBox(height: 8),
           TextFormField(
-            keyboardType: TextInputType.phone,
+            keyboardType: TextInputType.number,
             onChanged: provider.setPhoneNumber,
-            decoration: const InputDecoration(
-              hintText: '+1 (555) 000-0000',
-              prefixIcon: Icon(Icons.phone, size: 18),
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+            decoration: InputDecoration(
+              hintText: 'Enter 10-digit number',
+              prefixIcon: const Icon(Icons.phone, size: 18),
+              errorText: provider.phoneError,
             ),
           ),
           const SizedBox(height: 16),
@@ -182,9 +187,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           TextFormField(
             keyboardType: TextInputType.emailAddress,
             onChanged: provider.setEmailAddress,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'customer@domain.com',
-              prefixIcon: Icon(Icons.email, size: 18),
+              prefixIcon: const Icon(Icons.email, size: 18),
+              errorText: provider.emailError,
             ),
           ),
         ],
