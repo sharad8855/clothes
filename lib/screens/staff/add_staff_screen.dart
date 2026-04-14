@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/auth_service.dart';
 
@@ -16,14 +17,47 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
   final TextEditingController _jobTitleController = TextEditingController();
   
   bool _isLoading = false;
+  String? _phoneError;
+  String? _emailError;
+
+  @override
+  void initState() {
+    super.initState();
+    _phoneController.addListener(_validatePhone);
+    _emailController.addListener(_validateEmail);
+  }
 
   @override
   void dispose() {
+    _phoneController.removeListener(_validatePhone);
+    _emailController.removeListener(_validateEmail);
     _nameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
     _jobTitleController.dispose();
     super.dispose();
+  }
+
+  void _validatePhone() {
+    final digits = _phoneController.text.replaceAll(RegExp(r'[^0-9]'), '');
+    setState(() {
+      if (digits.length > 10) {
+        _phoneError = 'Phone number must be exactly 10 digits';
+      } else {
+        _phoneError = null;
+      }
+    });
+  }
+
+  void _validateEmail() {
+    final email = _emailController.text.trim();
+    setState(() {
+      if (email.isNotEmpty && !RegExp(r'^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$').hasMatch(email)) {
+        _emailError = 'Please enter a valid email address';
+      } else {
+        _emailError = null;
+      }
+    });
   }
 
   Future<void> _handleSaveStaff() async {
@@ -36,6 +70,19 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all required fields')),
       );
+      return;
+    }
+
+    // Validate phone number
+    final digits = phone.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digits.length != 10) {
+      setState(() => _phoneError = 'Phone number must be exactly 10 digits');
+      return;
+    }
+
+    // Validate email
+    if (email.isNotEmpty && !RegExp(r'^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$').hasMatch(email)) {
+      setState(() => _emailError = 'Please enter a valid email address');
       return;
     }
 
@@ -160,10 +207,21 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
           _buildCustomTextField('e.g. John Doe', controller: _nameController),
           const SizedBox(height: 16),
           _buildTextFieldLabel('PHONE NUMBER *'),
-          _buildCustomTextField('9876543210', controller: _phoneController, keyboardType: TextInputType.phone),
+          _buildCustomTextField(
+            '',
+            controller: _phoneController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            errorText: _phoneError,
+          ),
           const SizedBox(height: 16),
           _buildTextFieldLabel('EMAIL (OPTIONAL)'),
-          _buildCustomTextField('john@example.com', controller: _emailController, keyboardType: TextInputType.emailAddress),
+          _buildCustomTextField(
+            '',
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            errorText: _emailError,
+          ),
           const SizedBox(height: 16),
           _buildTextFieldLabel('DESIGNATION *'),
           _buildCustomTextField('e.g. Senior Stylist', controller: _jobTitleController),
@@ -190,33 +248,60 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
   Widget _buildCustomTextField(String hint, {
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
+    List<TextInputFormatter>? inputFormatters,
+    String? errorText,
   }) {
-    return Container(
-      height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        style: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: const Color(0xFF1E293B),
-        ),
-        decoration: InputDecoration(
-          hintText: hint,
-          border: InputBorder.none,
-          isDense: true,
-          hintStyle: GoogleFonts.inter(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: const Color(0xFF94A3B8),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 48,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(12),
+            border: errorText != null
+                ? Border.all(color: Colors.red.shade400, width: 1)
+                : null,
+          ),
+          child: TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF1E293B),
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              focusedErrorBorder: InputBorder.none,
+              isDense: true,
+              hintStyle: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: const Color(0xFF94A3B8),
+              ),
+            ),
           ),
         ),
-      ),
+        if (errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Text(
+              errorText,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.red.shade600,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
