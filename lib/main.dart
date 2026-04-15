@@ -13,6 +13,7 @@ import 'providers/profile_provider.dart';
 import 'providers/staff_provider.dart';
 import 'providers/fabric_provider.dart';
 import 'providers/measurement_provider.dart';
+import 'providers/language_provider.dart';
 import 'screens/splash/splash_screen.dart';
 
 Future<void> main() async {
@@ -52,6 +53,7 @@ class BespokeAtelierApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => StaffProvider()),
         ChangeNotifierProvider(create: (_) => FabricProvider()),
         ChangeNotifierProvider(create: (_) => MeasurementProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
       child: MaterialApp(
         title: 'The Bespoke Atelier',
