@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/session_manager.dart';
 import '../../../providers/home_provider.dart';
+import '../../../providers/language_provider.dart';
 import '../../analytics/analytics_screen.dart';
 import '../../login/login_screen.dart';
 import '../../orders/order_history_screen.dart';
@@ -176,6 +177,9 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
 
+            // Language Selection
+            _buildLanguageSelector(context),
+
             // Logout Footer
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -268,5 +272,137 @@ class AppDrawer extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildLanguageSelector(BuildContext context) {
+    return Consumer<LanguageProvider>(
+      builder: (context, langProvider, _) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8F9FC),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: const Color(0xFFE2E8F0),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.translate_rounded,
+                      color: Color(0xFF1E3A8A),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Language',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF1E3A8A),
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: const Color(0xFFE2E8F0),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF1E3A8A).withOpacity(0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: langProvider.currentLanguageCode,
+                      isExpanded: true,
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: Color(0xFF64748B),
+                        size: 22,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      dropdownColor: Colors.white,
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF334155),
+                      ),
+                      items: LanguageProvider.supportedLanguages.map((lang) {
+                        return DropdownMenuItem<String>(
+                          value: lang.code,
+                          child: Row(
+                            children: [
+                              Text(
+                                _getFlagEmoji(lang.code),
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                lang.name,
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF334155),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '(${lang.nativeName})',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: const Color(0xFF94A3B8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (code) {
+                        if (code != null) {
+                          langProvider.setLanguage(code);
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _getFlagEmoji(String code) {
+    switch (code) {
+      case 'en':
+        return '🇬🇧';
+      case 'hi':
+        return '🇮🇳';
+      case 'mr':
+        return '🇮🇳';
+      default:
+        return '🌐';
+    }
   }
 }
