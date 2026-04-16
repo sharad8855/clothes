@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/localization/localization_manager.dart';
 
 class LanguageOption {
   final String code;
@@ -49,6 +50,8 @@ class LanguageProvider extends ChangeNotifier {
     );
     if (_selectedLanguage.code != lang.code) {
       _selectedLanguage = lang;
+      // Update the global locale for the app
+      LocalizationManager().changeLocale(lang.locale);
       notifyListeners();
     }
   }

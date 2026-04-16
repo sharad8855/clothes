@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../../providers/login_provider.dart';
+import '../../utils/localization/localization_extension.dart';
 import '../shell/main_shell.dart';
 import '../home/hello_screen.dart';
 import 'forgot_password_screen.dart';
@@ -111,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Welcome Back',
+          context.welcomeBack,
           style: GoogleFonts.inter(
             fontSize: 26,
             fontWeight: FontWeight.w800,
@@ -121,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen>
         ),
         const SizedBox(height: 6),
         Text(
-          'Enter your credentials to access the studio dashboard.',
+          context.enterCredentials,
           style: GoogleFonts.inter(
             fontSize: 13.5,
             fontWeight: FontWeight.w400,
