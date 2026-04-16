@@ -15,9 +15,13 @@ import 'providers/fabric_provider.dart';
 import 'providers/measurement_provider.dart';
 import 'providers/language_provider.dart';
 import 'screens/splash/splash_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'utils/localization/app_localizations.dart';
+import 'utils/localization/localization_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();  
+  await LocalizationManager().initialize();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -36,9 +40,31 @@ Future<void> main() async {
   runApp(BespokeAtelierApp(startLoggedIn: isLoggedIn));
 }
 
-class BespokeAtelierApp extends StatelessWidget {
+class BespokeAtelierApp extends StatefulWidget {
   final bool startLoggedIn;
   const BespokeAtelierApp({super.key, this.startLoggedIn = false});
+
+  @override
+  State<BespokeAtelierApp> createState() => _BespokeAtelierAppState();
+}
+
+class _BespokeAtelierAppState extends State<BespokeAtelierApp> {
+  late final ValueNotifier<Locale> _localeNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    _localeNotifier = LocalizationManager().localeNotifier;
+    _localeNotifier.addListener(_onLocaleChanged);
+  }
+
+  void _onLocaleChanged() => setState(() {});
+
+  @override
+  void dispose() {
+    _localeNotifier.removeListener(_onLocaleChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +85,16 @@ class BespokeAtelierApp extends StatelessWidget {
         title: 'The Bespoke Atelier',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
+        locale: _localeNotifier.value,
+        supportedLocales: LocalizationManager.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         // The splash screen will handle the redirection after the branding timer
-        home: SplashScreen(startLoggedIn: startLoggedIn),
+        home: SplashScreen(startLoggedIn: widget.startLoggedIn),
       ),
     );
   }

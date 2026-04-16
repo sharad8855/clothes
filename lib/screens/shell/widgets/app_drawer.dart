@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../core/session_manager.dart';
 import '../../../providers/home_provider.dart';
 import '../../../providers/language_provider.dart';
+import '../../../utils/localization/localization_extension.dart';
 import '../../analytics/analytics_screen.dart';
 import '../../login/login_screen.dart';
 import '../../orders/order_history_screen.dart';
@@ -32,7 +33,7 @@ class AppDrawer extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                'THE BESPOKE ATELIER',
+                context.bespokeAtelier,
                 style: GoogleFonts.inter(
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
@@ -134,7 +135,7 @@ class AppDrawer extends StatelessWidget {
                   _buildNavItem(
                     context,
                     icon: Icons.dashboard_rounded,
-                    title: 'Dashboard',
+                    title:context.dashboard,
                     isSelected: currentIndex == 0,
                     onTap: () => _handleRoute(context, 0),
                   ),
