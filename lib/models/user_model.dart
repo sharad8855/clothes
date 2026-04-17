@@ -36,6 +36,12 @@ class UserModel {
         m.role?.shortCode.toLowerCase() == 'business_staff');
   }
 
+  /// Returns the first business ID associated with the user.
+  String? get firstBusinessId {
+    if (userMappings.isEmpty) return null;
+    return userMappings.first.clientId;
+  }
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     var mappingsJson = json['user_mappings'] as List?;
     List<UserMapping> mappings = mappingsJson != null

@@ -55,12 +55,25 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       if (!mounted) return;
 
       Widget destination;
-      if (savedBusinessId == null) {
-        destination = const BusinessSelectionScreen();
+      final user = profile.userProfile;
+      
+      if (user?.isBusinessStaff == true) {
+        // STAFF PATH: Never show business selection
+        final businessId = savedBusinessId ?? user?.firstBusinessId;
+        if (businessId != null) {
+          await SessionManager.instance.saveSelectedBusinessId(businessId);
+          destination = const HelloScreen();
+        } else {
+          // Fallback if staff has no business assignment
+          destination = const LoginScreen();
+        }
       } else {
-        destination = profile.userProfile?.isBusinessStaff == true
-            ? const HelloScreen()
-            : MainShell();
+        // ADMIN PATH: Allow business selection/creation
+        if (savedBusinessId == null) {
+          destination = const BusinessSelectionScreen();
+        } else {
+          destination = MainShell();
+        }
       }
 
       Navigator.of(context).pushReplacement(

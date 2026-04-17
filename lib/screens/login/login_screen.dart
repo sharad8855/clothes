@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../../core/session_manager.dart';
 import '../../core/app_colors.dart';
 import '../../providers/login_provider.dart';
 import '../../utils/localization/localization_extension.dart';
@@ -323,15 +324,36 @@ class _LoginScreenState extends State<LoginScreen>
             : () async {
                 FocusScope.of(context).unfocus();
                 final success = await login.submit();
-                  Navigator.of(context).pushReplacement(
-                    PageRouteBuilder(
-                      pageBuilder: (_, animation, _) => const BusinessSelectionScreen(),
-                      transitionsBuilder: (_, animation, _, child) {
-                        return FadeTransition(opacity: animation, child: child);
-                      },
-                      transitionDuration: const Duration(milliseconds: 400),
-                    ),
-                  );
+                if (!success || !context.mounted) return;
+
+                final user = login.loggedInUser;
+                Widget destination;
+
+                if (user?.isBusinessStaff == true) {
+                  // STAFF: Auto-select business and go to HelloScreen
+                  final businessId = user?.firstBusinessId;
+                  if (businessId != null) {
+                    await SessionManager.instance.saveSelectedBusinessId(businessId);
+                    destination = const HelloScreen();
+                  } else {
+                    // This case should ideally be handled by an error state
+                    destination = const LoginScreen();
+                  }
+                } else {
+                  // ADMIN: Go to selection/creation
+                  destination = const BusinessSelectionScreen();
+                }
+
+                if (!context.mounted) return;
+                Navigator.of(context).pushReplacement(
+                  PageRouteBuilder(
+                    pageBuilder: (_, animation, _) => destination,
+                    transitionsBuilder: (_, animation, _, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                    transitionDuration: const Duration(milliseconds: 400),
+                  ),
+                );
               },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
