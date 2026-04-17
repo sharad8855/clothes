@@ -185,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'MOBILE NUMBER',
+          context.mobileNumber,
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -222,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'PASSWORD',
+              context.password,
               style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -233,7 +233,7 @@ class _LoginScreenState extends State<LoginScreen>
             GestureDetector(
               onTap: login.toggleAuthMode,
               child: Text(
-                'Use OTP Instead?',
+                context.useOtpInstead,
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -287,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen>
         ),
         const SizedBox(width: 8),
         Text(
-          'Remember device',
+          context.rememberDevice,
           style: GoogleFonts.inter(
             fontSize: 13,
             color: AppColors.textSecondary,
@@ -302,7 +302,7 @@ class _LoginScreenState extends State<LoginScreen>
             );
           },
           child: Text(
-            'Forgot Password?',
+            context.forgotPassword,
             style: GoogleFonts.inter(
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -384,8 +384,8 @@ class _LoginScreenState extends State<LoginScreen>
                 children: [
                   Text(
                     login.authMode == AuthMode.password
-                        ? 'Enter Atelier'
-                        : 'Send OTP',
+                        ? context.enterAtelier
+                        : context.sendOtp,
                     style: GoogleFonts.inter(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -400,7 +400,7 @@ class _LoginScreenState extends State<LoginScreen>
                     size: 18,
                   ),
                 ],
-              ),
+            ),
       ),
     );
   }
@@ -446,7 +446,7 @@ class _LoginScreenState extends State<LoginScreen>
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
-          text: 'New to the management suite?  ',
+          text: context.newToSuite + ' ',
           style: GoogleFonts.inter(
             fontSize: 13,
             color: AppColors.textSecondary,
@@ -458,7 +458,7 @@ class _LoginScreenState extends State<LoginScreen>
                   // TODO: Navigate to partner registration
                 },
                 child: Text(
-                  'Join as a Partner',
+                  context.joinAsPartner,
                   style: GoogleFonts.inter(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
