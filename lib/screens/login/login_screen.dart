@@ -6,6 +6,7 @@ import '../../providers/login_provider.dart';
 import '../../utils/localization/localization_extension.dart';
 import '../shell/main_shell.dart';
 import '../home/hello_screen.dart';
+import '../business/business_selection_screen.dart';
 import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -322,22 +323,15 @@ class _LoginScreenState extends State<LoginScreen>
             : () async {
                 FocusScope.of(context).unfocus();
                 final success = await login.submit();
-                if (success && mounted) {
-                  final destination =
-                      login.loggedInUser?.isBusinessStaff == true
-                      ? const HelloScreen()
-                      : const MainShell();
-
                   Navigator.of(context).pushReplacement(
                     PageRouteBuilder(
-                      pageBuilder: (_, animation, _) => destination,
+                      pageBuilder: (_, animation, _) => const BusinessSelectionScreen(),
                       transitionsBuilder: (_, animation, _, child) {
                         return FadeTransition(opacity: animation, child: child);
                       },
                       transitionDuration: const Duration(milliseconds: 400),
                     ),
                   );
-                }
               },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,

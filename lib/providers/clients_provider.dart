@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../models/customer_list_response.dart';
+import '../core/session_manager.dart';
 
 enum ClientTier { vip, premium, standard }
 
@@ -33,12 +34,14 @@ class ClientsProvider extends ChangeNotifier {
     if (_isLoading) return;
 
     _isLoading = true;
-    if (!refresh) notifyListeners(); // Only notify if not refreshing (UI might handle refresh indicator)
+    if (!refresh) notifyListeners(); 
 
     try {
+      final bizId = await SessionManager.instance.getSelectedBusinessId();
       final responseMap = await AuthService.getAllCustomers(
         page: _currentPage,
         limit: 10,
+        businessId: bizId,
       );
       
       final response = CustomerListResponse.fromJson(responseMap);
@@ -69,9 +72,11 @@ class ClientsProvider extends ChangeNotifier {
 
     try {
       final nextPage = _currentPage + 1;
+      final bizId = await SessionManager.instance.getSelectedBusinessId();
       final responseMap = await AuthService.getAllCustomers(
         page: nextPage,
         limit: 10,
+        businessId: bizId,
       );
       
       final response = CustomerListResponse.fromJson(responseMap);

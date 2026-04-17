@@ -8,6 +8,7 @@ import '../models/order_list_response.dart';
 import '../models/product_model.dart';
 import '../models/business_staff_response.dart';
 import '../models/order_timeline_response.dart';
+import '../models/business_model.dart';
 
 /// Handles all HTTP communication with the Bespoke Atelier backend.
 class AuthService {
@@ -179,20 +180,22 @@ class AuthService {
     }
   }
 
-  // ─── Invite Staff ──────────────────────────────────────────────────────────
   static Future<bool> inviteStaff({
     required String name,
     required String phone,
     required String email,
     required String jobTitle,
+    String? businessId,
   }) async {
     final cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
     try {
       final headers = await getAuthHeaders();
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      
       final response = await http
           .post(
             Uri.parse(
-              '$_baseUrl/auth/api/business/client/$clientId/business/257c88b2-8cff-482a-b297-51a9910a3413/invite-staff',
+              '$_baseUrl/auth/api/business/client/$clientId/business/$effectiveBusinessId/invite-staff',
             ),
             headers: headers,
             body: jsonEncode({
@@ -222,13 +225,15 @@ class AuthService {
   }
 
   // ─── Order Statistics ──────────────────────────────────────────────────────
-  static Future<OrderStatistics> getOrderStatistics() async {
+  static Future<OrderStatistics> getOrderStatistics({String? businessId}) async {
     try {
       final headers = await getAuthHeaders();
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+
       final response = await http
           .get(
             Uri.parse(
-              '$_baseUrl/auth/api/order/client/$clientId/order/statistics',
+              '$_baseUrl/auth/api/order/client/$clientId/order/statistics?business_id=$effectiveBusinessId',
             ),
             headers: headers,
           )
@@ -253,9 +258,11 @@ class AuthService {
   }
 
   // ─── Financial Summary (KPI Reporting) ─────────────────────────────────────
-  static Future<FinancialSummary> getFinancialSummary() async {
+  static Future<FinancialSummary> getFinancialSummary({String? businessId}) async {
     try {
       final headers = await getAuthHeaders();
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      
       final now = DateTime.now();
       final startDate =
           "${now.year}-${now.month.toString().padLeft(2, '0')}-01";
@@ -265,7 +272,7 @@ class AuthService {
       final response = await http
           .get(
             Uri.parse(
-              'https://reporting.baapmarket.in/api/ecommerce/kpi-dealer-summary?client_id=$clientId&start_date=$startDate&end_date=$endDate',
+              'https://reporting.baapmarket.in/api/ecommerce/kpi-dealer-summary?client_id=$clientId&business_id=$effectiveBusinessId&start_date=$startDate&end_date=$endDate',
             ),
             headers: headers,
           )
@@ -293,6 +300,7 @@ class AuthService {
     required String fullName,
     required String email,
     required String phone,
+    String? businessId,
     String countryCode = '+91',
   }) async {
     final nameParts = fullName.trim().split(' ');
@@ -304,12 +312,15 @@ class AuthService {
 
     try {
       final headers = await getAuthHeaders();
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+
       final response = await http
           .post(
             Uri.parse('$_baseUrl/auth/api/order/client/$clientId/customer'),
             headers: headers,
             body: jsonEncode({
               'client_id': clientId,
+              'business_id': effectiveBusinessId,
               'first_name': firstName,
               'last_name': lastName,
               'email': email,
@@ -340,16 +351,23 @@ class AuthService {
   static Future<Map<String, dynamic>> getAllCustomers({
     int page = 1,
     int limit = 10,
+    String? businessId,
   }) async {
     try {
       final headers = await getAuthHeaders();
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+
       final response = await http
           .post(
             Uri.parse(
               '$_baseUrl/auth/api/order/client/$clientId/get-all/customer',
             ),
             headers: headers,
-            body: jsonEncode({'page': page, 'limit': limit}),
+            body: jsonEncode({
+              'page': page, 
+              'limit': limit,
+              'business_id': effectiveBusinessId,
+            }),
           )
           .timeout(const Duration(seconds: 30));
 
@@ -375,14 +393,18 @@ class AuthService {
     int page = 1,
     int limit = 10,
     String? userId,
+    String? businessId,
   }) async {
-    final bodyData = {
-      'page': page,
-      'limit': limit,
-      if (userId != null) 'assign_to': userId,
-    };
-
     try {
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      
+      final bodyData = {
+        'page': page,
+        'limit': limit,
+        'business_id': effectiveBusinessId,
+        if (userId != null) 'assign_to': userId,
+      };
+
       final headers = await getAuthHeaders();
       final response = await http
           .post(
@@ -557,13 +579,16 @@ class AuthService {
   static Future<BusinessStaffResponse> getBusinessStaff({
     int page = 1,
     int limit = 100,
+    String? businessId,
   }) async {
     try {
       final headers = await getAuthHeaders();
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+
       final response = await http
           .post(
             Uri.parse(
-              '$_baseUrl/auth/api/business/client/$clientId/business/257c88b2-8cff-482a-b297-51a9910a3413/staff',
+              '$_baseUrl/auth/api/business/client/$clientId/business/$effectiveBusinessId/staff',
             ),
             headers: headers,
             body: jsonEncode({'page': page, 'limit': limit}),
@@ -591,11 +616,21 @@ class AuthService {
   static Future<Map<String, dynamic>> createOrder(Map<String, dynamic> orderData) async {
     try {
       final headers = await getAuthHeaders();
+      final businessId = await SessionManager.instance.getSelectedBusinessId();
+      
+      final payload = Map<String, dynamic>.from(orderData);
+      if (businessId != null && !payload.containsKey('business_id')) {
+        payload['business_id'] = businessId;
+      }
+      if (!payload.containsKey('client_id')) {
+        payload['client_id'] = clientId;
+      }
+
       final response = await http
           .post(
             Uri.parse('$_baseUrl/auth/api/order/client/$clientId/order'),
             headers: headers,
-            body: jsonEncode(orderData),
+            body: jsonEncode(payload),
           )
           .timeout(const Duration(seconds: 45));
 
@@ -605,9 +640,7 @@ class AuthService {
         return body;
       }
 
-      final message = body['message'] as String? ??
-          body['error'] as String? ??
-          'Order creation failed (${response.statusCode})';
+      final message = body['message'] as String? ?? body['error'] as String? ?? 'Order creation failed';
       throw AuthException(message);
     } catch (e) {
       if (e is AuthException) rethrow;
@@ -689,6 +722,100 @@ class AuthService {
     } catch (e) {
       if (e is AuthException) rethrow;
       throw AuthException('Network error: $e');
+    }
+  }
+
+  // ─── Create Business ───────────────────────────────────────────────────────
+  static Future<BusinessModel> createBusiness(BusinessModel business) async {
+    try {
+      final headers = await getAuthHeaders();
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/auth/api/business/client/$clientId/'),
+            headers: headers,
+            body: jsonEncode(business.toJsonForCreation()),
+          )
+          .timeout(const Duration(seconds: 45));
+
+      final body = _processResponse(response) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = body['data'] as Map<String, dynamic>;
+        return BusinessModel.fromJson(data);
+      }
+
+      final message = body['message'] as String? ??
+          body['error'] as String? ??
+          'Business creation failed (${response.statusCode})';
+      throw AuthException(message);
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException('Network error: $e');
+    }
+  }
+
+  // ─── Fetch Business Details ────────────────────────────────────────────────
+  static Future<BusinessModel> getBusinessDetails(String businessId) async {
+    try {
+      final headers = await getAuthHeaders();
+      final response = await http
+          .get(
+            Uri.parse('$_baseUrl/auth/api/business/client/$clientId/business/$businessId'),
+            headers: headers,
+          )
+          .timeout(const Duration(seconds: 30));
+
+      final body = _processResponse(response) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (body['success'] == true && body['data'] != null) {
+          return BusinessModel.fromJson(body['data']);
+        }
+      }
+
+      final message = body['message'] as String? ??
+          body['error'] as String? ??
+          'Failed to fetch business details';
+      throw AuthException(message);
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException('Network error: $e');
+    }
+  }
+
+  // ─── Get User Businesses ───────────────────────────────────────────────────
+  static Future<List<BusinessModel>> getBusinessesList() async {
+    try {
+      final headers = await getAuthHeaders();
+      // Using the get-all pattern for businesses under this client
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/auth/api/business/client/$clientId/get-all'),
+            headers: headers,
+            body: jsonEncode({'page': 1, 'limit': 100}),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      final body = _processResponse(response) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (body['data'] != null && body['data']['items'] != null) {
+          return (body['data']['items'] as List)
+              .map((item) => BusinessModel.fromJson(item))
+              .toList();
+        }
+        // Fallback if data is directly a list
+        if (body['data'] is List) {
+          return (body['data'] as List)
+              .map((item) => BusinessModel.fromJson(item))
+              .toList();
+        }
+      }
+
+      return []; // Return empty instead of throwing if no businesses found
+    } catch (e) {
+      print('Error fetching businesses: $e');
+      return [];
     }
   }
 

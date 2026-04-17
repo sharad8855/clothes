@@ -11,6 +11,7 @@ import 'providers/clients_provider.dart';
 import 'providers/package_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/staff_provider.dart';
+import 'providers/business_provider.dart';
 import 'providers/fabric_provider.dart';
 import 'providers/measurement_provider.dart';
 import 'providers/language_provider.dart';
@@ -77,6 +78,7 @@ class _BespokeAtelierAppState extends State<BespokeAtelierApp> {
         ChangeNotifierProvider(create: (_) => PackageProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => StaffProvider()),
+        ChangeNotifierProvider(create: (_) => BusinessProvider()),
         ChangeNotifierProvider(create: (_) => FabricProvider()),
         ChangeNotifierProvider(create: (_) => MeasurementProvider()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),

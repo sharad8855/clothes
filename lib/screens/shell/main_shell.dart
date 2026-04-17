@@ -10,6 +10,10 @@ import '../customers/customers_screen.dart';
 import '../staff/staff_management_screen.dart';
 import '../gallery/gallery_screen.dart';
 
+import '../../providers/business_provider.dart';
+import '../../providers/order_management_provider.dart';
+import '../../providers/clients_provider.dart';
+
 /// MainShell is the single Scaffold that owns the app's bottom navigation bar.
 /// All top-level screens (Home, Orders, Customers, Staff, Profile) render
 /// inside its body via IndexedStack — never as separate pushed routes.
@@ -22,12 +26,27 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
+  String? _lastBusinessId;
+
   @override
   void initState() {
     super.initState();
+    _lastBusinessId = context.read<BusinessProvider>().selectedBusiness?.id;
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HomeProvider>().setNavIndex(widget.initialIndex);
     });
+  }
+
+  void _handleBusinessChange() {
+    final currentBusinessId = context.read<BusinessProvider>().selectedBusiness?.id;
+    if (currentBusinessId != _lastBusinessId) {
+      _lastBusinessId = currentBusinessId;
+      // Trigger global refresh
+      context.read<HomeProvider>().refresh();
+      context.read<OrderManagementProvider>().fetchOrders(refresh: true);
+      context.read<ClientsProvider>().fetchCustomers(refresh: true);
+    }
   }
 
   void _onTabTapped(int index) {
@@ -36,6 +55,9 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    // Listen for business change
+    _handleBusinessChange();
+    
     final effectiveIndex = context.watch<HomeProvider>().selectedNavIndex;
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,

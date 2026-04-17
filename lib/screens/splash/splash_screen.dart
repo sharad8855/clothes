@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../providers/profile_provider.dart';
+import '../../core/session_manager.dart';
 import '../login/login_screen.dart';
 import '../shell/main_shell.dart';
 import '../home/hello_screen.dart';
+import '../business/business_selection_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   final bool startLoggedIn;
@@ -48,11 +50,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       final profile = context.read<ProfileProvider>();
       await profile.fetchProfile();
       
+      final savedBusinessId = await SessionManager.instance.getSelectedBusinessId();
+      
       if (!mounted) return;
 
-      final destination = profile.userProfile?.isBusinessStaff == true
-          ? const HelloScreen()
-          : const MainShell();
+      Widget destination;
+      if (savedBusinessId == null) {
+        destination = const BusinessSelectionScreen();
+      } else {
+        destination = profile.userProfile?.isBusinessStaff == true
+            ? const HelloScreen()
+            : MainShell();
+      }
 
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => destination),

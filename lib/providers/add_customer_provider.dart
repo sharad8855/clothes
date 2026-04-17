@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../core/session_manager.dart';
 
 enum FitType { slim, regular }
 enum PriorityLevel { standard, vip }
@@ -106,10 +107,12 @@ class AddCustomerProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final bizId = await SessionManager.instance.getSelectedBusinessId();
       final success = await AuthService.createCustomer(
         fullName: _fullName,
         email: _emailAddress,
         phone: _phoneNumber,
+        businessId: bizId,
       );
 
       _isLoading = false;

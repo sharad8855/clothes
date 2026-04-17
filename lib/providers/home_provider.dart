@@ -73,7 +73,8 @@ class HomeProvider extends ChangeNotifier {
 
   Future<void> fetchStatistics() async {
     try {
-      _statistics = await AuthService.getOrderStatistics();
+      final bizId = await SessionManager.instance.getSelectedBusinessId();
+      _statistics = await AuthService.getOrderStatistics(businessId: bizId);
       notifyListeners();
     } catch (e) {
       if (kDebugMode) print('Error fetching statistics: $e');
@@ -86,7 +87,8 @@ class HomeProvider extends ChangeNotifier {
 
   Future<void> fetchFinancialSummary() async {
     try {
-      _financialSummary = await AuthService.getFinancialSummary();
+      final bizId = await SessionManager.instance.getSelectedBusinessId();
+      _financialSummary = await AuthService.getFinancialSummary(businessId: bizId);
       notifyListeners();
     } catch (e) {
       if (kDebugMode) print('Error fetching financial summary: $e');
@@ -96,10 +98,13 @@ class HomeProvider extends ChangeNotifier {
   Future<void> fetchRecentOrders() async {
     try {
       final user = await SessionManager.instance.getUser();
+      final bizId = await SessionManager.instance.getSelectedBusinessId();
+      
       final response = await AuthService.getOrdersList(
         page: 1, 
         limit: 10,
         userId: user?.id,
+        businessId: bizId,
       );
       _realRecentOrders = response.data;
       

@@ -33,7 +33,12 @@ class OrderManagementProvider extends ChangeNotifier {
 
   Future<void> _preloadCustomerNames() async {
     try {
-      final responseMap = await AuthService.getAllCustomers(page: 1, limit: 100);
+      final bizId = await SessionManager.instance.getSelectedBusinessId();
+      final responseMap = await AuthService.getAllCustomers(
+        page: 1, 
+        limit: 100, 
+        businessId: bizId,
+      );
       final response = CustomerListResponse.fromJson(responseMap);
       for (var customer in response.data) {
         _customerNames[customer.id] = customer.fullName;
@@ -62,8 +67,6 @@ class OrderManagementProvider extends ChangeNotifier {
     if (refresh) {
       _currentPage = 1;
       _hasMore = true;
-      // We don't clear the list immediately to avoid flickering if refresh is called, 
-      // but if initial load, we show loader.
       if (_orders.isEmpty) {
         _isLoading = true;
         notifyListeners();
@@ -81,10 +84,13 @@ class OrderManagementProvider extends ChangeNotifier {
       }
 
       final user = await SessionManager.instance.getUser();
+      final bizId = await SessionManager.instance.getSelectedBusinessId();
+      
       final response = await AuthService.getOrdersList(
         page: _currentPage,
         limit: _limit,
         userId: user?.id,
+        businessId: bizId,
       );
 
       if (refresh) {
@@ -121,10 +127,13 @@ class OrderManagementProvider extends ChangeNotifier {
 
     try {
       final user = await SessionManager.instance.getUser();
+      final bizId = await SessionManager.instance.getSelectedBusinessId();
+      
       final response = await AuthService.getOrdersList(
         page: _currentPage,
         limit: _limit,
         userId: user?.id,
+        businessId: bizId,
       );
 
       _orders.addAll(response.data);

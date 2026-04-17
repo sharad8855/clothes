@@ -7,6 +7,7 @@ class SessionManager {
   static const _keyAccessToken = 'access_token';
   static const _keyRefreshToken = 'refresh_token';
   static const _keyUser = 'user_json';
+  static const _keySelectedBusinessId = 'selected_business_id';
 
   // ─── Singleton ─────────────────────────────────────────────────────────────
   SessionManager._();
@@ -53,11 +54,23 @@ class SessionManager {
     return token != null && token.isNotEmpty;
   }
 
+  // ─── Selected Business ───────────────────────────────────────────────────
+  Future<void> saveSelectedBusinessId(String businessId) async {
+    await _init();
+    await _prefs!.setString(_keySelectedBusinessId, businessId);
+  }
+
+  Future<String?> getSelectedBusinessId() async {
+    await _init();
+    return _prefs!.getString(_keySelectedBusinessId);
+  }
+
   // ─── Clear session (logout) ────────────────────────────────────────────────
   Future<void> clearSession() async {
     await _init();
     await _prefs!.remove(_keyAccessToken);
     await _prefs!.remove(_keyRefreshToken);
     await _prefs!.remove(_keyUser);
+    await _prefs!.remove(_keySelectedBusinessId);
   }
 }
