@@ -41,4 +41,28 @@ extension LocalizationExtension on BuildContext {
   String get sendOtp => _l10n?.sendOtp ?? 'Send OTP';
   String get newToSuite => _l10n?.newToSuite ?? 'New to the management suite?  ';
   String get joinAsPartner => _l10n?.joinAsPartner ?? 'Join as a Partner';
+
+  // ── Home Screen ──
+  String get hello => _l10n?.hello ?? 'Hello';
+  String get activeOrdersSubtitle => _l10n?.activeOrdersSubtitle ?? 'Your workshop is handling {count} active orders';
+  String get aiInsights => _l10n?.aiInsights ?? 'AI Insights';
+  String get aiInsightsDelayed => _l10n?.aiInsightsDelayed ?? 'All insights. You have {count} delayed orders today.';
+  String get aiInsightsSuggestion => _l10n?.aiInsightsSuggestion ?? 'Prioritise these for customer satisfaction, suggesting to reduce up-coming fabric orders.';
+  String get viewDelayedOrders => _l10n?.viewDelayedOrders ?? 'View Delayed Orders';
+  String get dismissText => _l10n?.dismissText ?? 'Dismiss';
+  String get createOrder => _l10n?.createOrder ?? 'Create Order';
+  String get customerLabel => _l10n?.customerLabel ?? 'Customer';
+  String get totalOrders => _l10n?.totalOrders ?? 'Total Orders';
+  String get pendingLabel => _l10n?.pendingLabel ?? 'Pending';
+  String get deliveredLabel => _l10n?.deliveredLabel ?? 'Delivered';
+  String get collectedLabel => _l10n?.collectedLabel ?? 'Collected';
+  String get thisMonth => _l10n?.thisMonth ?? 'This month';
+  String get recentBoutiqueActivity => _l10n?.recentBoutiqueActivity ?? 'Recent Boutique Activity';
+  String get seeAll => _l10n?.seeAll ?? 'See all';
+  String get noRecentActivity => _l10n?.noRecentActivity ?? 'No recent activity';
+  String get financialOverview => _l10n?.financialOverview ?? 'Financial Overview';
+  String get monthlyTarget => _l10n?.monthlyTarget ?? 'of ₹{amount} monthly target';
+  String get achievedLabel => _l10n?.achievedLabel ?? '{percent}% achieved';
+  String get remainingLabel => _l10n?.remainingLabel ?? '{percent}% remaining';
+  String get inProgressLabel => _l10n?.inProgressLabel ?? 'In Progress';
 }

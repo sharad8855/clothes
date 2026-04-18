@@ -11,6 +11,7 @@ import '../shell/widgets/app_drawer.dart';
 import '../../providers/profile_provider.dart';
 import '../../providers/order_management_provider.dart';
 import '../customers/customers_screen.dart';
+import '../../utils/localization/localization_extension.dart';
 import 'notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -96,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen>
                             const SizedBox(height: 24),
                             // Recent Activity
                             _buildSectionHeader(
-                              'Recent Boutique Activity',
+                              context.recentBoutiqueActivity,
                               onSeeAll: () {
                                 context.read<HomeProvider>().setNavIndex(1); // 1 corresponds to OrderManagementScreen in MainShell IndexedStack
                               },
@@ -182,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen>
                         builder: (context, profileProvider, child) {
                           final firstName = profileProvider.userProfile?.firstName ?? home.tailorName;
                           return Text(
-                            'Hello, $firstName',
+                            '${context.hello}, $firstName',
                             style: GoogleFonts.inter(
                               fontSize: 17,
                               fontWeight: FontWeight.w700,
@@ -193,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Your workshop is handling ${home.totalOrders} active orders',
+                        context.activeOrdersSubtitle.replaceAll('{count}', '${home.totalOrders}'),
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           color: AppColors.textSecondary,
@@ -292,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  'AI Insights',
+                  context.aiInsights,
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -305,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen>
           ),
           const SizedBox(height: 12),
           Text(
-            'All insights. You have ${home.delayedOrders} delayed orders today.',
+            context.aiInsightsDelayed.replaceAll('{count}', '${home.delayedOrders}'),
             style: GoogleFonts.inter(
               fontSize: 15,
               fontWeight: FontWeight.w700,
@@ -315,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen>
           ),
           const SizedBox(height: 6),
           Text(
-            'Prioritise these for customer satisfaction, suggesting to reduce up-coming fabric orders.',
+            context.aiInsightsSuggestion,
             style: GoogleFonts.inter(
               fontSize: 12.5,
               color: Colors.white.withValues(alpha: 0.8),
@@ -336,7 +337,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                     child: Center(
                       child: Text(
-                        'View Delayed Orders',
+                        context.viewDelayedOrders,
                         style: GoogleFonts.inter(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w700,
@@ -363,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                   ),
                   child: Text(
-                    'Dismiss',
+                    context.dismissText,
                     style: GoogleFonts.inter(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
@@ -388,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen>
         Expanded(
           child: _QuickActionButton(
             icon: Icons.add_circle_outline_rounded,
-            label: 'Create Order',
+            label: context.createOrder,
             isPrimary: true,
             onTap: () {
               Navigator.push(
@@ -404,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen>
         Expanded(
           child: _QuickActionButton(
             icon: Icons.person_rounded,
-            label: 'Customer',
+            label: context.customerLabel,
             isPrimary: false,
             onTap: () {
               Navigator.push(
@@ -429,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen>
         Expanded(
           child: _StatCard(
             value: '${home.totalOrders}',
-            label: 'Total Orders',
+            label: context.totalOrders,
             icon: Icons.assignment_rounded,
             iconColor: const Color(0xFF6366F1),
             iconBg: const Color(0xFFEEF2FF),
@@ -439,7 +440,7 @@ class _HomeScreenState extends State<HomeScreen>
         Expanded(
           child: _StatCard(
             value: home.pendingOrders.toString().padLeft(2, '0'),
-            label: 'Pending',
+            label: context.pendingLabel,
             icon: Icons.pending_actions_outlined,
             iconColor: const Color(0xFFF59E0B),
             iconBg: const Color(0xFFFFFBEB),
@@ -449,7 +450,7 @@ class _HomeScreenState extends State<HomeScreen>
         Expanded(
           child: _StatCard(
             value: home.completedOrders.toString().padLeft(2, '0'),
-            label: 'Delivered',
+            label: context.deliveredLabel,
             icon: Icons.check_circle_outline_rounded,
             iconColor: const Color(0xFF10B981),
             iconBg: const Color(0xFFECFDF5),
@@ -505,7 +506,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
               Text(
-                'Collected',
+                context.collectedLabel,
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   color: AppColors.textSecondary,
@@ -521,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen>
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              '↑ This month',
+              '↑ ${context.thisMonth}',
               style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -553,7 +554,7 @@ class _HomeScreenState extends State<HomeScreen>
           GestureDetector(
             onTap: onSeeAll,
             child: Text(
-              'See all',
+              context.seeAll,
               style: GoogleFonts.inter(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -578,9 +579,9 @@ class _HomeScreenState extends State<HomeScreen>
           );
         }
         if (provider.orders.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: Center(child: Text('No recent activity')),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: Text(context.noRecentActivity)),
           );
         }
         final recentOrders = provider.orders.take(4).toList();
@@ -622,7 +623,7 @@ class _HomeScreenState extends State<HomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Financial Overview',
+                context.financialOverview,
                 style: GoogleFonts.inter(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
@@ -639,7 +640,7 @@ class _HomeScreenState extends State<HomeScreen>
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'This Month',
+                  context.thisMonth,
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -660,12 +661,19 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            'of ₹${home.monthlyTarget.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')} monthly target',
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+          Builder(
+            builder: (context) {
+              final formattedTarget = home.monthlyTarget.toStringAsFixed(0).replaceAllMapped(
+                RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},',
+              );
+              return Text(
+                context.monthlyTarget.replaceAll('{amount}', formattedTarget),
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
+              );
+            },
           ),
           const SizedBox(height: 16),
           // Progress bar
@@ -685,7 +693,7 @@ class _HomeScreenState extends State<HomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${(home.revenueProgress * 100).toInt()}% achieved',
+                context.achievedLabel.replaceAll('{percent}', '${(home.revenueProgress * 100).toInt()}'),
                 style: GoogleFonts.inter(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -693,7 +701,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
               Text(
-                '${(100 - home.revenueProgress * 100).toInt()}% remaining',
+                context.remainingLabel.replaceAll('{percent}', '${(100 - home.revenueProgress * 100).toInt()}'),
                 style: GoogleFonts.inter(
                   fontSize: 11,
                   color: AppColors.textSecondary,
@@ -707,13 +715,13 @@ class _HomeScreenState extends State<HomeScreen>
           Row(
             children: [
               _FinancialChip(
-                label: 'Collected',
+                label: context.collectedLabel,
                 value: '₹${(home.totalCollected / 1000).toStringAsFixed(1)}k',
                 color: const Color(0xFF10B981),
               ),
               const SizedBox(width: 12),
               _FinancialChip(
-                label: 'Pending',
+                label: context.pendingLabel,
                 value: '₹${(home.totalPending / 1000).toStringAsFixed(1)}k',
                 color: const Color(0xFFF59E0B),
               ),
@@ -892,12 +900,12 @@ class _OrderTile extends StatelessWidget {
     }
   }
 
-  String get _displayName {
+  String _displayName(BuildContext context) {
     switch (order.orderStatus.toLowerCase()) {
       case 'confirmed':
-        return 'Completed';
+        return context.deliveredLabel;
       case 'pending':
-        return 'In Progress';
+        return context.inProgressLabel;
       default:
         return order.orderStatus[0].toUpperCase() + order.orderStatus.substring(1);
     }
@@ -993,7 +1001,7 @@ class _OrderTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    _displayName,
+                    _displayName(context),
                     style: GoogleFonts.inter(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,

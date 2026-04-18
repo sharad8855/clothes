@@ -631,6 +631,30 @@ class AppLocalizations {
   String get enterAtelier => translate('enter_atelier');
   String get newToSuite => translate('new_to_suite');
   String get joinAsPartner => translate('join_as_partner');
+
+  // ── Home Screen ──
+  String get hello => translate('hello');
+  String get activeOrdersSubtitle => translate('active_orders_subtitle');
+  String get aiInsights => translate('ai_insights');
+  String get aiInsightsDelayed => translate('ai_insights_delayed');
+  String get aiInsightsSuggestion => translate('ai_insights_suggestion');
+  String get viewDelayedOrders => translate('view_delayed_orders');
+  String get dismissText => translate('dismiss');
+  String get createOrder => translate('create_order');
+  String get customerLabel => translate('customer_label');
+  String get totalOrders => translate('total_orders');
+  String get pendingLabel => translate('pending_label');
+  String get deliveredLabel => translate('delivered');
+  String get collectedLabel => translate('collected');
+  String get thisMonth => translate('this_month');
+  String get recentBoutiqueActivity => translate('recent_boutique_activity');
+  String get seeAll => translate('see_all');
+  String get noRecentActivity => translate('no_recent_activity');
+  String get financialOverview => translate('financial_overview');
+  String get monthlyTarget => translate('monthly_target');
+  String get achievedLabel => translate('achieved');
+  String get remainingLabel => translate('remaining');
+  String get inProgressLabel => translate('in_progress');
 }
 
 class _AppLocalizationsDelegate
