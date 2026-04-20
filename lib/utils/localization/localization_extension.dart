@@ -100,4 +100,16 @@ extension LocalizationExtension on BuildContext {
   String get editDetails => _l10n?.editDetails ?? 'Edit Details';
   String get cancelButton => _l10n?.cancelButton ?? 'Cancel';
   String get confirmProfile => _l10n?.confirmProfile ?? 'Confirm Profile';
+
+  // ── Customers Screen ──
+  String get customersTitle => _l10n?.customersTitle ?? 'Customers';
+  String get manageBespokeClients => _l10n?.manageBespokeClients ?? 'Manage your {count} bespoke clients';
+  String get searchClientsHint => _l10n?.searchClientsHint ?? 'Search clients by name or phone...';
+  String get noMoreCustomers => _l10n?.noMoreCustomers ?? 'No more customers';
+  String get billPrefix => _l10n?.billPrefix ?? 'BILL';
+  String get statusLabel => _l10n?.statusLabel ?? 'STATUS';
+  String get noEmailProvided => _l10n?.noEmailProvided ?? 'No email provided';
+  String get viewProfile => _l10n?.viewProfile ?? 'View Profile';
+  String get billNoLabel => _l10n?.billNoLabel ?? 'Bill No';
+  String get generateAiStyleProfile => _l10n?.generateAiStyleProfile ?? 'Generate AI Style Profile';
 }

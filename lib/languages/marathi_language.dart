@@ -92,4 +92,16 @@ const Map<String, String> marathiStrings = {
   'edit_details': 'तपशील संपादित करा',
   'cancel_button': 'रद्द करा',
   'confirm_profile': 'प्रोफाइलची पुष्टी करा',
+
+  // ── Customers Screen ──
+  'customers_title': 'ग्राहक',
+  'manage_bespoke_clients': 'तुमच्या {count} बिस्पोक ग्राहकांचे व्यवस्थापन करा',
+  'search_clients_hint': 'नाव किंवा फोनद्वारे ग्राहक शोधा...',
+  'no_more_customers': 'आणखी ग्राहक नाहीत',
+  'bill_prefix': 'बिल',
+  'status_label': 'स्थिती',
+  'no_email_provided': 'ईमेल उपलब्ध नाही',
+  'view_profile': 'प्रोफाइल पहा',
+  'bill_no_label': 'बिल क्र.',
+  'generate_ai_style_profile': 'एआय स्टाइल प्रोफाइल तयार करा',
 };
