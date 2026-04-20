@@ -655,6 +655,41 @@ class AppLocalizations {
   String get achievedLabel => translate('achieved');
   String get remainingLabel => translate('remaining');
   String get inProgressLabel => translate('in_progress');
+
+  // ── Add Customer Screen ──
+  String get addCustomer => translate('add_customer');
+  String get save => translate('save');
+  String get contactDetails => translate('contact_details');
+  String get fullName => translate('full_name');
+  String get fullNameHint => translate('full_name_hint');
+  String get pleaseEnterFullName => translate('please_enter_full_name');
+  String get phoneNumberLabel => translate('phone_number_label');
+  String get enter10DigitNumber => translate('enter_10_digit_number');
+  String get emailAddressLabel => translate('email_address_label');
+  String get emailHint => translate('email_hint');
+  String get saveCustomer => translate('save_customer');
+  String get customerAddedSuccessfully => translate('customer_added_successfully');
+  String get errorPrefix => translate('error_prefix');
+
+  // ── Confirm Customer Bottom Sheet ──
+  String get reviewClientProfile => translate('review_client_profile');
+  String get confirmNewCustomer => translate('confirm_new_customer');
+  String get verifyProfileDetails => translate('verify_profile_details');
+  String get contact => translate('contact');
+  String get fullNameLabel => translate('full_name_label');
+  String get phoneLabel => translate('phone_label');
+  String get emailLabel => translate('email_label');
+  String get preferences => translate('preferences');
+  String get priorityLabel => translate('priority');
+  String get urgentLabel => translate('urgent');
+  String get standardLabel => translate('standard');
+  String get fitStyle => translate('fit_style');
+  String get fabricClass => translate('fabric_class');
+  String get super150sWool => translate('super_150s_wool');
+  String get internalNotes => translate('internal_notes');
+  String get editDetails => translate('edit_details');
+  String get cancelButton => translate('cancel_button');
+  String get confirmProfile => translate('confirm_profile');
 }
 
 class _AppLocalizationsDelegate

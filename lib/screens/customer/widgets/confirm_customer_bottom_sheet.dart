@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/app_colors.dart';
 import '../../../providers/add_customer_provider.dart';
+import '../../../utils/localization/localization_extension.dart';
 
 class ConfirmCustomerBottomSheet extends StatelessWidget {
   final AddCustomerProvider provider;
@@ -44,11 +45,11 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
             children: [
               _buildDragHandle(),
               const SizedBox(height: 24),
-              _buildHeader(),
+              _buildHeader(context),
               const SizedBox(height: 24),
-              _buildContactCard(),
+              _buildContactCard(context),
               const SizedBox(height: 16),
-              _buildPreferencesCard(),
+              _buildPreferencesCard(context),
               const SizedBox(height: 24),
               _buildEditDetailsButton(context),
               const SizedBox(height: 16),
@@ -73,7 +74,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Column(
       children: [
         Container(
@@ -83,7 +84,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            'Review Client Profile',
+            context.reviewClientProfile,
             style: GoogleFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.w700,
@@ -93,7 +94,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          'Confirm New Customer',
+          context.confirmNewCustomer,
           style: GoogleFonts.inter(
             fontSize: 24,
             fontWeight: FontWeight.w800,
@@ -103,7 +104,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Please verify the bespoke profile details\nbefore finalization.',
+          context.verifyProfileDetails,
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -116,7 +117,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildContactCard() {
+  Widget _buildContactCard(BuildContext context) {
     final name = provider.fullName.isEmpty ? 'Julian Vane-Tempest' : provider.fullName;
     final phone = provider.phoneNumber.isEmpty ? '+44 7700 900542' : provider.phoneNumber;
     final email = provider.emailAddress.isEmpty ? 'j.vane@atelier.com' : provider.emailAddress;
@@ -147,7 +148,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Text(
-                'Contact',
+                context.contact,
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -157,17 +158,17 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          _buildInfoRow('FULL NAME', name),
+          _buildInfoRow(context.fullNameLabel, name),
           const SizedBox(height: 16),
-          _buildInfoRow('PHONE', phone),
+          _buildInfoRow(context.phoneLabel, phone),
           const SizedBox(height: 16),
-          _buildInfoRow('EMAIL', email),
+          _buildInfoRow(context.emailLabel, email),
         ],
       ),
     );
   }
 
-  Widget _buildPreferencesCard() {
+  Widget _buildPreferencesCard(BuildContext context) {
     final isVip = provider.priorityLevel == PriorityLevel.vip;
     final fitStr = provider.typicalFit == FitType.slim ? 'Savile Slim' : 'Classic Regular';
     final notes = provider.preferences.isEmpty 
@@ -200,7 +201,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Text(
-                'Preferences',
+                context.preferences,
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -212,7 +213,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    'PRIORITY',
+                    context.priorityLabel,
                     style: GoogleFonts.inter(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
@@ -242,7 +243,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
                           const SizedBox(width: 4),
                         ],
                         Text(
-                          isVip ? 'Urgent' : 'Standard',
+                          isVip ? context.urgentLabel : context.standardLabel,
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
@@ -270,7 +271,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'FIT STYLE',
+                        context.fitStyle,
                         style: GoogleFonts.inter(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -303,7 +304,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'FABRIC CLASS',
+                        context.fabricClass,
                         style: GoogleFonts.inter(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -313,7 +314,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Super 150s Wool',
+                        context.super150sWool,
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -348,7 +349,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'INTERNAL NOTES',
+                      context.internalNotes,
                       style: GoogleFonts.inter(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
@@ -411,7 +412,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
         },
         icon: const Icon(Icons.edit, color: AppColors.textSecondary, size: 18),
         label: Text(
-          'Edit Details',
+          context.editDetails,
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w700,
@@ -440,7 +441,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
             ),
           ),
           child: Text(
-            'Cancel',
+            context.cancelButton,
             style: GoogleFonts.inter(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -465,7 +466,7 @@ class ConfirmCustomerBottomSheet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Confirm Profile',
+                context.confirmProfile,
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
