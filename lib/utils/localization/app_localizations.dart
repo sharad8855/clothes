@@ -690,6 +690,18 @@ class AppLocalizations {
   String get editDetails => translate('edit_details');
   String get cancelButton => translate('cancel_button');
   String get confirmProfile => translate('confirm_profile');
+
+  // ── Customers Screen ──
+  String get customersTitle => translate('customers_title');
+  String get manageBespokeClients => translate('manage_bespoke_clients');
+  String get searchClientsHint => translate('search_clients_hint');
+  String get noMoreCustomers => translate('no_more_customers');
+  String get billPrefix => translate('bill_prefix');
+  String get statusLabel => translate('status_label');
+  String get noEmailProvided => translate('no_email_provided');
+  String get viewProfile => translate('view_profile');
+  String get billNoLabel => translate('bill_no_label');
+  String get generateAiStyleProfile => translate('generate_ai_style_profile');
 }
 
 class _AppLocalizationsDelegate

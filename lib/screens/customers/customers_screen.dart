@@ -6,6 +6,7 @@ import '../shell/widgets/app_drawer.dart';
 import '../../providers/clients_provider.dart';
 import '../../models/customer_list_response.dart';
 import '../customer/add_customer_screen.dart';
+import '../../utils/localization/localization_extension.dart';
 
 class CustomersScreen extends StatefulWidget {
   const CustomersScreen({super.key});
@@ -91,7 +92,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                         : provider.hasMore
                             ? const SizedBox.shrink()
                             : Text(
-                                'No more customers',
+                                context.noMoreCustomers,
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
                                   color: const Color(0xFF64748B),
@@ -120,7 +121,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
       ),
       centerTitle: true,
       title: Text(
-        'The Bespoke Atelier',
+        context.bespokeAtelier,
         style: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w700,
@@ -149,7 +150,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Customers',
+          context.customersTitle,
           style: GoogleFonts.inter(
             fontSize: 28,
             fontWeight: FontWeight.w800,
@@ -159,7 +160,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
         ),
         const SizedBox(height: 6),
         Text(
-          'Manage your $totalCount bespoke clients',
+          context.manageBespokeClients.replaceAll('{count}', '$totalCount'),
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w500,
@@ -191,7 +192,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 color: const Color(0xFF1E293B),
               ),
               decoration: InputDecoration(
-                hintText: 'Search clients by name or phone...',
+                hintText: context.searchClientsHint,
                 border: InputBorder.none,
                 isDense: true,
                 hintStyle: GoogleFonts.inter(
@@ -278,7 +279,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                'BILL: ${customer.billNumber}',
+                                '${context.billPrefix}: ${customer.billNumber}',
                                 style: GoogleFonts.inter(
                                   fontSize: 7,
                                   fontWeight: FontWeight.w800,
@@ -311,7 +312,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'STATUS',
+                      context.statusLabel,
                       style: GoogleFonts.inter(
                         fontSize: 9,
                         fontWeight: FontWeight.w700,
@@ -320,7 +321,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      customer.email ?? 'No email provided',
+                      customer.email ?? context.noEmailProvided,
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -332,7 +333,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 Row(
                   children: [
                     Text(
-                      'View Profile',
+                      context.viewProfile,
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -459,9 +460,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     ),
                     child: Column(
                       children: [
-                        _buildDetailRow('Email', customer.email ?? 'N/A'),
+                        _buildDetailRow(context.emailLabel, customer.email ?? 'N/A'),
                         const Divider(height: 24),
-                        _buildDetailRow('Bill No', customer.billNumber ?? 'N/A'),
+                        _buildDetailRow(context.billNoLabel, customer.billNumber ?? 'N/A'),
                       ],
                     ),
                   ),
@@ -481,7 +482,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                       ),
                       icon: const Icon(Icons.auto_awesome_rounded, size: 20),
                       label: Text(
-                        'Generate AI Style Profile',
+                        context.generateAiStyleProfile,
                         style: GoogleFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,

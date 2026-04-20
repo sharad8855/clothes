@@ -92,4 +92,16 @@ const Map<String, String> hindiStrings = {
   'edit_details': 'विवरण संपादित करें',
   'cancel_button': 'रद्द करें',
   'confirm_profile': 'प्रोफ़ाइल की पुष्टि करें',
+
+  // ── Customers Screen ──
+  'customers_title': 'ग्राहक',
+  'manage_bespoke_clients': 'अपने {count} बिस्पोक ग्राहकों का प्रबंधन करें',
+  'search_clients_hint': 'नाम या फ़ोन से ग्राहक खोजें...',
+  'no_more_customers': 'और कोई ग्राहक नहीं',
+  'bill_prefix': 'बिल',
+  'status_label': 'स्थिति',
+  'no_email_provided': 'ईमेल उपलब्ध नहीं',
+  'view_profile': 'प्रोफ़ाइल देखें',
+  'bill_no_label': 'बिल नं.',
+  'generate_ai_style_profile': 'एआई स्टाइल प्रोफ़ाइल बनाएं',
 };

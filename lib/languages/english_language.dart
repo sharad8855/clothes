@@ -92,4 +92,16 @@ const Map<String, String> englishStrings = {
   'edit_details': 'Edit Details',
   'cancel_button': 'Cancel',
   'confirm_profile': 'Confirm Profile',
+
+  // ── Customers Screen ──
+  'customers_title': 'Customers',
+  'manage_bespoke_clients': 'Manage your {count} bespoke clients',
+  'search_clients_hint': 'Search clients by name or phone...',
+  'no_more_customers': 'No more customers',
+  'bill_prefix': 'BILL',
+  'status_label': 'STATUS',
+  'no_email_provided': 'No email provided',
+  'view_profile': 'View Profile',
+  'bill_no_label': 'Bill No',
+  'generate_ai_style_profile': 'Generate AI Style Profile',
 };
