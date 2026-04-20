@@ -65,4 +65,39 @@ extension LocalizationExtension on BuildContext {
   String get achievedLabel => _l10n?.achievedLabel ?? '{percent}% achieved';
   String get remainingLabel => _l10n?.remainingLabel ?? '{percent}% remaining';
   String get inProgressLabel => _l10n?.inProgressLabel ?? 'In Progress';
+
+  // ── Add Customer Screen ──
+  String get addCustomer => _l10n?.addCustomer ?? 'Add Customer';
+  String get save => _l10n?.save ?? 'Save';
+  String get contactDetails => _l10n?.contactDetails ?? 'Contact Details';
+  String get fullName => _l10n?.fullName ?? 'Full Name';
+  String get fullNameHint => _l10n?.fullNameHint ?? 'e.g. Sebastian Vael';
+  String get pleaseEnterFullName => _l10n?.pleaseEnterFullName ?? 'Please enter full name';
+  String get phoneNumberLabel => _l10n?.phoneNumberLabel ?? 'Phone Number';
+  String get enter10DigitNumber => _l10n?.enter10DigitNumber ?? 'Enter 10-digit number';
+  String get emailAddressLabel => _l10n?.emailAddressLabel ?? 'Email Address';
+  String get emailHint => _l10n?.emailHint ?? 'customer@domain.com';
+  String get saveCustomer => _l10n?.saveCustomer ?? 'Save Customer';
+  String get customerAddedSuccessfully => _l10n?.customerAddedSuccessfully ?? 'Customer added successfully!';
+  String get errorPrefix => _l10n?.errorPrefix ?? 'Error';
+
+  // ── Confirm Customer Bottom Sheet ──
+  String get reviewClientProfile => _l10n?.reviewClientProfile ?? 'Review Client Profile';
+  String get confirmNewCustomer => _l10n?.confirmNewCustomer ?? 'Confirm New Customer';
+  String get verifyProfileDetails => _l10n?.verifyProfileDetails ?? 'Please verify the bespoke profile details\nbefore finalization.';
+  String get contact => _l10n?.contact ?? 'Contact';
+  String get fullNameLabel => _l10n?.fullNameLabel ?? 'FULL NAME';
+  String get phoneLabel => _l10n?.phoneLabel ?? 'PHONE';
+  String get emailLabel => _l10n?.emailLabel ?? 'EMAIL';
+  String get preferences => _l10n?.preferences ?? 'Preferences';
+  String get priorityLabel => _l10n?.priorityLabel ?? 'PRIORITY';
+  String get urgentLabel => _l10n?.urgentLabel ?? 'Urgent';
+  String get standardLabel => _l10n?.standardLabel ?? 'Standard';
+  String get fitStyle => _l10n?.fitStyle ?? 'FIT STYLE';
+  String get fabricClass => _l10n?.fabricClass ?? 'FABRIC CLASS';
+  String get super150sWool => _l10n?.super150sWool ?? 'Super 150s Wool';
+  String get internalNotes => _l10n?.internalNotes ?? 'INTERNAL NOTES';
+  String get editDetails => _l10n?.editDetails ?? 'Edit Details';
+  String get cancelButton => _l10n?.cancelButton ?? 'Cancel';
+  String get confirmProfile => _l10n?.confirmProfile ?? 'Confirm Profile';
 }

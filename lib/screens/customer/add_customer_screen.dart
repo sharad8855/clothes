@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../../providers/add_customer_provider.dart';
+import '../../utils/localization/localization_extension.dart';
 import '../package/package_screen.dart';
 import 'widgets/confirm_customer_bottom_sheet.dart';
 
@@ -65,7 +66,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: Text(
-        'Add Customer',
+        context.addCustomer,
         style: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w700,
@@ -78,7 +79,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
             // Save action
           },
           child: Text(
-            'Save',
+            context.save,
             style: GoogleFonts.inter(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -124,7 +125,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Contact Details',
+                context.contactDetails,
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -135,7 +136,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            'Full Name',
+            context.fullName,
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -147,20 +148,20 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
             initialValue: provider.fullName,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             onChanged: provider.setFullName,
-            decoration: const InputDecoration(
-              hintText: 'e.g. Sebastian Vael',
-              prefixIcon: Icon(Icons.person_outline, size: 18),
+            decoration: InputDecoration(
+              hintText: context.fullNameHint,
+              prefixIcon: const Icon(Icons.person_outline, size: 18),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter full name';
+                return context.pleaseEnterFullName;
               }
               return null;
             },
           ),
           const SizedBox(height: 16),
           Text(
-            'Phone Number',
+            context.phoneNumberLabel,
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -173,14 +174,14 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
             onChanged: provider.setPhoneNumber,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
-              hintText: 'Enter 10-digit number',
+              hintText: context.enter10DigitNumber,
               prefixIcon: const Icon(Icons.phone, size: 18),
               errorText: provider.phoneError,
             ),
           ),
           const SizedBox(height: 16),
           Text(
-            'Email Address',
+            context.emailAddressLabel,
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -192,7 +193,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
             keyboardType: TextInputType.emailAddress,
             onChanged: provider.setEmailAddress,
             decoration: InputDecoration(
-              hintText: 'customer@domain.com',
+              hintText: context.emailHint,
               prefixIcon: const Icon(Icons.email, size: 18),
               errorText: provider.emailError,
             ),
@@ -234,7 +235,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               const Icon(Icons.person_add, size: 20),
               const SizedBox(width: 8),
               Text(
-                'Save Customer',
+                context.saveCustomer,
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -261,8 +262,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
         final success = await provider.saveCustomer();
         if (success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Customer added successfully!'),
+            SnackBar(
+              content: Text(context.customerAddedSuccessfully),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
             ),
@@ -276,7 +277,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error: $e'),
+              content: Text('${context.errorPrefix}: $e'),
               backgroundColor: AppColors.error,
               behavior: SnackBarBehavior.floating,
             ),

@@ -84,7 +84,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Full Name',
+          'Full Namefffffffffffffff',
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w600,
