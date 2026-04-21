@@ -717,6 +717,21 @@ class AppLocalizations {
   String get overCapacity => translate('over_capacity');
   String get capacityLabel => translate('capacity_label');
   String get onboardNewArtisan => translate('onboard_new_artisan');
+  // ── Gallery Screen ──
+  String get galleryCuratedPortfolio => translate('gallery_curated_portfolio');
+  String get galleryArchiveOfExcellence => translate('gallery_archive_of_excellence');
+  String get galleryAddPortfolioItem => translate('gallery_add_portfolio_item');
+  String get galleryTapToUploadPhoto => translate('gallery_tap_to_upload_photo');
+  String get galleryItemTitle => translate('gallery_item_title');
+  String get galleryEgTitle => translate('gallery_eg_title');
+  String get galleryMaterialSubtitle => translate('gallery_material_subtitle');
+  String get galleryEgSubtitle => translate('gallery_eg_subtitle');
+  String get galleryAddToArchive => translate('gallery_add_to_archive');
+  String get galleryFilterAllWorks => translate('gallery_filter_all_works');
+  String get galleryFilterSuits => translate('gallery_filter_suits');
+  String get galleryFilterCasual => translate('gallery_filter_casual');
+  String get galleryFilterFabrics => translate('gallery_filter_fabrics');
+  String get galleryFilterFittings => translate('gallery_filter_fittings');
 }
 
 class _AppLocalizationsDelegate

@@ -120,4 +120,20 @@ const Map<String, String> hindiStrings = {
   'capacity_label': 'क्षमता:',
   'onboard_new_artisan': 'नए कारीगर को जोड़ें',
   'retry': 'पुनः प्रयास करें',
+
+  // ── Gallery Screen ──
+  'gallery_curated_portfolio': 'क्यूरेटेड पोर्टफोलियो',
+  'gallery_archive_of_excellence': 'उत्कृष्टता का\nसंग्रह',
+  'gallery_add_portfolio_item': 'पोर्टफोलियो आइटम जोड़ें',
+  'gallery_tap_to_upload_photo': 'फोटो अपलोड करने के लिए टैप करें',
+  'gallery_item_title': 'आइटम का शीर्षक',
+  'gallery_eg_title': 'उदा. मिडनाइट ब्लू थ्री-पीस',
+  'gallery_material_subtitle': 'सामग्री / उपशीर्षक',
+  'gallery_eg_subtitle': 'उदा. सुपर 150 मेरिनो वूल',
+  'gallery_add_to_archive': 'संग्रह में जोड़ें',
+  'gallery_filter_all_works': 'सभी कार्य',
+  'gallery_filter_suits': 'सूट',
+  'gallery_filter_casual': 'कैज़ुअल',
+  'gallery_filter_fabrics': 'कपड़े',
+  'gallery_filter_fittings': 'फिटिंग',
 };

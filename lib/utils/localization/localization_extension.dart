@@ -128,4 +128,19 @@ extension LocalizationExtension on BuildContext {
   String get capacityLabel => _l10n?.capacityLabel ?? 'Capacity:';
   String get onboardNewArtisan => _l10n?.onboardNewArtisan ?? 'Onboard New Artisan';
   String get retry => _l10n?.retry ?? 'Retry';
+  // ── Gallery Screen ──
+  String get galleryCuratedPortfolio => _l10n?.galleryCuratedPortfolio ?? 'CURATED PORTFOLIO';
+  String get galleryArchiveOfExcellence => _l10n?.galleryArchiveOfExcellence ?? 'Archive of\nExcellence';
+  String get galleryAddPortfolioItem => _l10n?.galleryAddPortfolioItem ?? 'Add Portfolio Item';
+  String get galleryTapToUploadPhoto => _l10n?.galleryTapToUploadPhoto ?? 'Tap to Upload Photo';
+  String get galleryItemTitle => _l10n?.galleryItemTitle ?? 'Item Title';
+  String get galleryEgTitle => _l10n?.galleryEgTitle ?? 'e.g. Midnight Blue Three-Piece';
+  String get galleryMaterialSubtitle => _l10n?.galleryMaterialSubtitle ?? 'Material / Subtitle';
+  String get galleryEgSubtitle => _l10n?.galleryEgSubtitle ?? 'e.g. Super 150s Merino Wool';
+  String get galleryAddToArchive => _l10n?.galleryAddToArchive ?? 'ADD TO ARCHIVE';
+  String get galleryFilterAllWorks => _l10n?.galleryFilterAllWorks ?? 'All Works';
+  String get galleryFilterSuits => _l10n?.galleryFilterSuits ?? 'Suits';
+  String get galleryFilterCasual => _l10n?.galleryFilterCasual ?? 'Casual';
+  String get galleryFilterFabrics => _l10n?.galleryFilterFabrics ?? 'Fabrics';
+  String get galleryFilterFittings => _l10n?.galleryFilterFittings ?? 'Fittings';
 }

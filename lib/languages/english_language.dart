@@ -120,4 +120,20 @@ const Map<String, String> englishStrings = {
   'capacity_label': 'Capacity:',
   'onboard_new_artisan': 'Onboard New Artisan',
   'retry': 'Retry',
+
+  // ── Gallery Screen ──
+  'gallery_curated_portfolio': 'CURATED PORTFOLIO',
+  'gallery_archive_of_excellence': 'Archive of\nExcellence',
+  'gallery_add_portfolio_item': 'Add Portfolio Item',
+  'gallery_tap_to_upload_photo': 'Tap to Upload Photo',
+  'gallery_item_title': 'Item Title',
+  'gallery_eg_title': 'e.g. Midnight Blue Three-Piece',
+  'gallery_material_subtitle': 'Material / Subtitle',
+  'gallery_eg_subtitle': 'e.g. Super 150s Merino Wool',
+  'gallery_add_to_archive': 'ADD TO ARCHIVE',
+  'gallery_filter_all_works': 'All Works',
+  'gallery_filter_suits': 'Suits',
+  'gallery_filter_casual': 'Casual',
+  'gallery_filter_fabrics': 'Fabrics',
+  'gallery_filter_fittings': 'Fittings',
 };

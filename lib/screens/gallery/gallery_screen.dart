@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../shell/widgets/app_drawer.dart';
+import '../../utils/localization/localization_extension.dart';
 
 class GalleryScreen extends StatefulWidget {
   const GalleryScreen({super.key});
@@ -13,12 +14,12 @@ class GalleryScreen extends StatefulWidget {
 class _GalleryScreenState extends State<GalleryScreen> {
   int _selectedFilterIndex = 0;
 
-  final List<String> _filters = [
-    'All Works',
-    'Suits',
-    'Casual',
-    'Fabrics',
-    'Fittings',
+  List<String> get _filters => [
+    context.galleryFilterAllWorks,
+    context.galleryFilterSuits,
+    context.galleryFilterCasual,
+    context.galleryFilterFabrics,
+    context.galleryFilterFittings,
   ];
 
   final List<Map<String, String>> _portfolioItems = [
@@ -76,7 +77,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'CURATED PORTFOLIO',
+                    context.galleryCuratedPortfolio,
                     style: GoogleFonts.inter(
                       fontSize: 9,
                       fontWeight: FontWeight.w800,
@@ -86,7 +87,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Archive of\nExcellence',
+                    context.galleryArchiveOfExcellence,
                     style: GoogleFonts.inter(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
@@ -140,7 +141,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Add Portfolio Item',
+                    context.galleryAddPortfolioItem,
                     style: GoogleFonts.inter(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -169,7 +170,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     const Icon(Icons.cloud_upload_rounded, color: Color(0xFF8B5CF6), size: 36),
                     const SizedBox(height: 8),
                     Text(
-                      'Tap to Upload Photo',
+                      context.galleryTapToUploadPhoto,
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -182,8 +183,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
               const SizedBox(height: 20),
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Item Title',
-                  hintText: 'e.g. Midnight Blue Three-Piece',
+                  labelText: context.galleryItemTitle,
+                  hintText: context.galleryEgTitle,
                   filled: true,
                   fillColor: const Color(0xFFF8F9FC),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
@@ -192,8 +193,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
               const SizedBox(height: 12),
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Material / Subtitle',
-                  hintText: 'e.g. Super 150s Merino Wool',
+                  labelText: context.galleryMaterialSubtitle,
+                  hintText: context.galleryEgSubtitle,
                   filled: true,
                   fillColor: const Color(0xFFF8F9FC),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
@@ -213,7 +214,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   child: Text(
-                    'ADD TO ARCHIVE',
+                    context.galleryAddToArchive,
                     style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: Colors.white),
                   ),
                 ),
@@ -239,7 +240,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
       ),
       centerTitle: true,
       title: Text(
-        'The Bespoke Atelier',
+        context.bespokeAtelier,
         style: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w700,
