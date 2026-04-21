@@ -120,4 +120,20 @@ const Map<String, String> marathiStrings = {
   'capacity_label': 'क्षमता:',
   'onboard_new_artisan': 'नवीन कारागीर जोडा',
   'retry': 'पुन्हा प्रयत्न करा',
+
+  // ── Gallery Screen ──
+  'gallery_curated_portfolio': 'क्यूरेटेड पोर्टफोलिओ',
+  'gallery_archive_of_excellence': 'उत्कृष्टतेचा\nसंग्रह',
+  'gallery_add_portfolio_item': 'पोर्टफोलिओ आयटम जोडा',
+  'gallery_tap_to_upload_photo': 'फोटो अपलोड करण्यासाठी टॅप करा',
+  'gallery_item_title': 'आयटमचे शीर्षक',
+  'gallery_eg_title': 'उदा. मिडनाइट ब्लू थ्री-पीस',
+  'gallery_material_subtitle': 'साहित्य / उपशीर्षक',
+  'gallery_eg_subtitle': 'उदा. सुपर १५० मेरिनो वूल',
+  'gallery_add_to_archive': 'संग्रहात जोडा',
+  'gallery_filter_all_works': 'सर्व कामे',
+  'gallery_filter_suits': 'सूट',
+  'gallery_filter_casual': 'कॅज्युअल',
+  'gallery_filter_fabrics': 'कापड',
+  'gallery_filter_fittings': 'फिटिंग',
 };
