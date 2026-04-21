@@ -104,4 +104,20 @@ const Map<String, String> marathiStrings = {
   'view_profile': 'प्रोफाइल पहा',
   'bill_no_label': 'बिल क्र.',
   'generate_ai_style_profile': 'एआय स्टाइल प्रोफाइल तयार करा',
+
+  // ── Staff Management Screen ──
+  'staff_management': 'कर्मचारी व्यवस्थापन',
+  'staff_management_desc': 'तुमच्या कार्यशाळेतील कुशल कारागिरांचे व्यवस्थापन आणि निरीक्षण करा.',
+  'add_staff': 'कर्मचारी जोडा',
+  'active_upper': 'सक्रिय',
+  'total_artisans': 'एकूण कारागीर',
+  'current_workload': 'सध्याचे काम',
+  'orders': 'ऑर्डर्स',
+  'efficiency_rate': 'कार्यक्षमता दर',
+  'staff_artisan_upper': 'मुख्य कारागीर',
+  'assigned_orders': 'नियुक्त केलेल्या ऑर्डर्स',
+  'over_capacity': 'क्षमतेपेक्षा जास्त',
+  'capacity_label': 'क्षमता:',
+  'onboard_new_artisan': 'नवीन कारागीर जोडा',
+  'retry': 'पुन्हा प्रयत्न करा',
 };

@@ -104,4 +104,20 @@ const Map<String, String> englishStrings = {
   'view_profile': 'View Profile',
   'bill_no_label': 'Bill No',
   'generate_ai_style_profile': 'Generate AI Style Profile',
+
+  // ── Staff Management Screen ──
+  'staff_management': 'Staff Management',
+  'staff_management_desc': 'Organize and monitor your atelier\'s expert artisans.',
+  'add_staff': 'Add Staff',
+  'active_upper': 'ACTIVE',
+  'total_artisans': 'Total Artisans',
+  'current_workload': 'Current Workload',
+  'orders': 'Orders',
+  'efficiency_rate': 'Efficiency Rate',
+  'staff_artisan_upper': 'STAFF ARTISAN',
+  'assigned_orders': 'Assigned Orders',
+  'over_capacity': 'OVER CAPACITY',
+  'capacity_label': 'Capacity:',
+  'onboard_new_artisan': 'Onboard New Artisan',
+  'retry': 'Retry',
 };

@@ -702,6 +702,21 @@ class AppLocalizations {
   String get viewProfile => translate('view_profile');
   String get billNoLabel => translate('bill_no_label');
   String get generateAiStyleProfile => translate('generate_ai_style_profile');
+
+  // ── Staff Management Screen ──
+  String get staffManagement => translate('staff_management');
+  String get staffManagementDesc => translate('staff_management_desc');
+  String get addStaff => translate('add_staff');
+  String get activeUpper => translate('active_upper');
+  String get totalArtisans => translate('total_artisans');
+  String get currentWorkload => translate('current_workload');
+  String get ordersText => translate('orders');
+  String get efficiencyRate => translate('efficiency_rate');
+  String get staffArtisanUpper => translate('staff_artisan_upper');
+  String get assignedOrders => translate('assigned_orders');
+  String get overCapacity => translate('over_capacity');
+  String get capacityLabel => translate('capacity_label');
+  String get onboardNewArtisan => translate('onboard_new_artisan');
 }
 
 class _AppLocalizationsDelegate
