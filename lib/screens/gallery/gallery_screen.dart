@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../utils/localization/localization_extension.dart';
 import '../shell/widgets/app_drawer.dart';
 import '../../utils/localization/localization_extension.dart';
 

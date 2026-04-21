@@ -732,6 +732,30 @@ class AppLocalizations {
   String get galleryFilterCasual => translate('gallery_filter_casual');
   String get galleryFilterFabrics => translate('gallery_filter_fabrics');
   String get galleryFilterFittings => translate('gallery_filter_fittings');
+
+  // ── Staff Hello Screen ──
+  String get staffPortalTitle => translate('staff_portal_title');
+  String get queueOverview => translate('queue_overview');
+  String get activeTasksFor => translate('active_tasks_for');
+  String get searchOrdersHint => translate('search_orders_hint');
+  String get totalTasksLabel => translate('total_tasks_label');
+  String get inProgressUpper => translate('in_progress_upper');
+  String get highPriorityUpper => translate('high_priority_upper');
+  String get completedUpper => translate('completed_upper');
+  String get noTasksInQueue => translate('no_tasks_in_queue');
+  String get tasksTab => translate('tasks_tab');
+  String get ordersTab => translate('orders_tab');
+  String get logOut => translate('log_out');
+  String get aiEfficiencySuggest => translate('ai_efficiency_suggest');
+  String get batchCuttingRecommendation => translate('batch_cutting_recommendation');
+  String get optimizeWorkflow => translate('optimize_workflow');
+  String get fabricAvailability => translate('fabric_availability');
+  String get navySilk => translate('navy_silk');
+  String get inStockUpper => translate('in_stock_upper');
+  String get tweedHarris => translate('tweed_harris');
+  String get lowStockUpper => translate('low_stock_upper');
+  String get clientLabel => translate('client_label');
+  String get dueLabel => translate('due_label');
 }
 
 class _AppLocalizationsDelegate
