@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/login_provider.dart';
 import '../../providers/order_management_provider.dart';
 import '../../providers/profile_provider.dart';
+import '../../utils/localization/localization_extension.dart';
 import '../login/login_screen.dart';
 import '../staff/staff_order_screen.dart';
 class HelloScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _HelloScreenState extends State<HelloScreen> {
                 Consumer<ProfileProvider>(
                   builder: (context, profile, _) {
                     final name = profile.userProfile?.firstName ?? 'Julian';
-                    return _buildSectionTitle('QUEUE OVERVIEW', 'Active Tasks for $name');
+                    return _buildSectionTitle(context.queueOverview, context.activeTasksFor.replaceAll('{name}', name));
                   },
                 ),
                 const SizedBox(height: 20),
@@ -93,7 +94,7 @@ class _HelloScreenState extends State<HelloScreen> {
                   const Icon(Icons.logout, color: Color(0xFFD50000), size: 20),
                   const SizedBox(width: 12),
                   Text(
-                    'Log Out',
+                    context.logOut,
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -107,7 +108,7 @@ class _HelloScreenState extends State<HelloScreen> {
         ),
         const SizedBox(width: 8),
         Text(
-          'Staff\nPortal',
+          context.staffPortalTitle,
           style: GoogleFonts.manrope(
             fontSize: 18,
             fontWeight: FontWeight.w800,
@@ -173,7 +174,7 @@ class _HelloScreenState extends State<HelloScreen> {
             ),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search orders...',
+                hintText: context.searchOrdersHint,
                 hintStyle: GoogleFonts.inter(
                   color: const Color(0xFF7A7488),
                   fontSize: 14,
@@ -205,7 +206,7 @@ class _HelloScreenState extends State<HelloScreen> {
               const Icon(Icons.filter_list, color: Color(0xFF494456), size: 18),
               const SizedBox(width: 8),
               Text(
-                'Priority',
+                context.priorityLabel,
                 style: GoogleFonts.inter(
                   color: const Color(0xFF191C1D),
                   fontWeight: FontWeight.w600,
@@ -234,10 +235,10 @@ class _HelloScreenState extends State<HelloScreen> {
           physics: const NeverScrollableScrollPhysics(),
           childAspectRatio: 1.3,
           children: [
-            _buildSummaryCard(Icons.inbox_outlined, totalCount.toString().padLeft(2, '0'), 'TOTAL TASKS', const Color(0xFF191C1D)),
-            _buildSummaryCard(Icons.content_cut, '05', 'IN PROGRESS', const Color(0xFF6200EE)),
-            _buildSummaryCard(Icons.priority_high, pendingCount.toString().padLeft(2, '0'), 'HIGH PRIORITY', const Color(0xFFD50000)),
-            _buildSummaryCard(Icons.check_circle_outline, readyCount.toString().padLeft(2, '0'), 'COMPLETED', const Color(0xFF00C853)),
+            _buildSummaryCard(Icons.inbox_outlined, totalCount.toString().padLeft(2, '0'), context.totalTasksLabel, const Color(0xFF191C1D)),
+            _buildSummaryCard(Icons.content_cut, '05', context.inProgressUpper, const Color(0xFF6200EE)),
+            _buildSummaryCard(Icons.priority_high, pendingCount.toString().padLeft(2, '0'), context.highPriorityUpper, const Color(0xFFD50000)),
+            _buildSummaryCard(Icons.check_circle_outline, readyCount.toString().padLeft(2, '0'), context.completedUpper, const Color(0xFF00C853)),
           ],
         );
       },
@@ -303,12 +304,12 @@ class _HelloScreenState extends State<HelloScreen> {
         }
 
         if (orderProvider.orders.isEmpty) {
-          return const Center(
+          return Center(
             child: Padding(
-              padding: EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(24.0),
               child: Text(
-                'No tasks in queue.',
-                style: TextStyle(color: Color(0xFF7A7488)),
+                context.noTasksInQueue,
+                style: const TextStyle(color: Color(0xFF7A7488)),
               ),
             ),
           );
@@ -323,9 +324,9 @@ class _HelloScreenState extends State<HelloScreen> {
                 iconBgColor: const Color(0xFFCFBDFF).withOpacity(0.3),
                 iconColor: const Color(0xFF4800B2),
                 orderId: order.billNumber.isNotEmpty ? order.billNumber : order.orderId.substring(0, 8),
-                priority: order.orderStatus.toLowerCase() == 'pending' ? 'HIGH PRIORITY' : '',
+                priority: order.orderStatus.toLowerCase() == 'pending' ? context.highPriorityUpper : '',
                 priorityColor: const Color(0xFFFFFFFF),
-                priorityBgColor: const Color(0xFFAC0000), 
+                priorityBgColor: const Color(0xFFAC0000),
                 title: order.firstItemName,
                 client: order.customerName,
                 badgeText: order.orderStatus.toUpperCase(),
@@ -425,7 +426,7 @@ class _HelloScreenState extends State<HelloScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Client: $client',
+            '${context.clientLabel}$client',
             style: GoogleFonts.inter(
               fontSize: 13,
               color: const Color(0xFF7A7488),
@@ -453,7 +454,7 @@ class _HelloScreenState extends State<HelloScreen> {
                 ),
               ),
               Text(
-                'Due: $dueTime',
+                '${context.dueLabel}$dueTime',
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   color: const Color(0xFF494456),
@@ -490,7 +491,7 @@ class _HelloScreenState extends State<HelloScreen> {
               const Icon(Icons.auto_awesome, color: Color(0xFF6200EE), size: 20),
               const SizedBox(width: 8),
               Text(
-                'AI Efficiency Suggest',
+                context.aiEfficiencySuggest,
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
@@ -503,7 +504,7 @@ class _HelloScreenState extends State<HelloScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Batch cutting for ORD-0042 and ORD-0050 is recommended. Both use similar weight interfacing.',
+            context.batchCuttingRecommendation,
             style: GoogleFonts.inter(
               fontSize: 14,
               color: const Color(0xFF494456),
@@ -533,7 +534,7 @@ class _HelloScreenState extends State<HelloScreen> {
                 elevation: 0,
               ),
               child: Text(
-                'Optimize Workflow',
+                context.optimizeWorkflow,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -564,7 +565,7 @@ class _HelloScreenState extends State<HelloScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Fabric Availability',
+            context.fabricAvailability,
             style: GoogleFonts.inter(
               fontSize: 16,
               fontWeight: FontWeight.w800,
@@ -572,9 +573,9 @@ class _HelloScreenState extends State<HelloScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          _buildFabricRow('Navy Silk (120s)', 'IN STOCK', const Color(0xFF00732C), 0.85, const Color(0xFF00C853)),
+          _buildFabricRow(context.navySilk, context.inStockUpper, const Color(0xFF00732C), 0.85, const Color(0xFF00C853)),
           const SizedBox(height: 20),
-          _buildFabricRow('Tweed (Harris)', 'LOW STOCK', const Color(0xFFFFFFFF), 0.2, const Color(0xFFD50000), badgeBg: const Color(0xFFAC0000)),
+          _buildFabricRow(context.tweedHarris, context.lowStockUpper, const Color(0xFFFFFFFF), 0.2, const Color(0xFFD50000), badgeBg: const Color(0xFFAC0000)),
         ],
       ),
     );
@@ -643,14 +644,14 @@ class _HelloScreenState extends State<HelloScreen> {
           _buildNavItem(
             context: context,
             icon: Icons.inbox,
-            label: 'TASKS',
+            label: context.tasksTab,
             isActive: true,
             onTap: () {},
           ),
           _buildNavItem(
             context: context,
             icon: Icons.receipt_long_outlined,
-            label: 'ORDERS',
+            label: context.ordersTab,
             isActive: false,
             onTap: () {
               Navigator.push(

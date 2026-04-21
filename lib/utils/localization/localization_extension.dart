@@ -5,6 +5,9 @@ extension LocalizationExtension on BuildContext {
     String get bespokeAtelier => _l10n?.bespokeAtelier ?? 'THE BESPOKE ATELIER';
   AppLocalizations? get _l10n => AppLocalizations.of(this);
 
+  // Generic translate method
+  String translate(String key) => _l10n?.translate(key) ?? key;
+
   // Quick access to translations
   String get sangamnerAi => _l10n?.sangamnerAi ?? 'Sangamner AI';
   String get homeTitle =>
@@ -143,4 +146,28 @@ extension LocalizationExtension on BuildContext {
   String get galleryFilterCasual => _l10n?.galleryFilterCasual ?? 'Casual';
   String get galleryFilterFabrics => _l10n?.galleryFilterFabrics ?? 'Fabrics';
   String get galleryFilterFittings => _l10n?.galleryFilterFittings ?? 'Fittings';
+
+  // ── Staff Hello Screen ──
+  String get staffPortalTitle => _l10n?.staffPortalTitle ?? 'Staff\nPortal';
+  String get queueOverview => _l10n?.queueOverview ?? 'QUEUE OVERVIEW';
+  String get activeTasksFor => _l10n?.activeTasksFor ?? 'Active Tasks for {name}';
+  String get searchOrdersHint => _l10n?.searchOrdersHint ?? 'Search orders...';
+  String get totalTasksLabel => _l10n?.totalTasksLabel ?? 'TOTAL TASKS';
+  String get inProgressUpper => _l10n?.inProgressUpper ?? 'IN PROGRESS';
+  String get highPriorityUpper => _l10n?.highPriorityUpper ?? 'HIGH PRIORITY';
+  String get completedUpper => _l10n?.completedUpper ?? 'COMPLETED';
+  String get noTasksInQueue => _l10n?.noTasksInQueue ?? 'No tasks in queue.';
+  String get tasksTab => _l10n?.tasksTab ?? 'TASKS';
+  String get ordersTab => _l10n?.ordersTab ?? 'ORDERS';
+  String get logOut => _l10n?.logOut ?? 'Log Out';
+  String get aiEfficiencySuggest => _l10n?.aiEfficiencySuggest ?? 'AI Efficiency Suggest';
+  String get batchCuttingRecommendation => _l10n?.batchCuttingRecommendation ?? 'Batch cutting for ORD-0042 and ORD-0050 is recommended. Both use similar weight interfacing.';
+  String get optimizeWorkflow => _l10n?.optimizeWorkflow ?? 'Optimize Workflow';
+  String get fabricAvailability => _l10n?.fabricAvailability ?? 'Fabric Availability';
+  String get navySilk => _l10n?.navySilk ?? 'Navy Silk (120s)';
+  String get inStockUpper => _l10n?.inStockUpper ?? 'IN STOCK';
+  String get tweedHarris => _l10n?.tweedHarris ?? 'Tweed (Harris)';
+  String get lowStockUpper => _l10n?.lowStockUpper ?? 'LOW STOCK';
+  String get clientLabel => _l10n?.clientLabel ?? 'Client: ';
+  String get dueLabel => _l10n?.dueLabel ?? 'Due: ';
 }
