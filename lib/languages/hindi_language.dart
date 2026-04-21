@@ -104,4 +104,20 @@ const Map<String, String> hindiStrings = {
   'view_profile': 'प्रोफ़ाइल देखें',
   'bill_no_label': 'बिल नं.',
   'generate_ai_style_profile': 'एआई स्टाइल प्रोफ़ाइल बनाएं',
+
+  // ── Staff Management Screen ──
+  'staff_management': 'कर्मचारी प्रबंधन',
+  'staff_management_desc': 'अपने कार्यशाला के कुशल कारीगरों को व्यवस्थित और मॉनिटर करें।',
+  'add_staff': 'कर्मचारी जोड़ें',
+  'active_upper': 'सक्रिय',
+  'total_artisans': 'कुल कारीगर',
+  'current_workload': 'वर्तमान कार्यभार',
+  'orders': 'ऑर्डर्स',
+  'efficiency_rate': 'दक्षता दर',
+  'staff_artisan_upper': 'कारीगर',
+  'assigned_orders': 'सौंपे गए ऑर्डर्स',
+  'over_capacity': 'क्षमता से अधिक',
+  'capacity_label': 'क्षमता:',
+  'onboard_new_artisan': 'नए कारीगर को जोड़ें',
+  'retry': 'पुनः प्रयास करें',
 };

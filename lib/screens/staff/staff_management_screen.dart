@@ -5,6 +5,7 @@ import '../../providers/home_provider.dart';
 import '../../providers/order_management_provider.dart';
 import '../../providers/staff_provider.dart';
 import '../../models/business_staff_response.dart';
+import '../../utils/localization/localization_extension.dart';
 import 'add_staff_screen.dart';
 import '../shell/widgets/app_drawer.dart';
 
@@ -44,11 +45,11 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: ${staffProvider.error}'),
+                  Text('${context.errorPrefix}: ${staffProvider.error}'),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => staffProvider.fetchStaff(),
-                    child: const Text('Retry'),
+                    child: Text(context.retry),
                   ),
                 ],
               ),
@@ -95,7 +96,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
       ),
       centerTitle: true,
       title: Text(
-        'The Bespoke Atelier',
+        context.bespokeAtelier,
         style: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w700,
@@ -110,7 +111,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Staff Management',
+          context.staffManagement,
           style: GoogleFonts.inter(
             fontSize: 26,
             fontWeight: FontWeight.w800,
@@ -120,7 +121,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
         ),
         const SizedBox(height: 6),
         Text(
-          'Organize and monitor your atelier\'s expert artisans.',
+          context.staffManagementDesc,
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -152,7 +153,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
         ),
         icon: const Icon(Icons.person_add_alt_1_rounded, size: 20),
         label: Text(
-          'Add Staff',
+          context.addStaff,
           style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700),
         ),
       ),
@@ -192,7 +193,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      'ACTIVE',
+                      context.activeUpper,
                       style: GoogleFonts.inter(
                         fontSize: 9,
                         fontWeight: FontWeight.w700,
@@ -205,7 +206,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Total Artisans',
+                context.totalArtisans,
                 style: GoogleFonts.inter(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -247,7 +248,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Current Workload',
+                context.currentWorkload,
                 style: GoogleFonts.inter(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -256,7 +257,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                '${homeProvider.totalOrders} Orders',
+                '${homeProvider.totalOrders} ${context.ordersText}',
                 style: GoogleFonts.inter(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
@@ -282,7 +283,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
               const Icon(Icons.insights_rounded, size: 24, color: Color(0xFF0F172A)),
               const SizedBox(height: 16),
               Text(
-                'Efficiency Rate',
+                context.efficiencyRate,
                 style: GoogleFonts.inter(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -322,7 +323,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
     final bool isOverCapacity = assigned >= maxCapacity;
     
     // UI mapping for roles
-    final String role = staff.service?.serviceName.toUpperCase() ?? "STAFF ARTISAN";
+    final String role = staff.service?.serviceName.toUpperCase() ?? context.staffArtisanUpper;
     final Color roleColor = _getRoleColor(role);
 
     return Container(
@@ -430,7 +431,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Assigned Orders',
+                      context.assignedOrders,
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
@@ -472,7 +473,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  isOverCapacity ? "OVER CAPACITY" : "Capacity: $capacityPercentage%",
+                  isOverCapacity ? context.overCapacity : "${context.capacityLabel} $capacityPercentage%",
                   style: GoogleFonts.inter(
                     fontSize: 9,
                     fontWeight: FontWeight.w600,
@@ -529,7 +530,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            'Onboard New Artisan',
+            context.onboardNewArtisan,
             style: GoogleFonts.inter(
               fontSize: 13,
               fontWeight: FontWeight.w600,

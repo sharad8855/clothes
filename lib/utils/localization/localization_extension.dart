@@ -112,4 +112,20 @@ extension LocalizationExtension on BuildContext {
   String get viewProfile => _l10n?.viewProfile ?? 'View Profile';
   String get billNoLabel => _l10n?.billNoLabel ?? 'Bill No';
   String get generateAiStyleProfile => _l10n?.generateAiStyleProfile ?? 'Generate AI Style Profile';
+
+  // ── Staff Management Screen ──
+  String get staffManagement => _l10n?.staffManagement ?? 'Staff Management';
+  String get staffManagementDesc => _l10n?.staffManagementDesc ?? 'Organize and monitor your atelier\'s expert artisans.';
+  String get addStaff => _l10n?.addStaff ?? 'Add Staff';
+  String get activeUpper => _l10n?.activeUpper ?? 'ACTIVE';
+  String get totalArtisans => _l10n?.totalArtisans ?? 'Total Artisans';
+  String get currentWorkload => _l10n?.currentWorkload ?? 'Current Workload';
+  String get ordersText => _l10n?.ordersText ?? 'Orders';
+  String get efficiencyRate => _l10n?.efficiencyRate ?? 'Efficiency Rate';
+  String get staffArtisanUpper => _l10n?.staffArtisanUpper ?? 'STAFF ARTISAN';
+  String get assignedOrders => _l10n?.assignedOrders ?? 'Assigned Orders';
+  String get overCapacity => _l10n?.overCapacity ?? 'OVER CAPACITY';
+  String get capacityLabel => _l10n?.capacityLabel ?? 'Capacity:';
+  String get onboardNewArtisan => _l10n?.onboardNewArtisan ?? 'Onboard New Artisan';
+  String get retry => _l10n?.retry ?? 'Retry';
 }
