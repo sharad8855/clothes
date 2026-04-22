@@ -161,4 +161,13 @@ const Map<String, String> englishStrings = {
   'low_stock_upper': 'LOW STOCK',
   'client_label': 'Client: ',
   'due_label': 'Due: ',
+
+  // ── Orders Management Screen ──
+  'production_label': 'PRODUCTION',
+  'orders_title': 'Orders',
+  'search_customer_or_id': 'Search customer or ID...',
+  'no_orders_found': 'No orders found',
+  'created_by': 'Created by:',
+  'inv_prefix': 'INV:',
+  'total_count_label': '{count} Total',
 };

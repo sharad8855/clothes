@@ -161,4 +161,13 @@ const Map<String, String> hindiStrings = {
   'low_stock_upper': 'कम स्टॉक',
   'client_label': 'क्लाइंट: ',
   'due_label': 'नियत: ',
+
+  // ── Orders Management Screen ──
+  'production_label': 'प्रोडक्शन',
+  'orders_title': 'ऑर्डर',
+  'search_customer_or_id': 'ग्राहक या आईडी खोजें...',
+  'no_orders_found': 'कोई ऑर्डर नहीं मिला',
+  'created_by': 'द्वारा बनाया गया:',
+  'inv_prefix': 'INV:',
+  'total_count_label': '{count} कुल',
 };

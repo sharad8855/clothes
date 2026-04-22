@@ -161,4 +161,13 @@ const Map<String, String> marathiStrings = {
   'low_stock_upper': 'कमी स्टॉक',
   'client_label': 'क्लायंट: ',
   'due_label': 'देय: ',
+
+  // ── Orders Management Screen ──
+  'production_label': 'उत्पादन',
+  'orders_title': 'ऑर्डर',
+  'search_customer_or_id': 'ग्राहक किंवा आयडी शोधा...',
+  'no_orders_found': 'कोणतेही ऑर्डर आढळले नाही',
+  'created_by': 'तयार केले:',
+  'inv_prefix': 'INV:',
+  'total_count_label': '{count} एकूण',
 };
