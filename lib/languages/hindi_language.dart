@@ -170,4 +170,19 @@ const Map<String, String> hindiStrings = {
   'created_by': 'द्वारा बनाया गया:',
   'inv_prefix': 'INV:',
   'total_count_label': '{count} कुल',
+
+  // ── Add Staff Screen ──
+  'add_staff_title': 'कर्मचारी जोड़ें',
+  'basic_information': 'बुनियादी जानकारी',
+  'full_name_required': 'पूरा नाम *',
+  'phone_number_required': 'फ़ोन नंबर *',
+  'email_optional': 'ईमेल (वैकल्पिक)',
+  'designation_required': 'पदनाम *',
+  'eg_john_doe': 'उदा. जॉन डो',
+  'eg_senior_stylist': 'उदा. सीनियर स्टाइलिस्ट',
+  'phone_must_be_10_digits': 'फ़ोन नंबर ठीक 10 अंकों का होना चाहिए',
+  'please_enter_valid_email': 'कृपया एक मान्य ईमेल पता दर्ज करें',
+  'please_fill_required_fields': 'कृपया सभी आवश्यक फ़ील्ड भरें',
+  'staff_invited_successfully': 'कर्मचारी को सफलतापूर्वक आमंत्रित किया गया',
+  'invite_staff': 'कर्मचारी आमंत्रित करें',
 };
