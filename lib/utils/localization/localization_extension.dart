@@ -131,6 +131,16 @@ extension LocalizationExtension on BuildContext {
   String get capacityLabel => _l10n?.capacityLabel ?? 'Capacity:';
   String get onboardNewArtisan => _l10n?.onboardNewArtisan ?? 'Onboard New Artisan';
   String get retry => _l10n?.retry ?? 'Retry';
+
+  // ── Orders Management Screen ──
+  String get productionLabel => _l10n?.productionLabel ?? 'PRODUCTION';
+  String get ordersTitle => _l10n?.ordersTitle ?? 'Orders';
+  String get searchCustomerOrId => _l10n?.searchCustomerOrId ?? 'Search customer or ID...';
+  String get noOrdersFound => _l10n?.noOrdersFound ?? 'No orders found';
+  String get createdBy => _l10n?.createdBy ?? 'Created by:';
+  String get invPrefix => _l10n?.invPrefix ?? 'INV:';
+  String get totalCountLabel => _l10n?.totalCountLabel ?? '{count} Total';
+
   // ── Gallery Screen ──
   String get galleryCuratedPortfolio => _l10n?.galleryCuratedPortfolio ?? 'CURATED PORTFOLIO';
   String get galleryArchiveOfExcellence => _l10n?.galleryArchiveOfExcellence ?? 'Archive of\nExcellence';

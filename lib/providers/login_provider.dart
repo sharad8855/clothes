@@ -32,6 +32,12 @@ class LoginProvider extends ChangeNotifier {
     _credential = value;
     _credentialError = null;
     _apiError = null;
+    
+    final digitsOnly = _credential.replaceAll(RegExp(r'\D'), '');
+    if (digitsOnly.length > 10) {
+      _credentialError = 'Mobile number cannot exceed 10 digits';
+    }
+    
     notifyListeners();
   }
 
@@ -88,6 +94,9 @@ class LoginProvider extends ChangeNotifier {
       final digitsOnly = _credential.replaceAll(RegExp(r'\D'), '');
       if (digitsOnly.length < 10) {
         _credentialError = 'Enter a valid 10-digit mobile number';
+        valid = false;
+      } else if (digitsOnly.length > 10) {
+        _credentialError = 'Mobile number cannot exceed 10 digits';
         valid = false;
       }
     }

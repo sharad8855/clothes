@@ -8,6 +8,7 @@ import '../shell/widgets/app_drawer.dart';
 import 'order_details_screen.dart';
 import '../../providers/profile_provider.dart';
 import '../profile/profile_screen.dart';
+import '../../utils/localization/localization_extension.dart';
 
 class OrderManagementScreen extends StatefulWidget {
   const OrderManagementScreen({super.key});
@@ -106,7 +107,7 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
       ),
       centerTitle: true,
       title: Text(
-        'The Bespoke Atelier',
+        context.bespokeAtelier,
         style: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w700,
@@ -122,7 +123,7 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'PRODUCTION',
+          context.productionLabel,
           style: GoogleFonts.inter(
             fontSize: 10,
             fontWeight: FontWeight.w800,
@@ -135,7 +136,7 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Orders',
+              context.ordersTitle,
               style: GoogleFonts.inter(
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
@@ -151,7 +152,7 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  '${provider.totalCount} Total',
+                  context.totalCountLabel.replaceAll('{count}', '${provider.totalCount}'),
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -198,7 +199,7 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
                       color: const Color(0xFF1E293B),
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Search customer or ID...',
+                      hintText: context.searchCustomerOrId,
                       border: InputBorder.none,
                       isDense: true,
                       hintStyle: GoogleFonts.inter(
@@ -256,7 +257,7 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
               const Icon(Icons.receipt_long_outlined, size: 64, color: Color(0xFFCBD5E1)),
               const SizedBox(height: 16),
               Text(
-                'No orders found',
+                context.noOrdersFound,
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -383,7 +384,7 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'INV: ${order.billNumber}',
+                        '${context.invPrefix} ${order.billNumber}',
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -447,7 +448,7 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Created by:',
+                    context.createdBy,
                     style: GoogleFonts.inter(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,

@@ -717,6 +717,15 @@ class AppLocalizations {
   String get overCapacity => translate('over_capacity');
   String get capacityLabel => translate('capacity_label');
   String get onboardNewArtisan => translate('onboard_new_artisan');
+
+  // ── Orders Management Screen ──
+  String get productionLabel => translate('production_label');
+  String get ordersTitle => translate('orders_title');
+  String get searchCustomerOrId => translate('search_customer_or_id');
+  String get noOrdersFound => translate('no_orders_found');
+  String get createdBy => translate('created_by');
+  String get invPrefix => translate('inv_prefix');
+  String get totalCountLabel => translate('total_count_label');
   // ── Gallery Screen ──
   String get galleryCuratedPortfolio => translate('gallery_curated_portfolio');
   String get galleryArchiveOfExcellence => translate('gallery_archive_of_excellence');
