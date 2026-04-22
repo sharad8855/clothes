@@ -726,6 +726,22 @@ class AppLocalizations {
   String get createdBy => translate('created_by');
   String get invPrefix => translate('inv_prefix');
   String get totalCountLabel => translate('total_count_label');
+
+  // ── Add Staff Screen ──
+  String get addStaffTitle => translate('add_staff_title');
+  String get basicInformation => translate('basic_information');
+  String get fullNameRequired => translate('full_name_required');
+  String get phoneNumberRequired => translate('phone_number_required');
+  String get emailOptional => translate('email_optional');
+  String get designationRequired => translate('designation_required');
+  String get egJohnDoe => translate('eg_john_doe');
+  String get egSeniorStylist => translate('eg_senior_stylist');
+  String get phoneMustBe10Digits => translate('phone_must_be_10_digits');
+  String get pleaseEnterValidEmail => translate('please_enter_valid_email');
+  String get pleaseFillRequiredFields => translate('please_fill_required_fields');
+  String get staffInvitedSuccessfully => translate('staff_invited_successfully');
+  String get inviteStaff => translate('invite_staff');
+
   // ── Gallery Screen ──
   String get galleryCuratedPortfolio => translate('gallery_curated_portfolio');
   String get galleryArchiveOfExcellence => translate('gallery_archive_of_excellence');

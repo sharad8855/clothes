@@ -141,6 +141,21 @@ extension LocalizationExtension on BuildContext {
   String get invPrefix => _l10n?.invPrefix ?? 'INV:';
   String get totalCountLabel => _l10n?.totalCountLabel ?? '{count} Total';
 
+  // ── Add Staff Screen ──
+  String get addStaffTitle => _l10n?.addStaffTitle ?? 'Add Staff';
+  String get basicInformation => _l10n?.basicInformation ?? 'Basic Information';
+  String get fullNameRequired => _l10n?.fullNameRequired ?? 'FULL NAME *';
+  String get phoneNumberRequired => _l10n?.phoneNumberRequired ?? 'PHONE NUMBER *';
+  String get emailOptional => _l10n?.emailOptional ?? 'EMAIL (OPTIONAL)';
+  String get designationRequired => _l10n?.designationRequired ?? 'DESIGNATION *';
+  String get egJohnDoe => _l10n?.egJohnDoe ?? 'e.g. John Doe';
+  String get egSeniorStylist => _l10n?.egSeniorStylist ?? 'e.g. Senior Stylist';
+  String get phoneMustBe10Digits => _l10n?.phoneMustBe10Digits ?? 'Phone number must be exactly 10 digits';
+  String get pleaseEnterValidEmail => _l10n?.pleaseEnterValidEmail ?? 'Please enter a valid email address';
+  String get pleaseFillRequiredFields => _l10n?.pleaseFillRequiredFields ?? 'Please fill all required fields';
+  String get staffInvitedSuccessfully => _l10n?.staffInvitedSuccessfully ?? 'Staff invited successfully';
+  String get inviteStaff => _l10n?.inviteStaff ?? 'Invite Staff';
+
   // ── Gallery Screen ──
   String get galleryCuratedPortfolio => _l10n?.galleryCuratedPortfolio ?? 'CURATED PORTFOLIO';
   String get galleryArchiveOfExcellence => _l10n?.galleryArchiveOfExcellence ?? 'Archive of\nExcellence';

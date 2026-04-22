@@ -170,4 +170,19 @@ const Map<String, String> englishStrings = {
   'created_by': 'Created by:',
   'inv_prefix': 'INV:',
   'total_count_label': '{count} Total',
+
+  // ── Add Staff Screen ──
+  'add_staff_title': 'Add Staff',
+  'basic_information': 'Basic Information',
+  'full_name_required': 'FULL NAME *',
+  'phone_number_required': 'PHONE NUMBER *',
+  'email_optional': 'EMAIL (OPTIONAL)',
+  'designation_required': 'DESIGNATION *',
+  'eg_john_doe': 'e.g. John Doe',
+  'eg_senior_stylist': 'e.g. Senior Stylist',
+  'phone_must_be_10_digits': 'Phone number must be exactly 10 digits',
+  'please_enter_valid_email': 'Please enter a valid email address',
+  'please_fill_required_fields': 'Please fill all required fields',
+  'staff_invited_successfully': 'Staff invited successfully',
+  'invite_staff': 'Invite Staff',
 };

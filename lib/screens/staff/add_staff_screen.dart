@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/auth_service.dart';
+import '../../utils/localization/localization_extension.dart';
 
 class AddStaffScreen extends StatefulWidget {
   const AddStaffScreen({super.key});
@@ -42,7 +43,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
     final digits = _phoneController.text.replaceAll(RegExp(r'[^0-9]'), '');
     setState(() {
       if (digits.length > 10) {
-        _phoneError = 'Phone number must be exactly 10 digits';
+        _phoneError = context.phoneMustBe10Digits;
       } else {
         _phoneError = null;
       }
@@ -53,7 +54,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
     final email = _emailController.text.trim();
     setState(() {
       if (email.isNotEmpty && !RegExp(r'^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$').hasMatch(email)) {
-        _emailError = 'Please enter a valid email address';
+        _emailError = context.pleaseEnterValidEmail;
       } else {
         _emailError = null;
       }
@@ -68,7 +69,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
 
     if (name.isEmpty || phone.isEmpty || jobTitle.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all required fields')),
+        SnackBar(content: Text(context.pleaseFillRequiredFields)),
       );
       return;
     }
@@ -76,13 +77,13 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
     // Validate phone number
     final digits = phone.replaceAll(RegExp(r'[^0-9]'), '');
     if (digits.length != 10) {
-      setState(() => _phoneError = 'Phone number must be exactly 10 digits');
+      setState(() => _phoneError = context.phoneMustBe10Digits);
       return;
     }
 
     // Validate email
     if (email.isNotEmpty && !RegExp(r'^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$').hasMatch(email)) {
-      setState(() => _emailError = 'Please enter a valid email address');
+      setState(() => _emailError = context.pleaseEnterValidEmail);
       return;
     }
 
@@ -98,7 +99,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Staff invited successfully')),
+          SnackBar(content: Text(context.staffInvitedSuccessfully)),
         );
         Navigator.pop(context);
       }
@@ -154,7 +155,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
       ),
       centerTitle: true,
       title: Text(
-        'Add Staff',
+        context.addStaffTitle,
         style: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w700,
@@ -193,7 +194,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Basic Information',
+                context.basicInformation,
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -203,10 +204,10 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
             ],
           ),
           const SizedBox(height: 24),
-          _buildTextFieldLabel('FULL NAME *'),
-          _buildCustomTextField('e.g. John Doe', controller: _nameController),
+          _buildTextFieldLabel(context.fullNameRequired),
+          _buildCustomTextField(context.egJohnDoe, controller: _nameController),
           const SizedBox(height: 16),
-          _buildTextFieldLabel('PHONE NUMBER *'),
+          _buildTextFieldLabel(context.phoneNumberRequired),
           _buildCustomTextField(
             '',
             controller: _phoneController,
@@ -215,7 +216,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
             errorText: _phoneError,
           ),
           const SizedBox(height: 16),
-          _buildTextFieldLabel('EMAIL (OPTIONAL)'),
+          _buildTextFieldLabel(context.emailOptional),
           _buildCustomTextField(
             '',
             controller: _emailController,
@@ -223,8 +224,8 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
             errorText: _emailError,
           ),
           const SizedBox(height: 16),
-          _buildTextFieldLabel('DESIGNATION *'),
-          _buildCustomTextField('e.g. Senior Stylist', controller: _jobTitleController),
+          _buildTextFieldLabel(context.designationRequired),
+          _buildCustomTextField(context.egSeniorStylist, controller: _jobTitleController),
         ],
       ),
     );
@@ -332,7 +333,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: Text(
-                'Cancel',
+                context.cancelButton,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -362,7 +363,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                     child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                   )
                 : Text(
-                    'Invite Staff',
+                    context.inviteStaff,
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,

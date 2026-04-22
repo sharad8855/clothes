@@ -170,4 +170,19 @@ const Map<String, String> marathiStrings = {
   'created_by': 'तयार केले:',
   'inv_prefix': 'INV:',
   'total_count_label': '{count} एकूण',
+
+  // ── Add Staff Screen ──
+  'add_staff_title': 'कर्मचारी जोडा',
+  'basic_information': 'मूलभूत माहिती',
+  'full_name_required': 'पूर्ण नाव *',
+  'phone_number_required': 'फोन नंबर *',
+  'email_optional': 'ईमेल (पर्यायी)',
+  'designation_required': 'पद *',
+  'eg_john_doe': 'उदा. जॉन डो',
+  'eg_senior_stylist': 'उदा. सीनियर स्टायलिस्ट',
+  'phone_must_be_10_digits': 'फोन नंबर बरोबर 10 अंकी असणे आवश्यक आहे',
+  'please_enter_valid_email': 'कृपया वैध ईमेल पत्ता प्रविष्ट करा',
+  'please_fill_required_fields': 'कृपया सर्व आवश्यक फील्ड भरा',
+  'staff_invited_successfully': 'कर्मचारी यशस्वीरित्या आमंत्रित केला',
+  'invite_staff': 'कर्मचारी आमंत्रित करा',
 };
