@@ -812,6 +812,38 @@ class AppLocalizations {
   String get changeText => translate('change');
   String get proceedToOrder => translate('proceed_to_order');
   String get noCustomersFound => translate('no_customers_found');
+
+  // ── Staff Order Screen ──
+  String get productionText => translate('production_text');
+  String get stageText => translate('stage_text');
+  String get inProgressCaps => translate('in_progress_caps');
+  String get confirmOrder => translate('confirm_order');
+  String get stepMeasurement => translate('step_measurement');
+  String get stepFabric => translate('step_fabric');
+  String get stepCutting => translate('step_cutting');
+  String get stepStitching => translate('step_stitching');
+  String get stepFitting => translate('step_fitting');
+  String get stepReady => translate('step_ready');
+  String get workshopComments => translate('workshop_comments');
+  String get workshopCommentsHint => translate('workshop_comments_hint');
+  String get chipFabricArrived => translate('chip_fabric_arrived');
+  String get chipPatternCompleted => translate('chip_pattern_completed');
+  String get chipMinorDelay => translate('chip_minor_delay');
+  String get updateNotifyManager => translate('update_notify_manager');
+  String get notificationsSentNotice => translate('notifications_sent_notice');
+  String get premiumMemberGold => translate('premium_member_gold');
+  String get deadlineLabel => translate('deadline_label');
+  String get fabricLabel => translate('fabric_label');
+  String get liningLabel => translate('lining_label');
+  String get viewFullMeasurement => translate('view_full_measurement');
+  String get aiWorkshopSuggest => translate('ai_workshop_suggest');
+  String get aiSuggestDesc => translate('ai_suggest_desc');
+  String get acceptAdjustment => translate('accept_adjustment');
+  String get staffOrderHistory => translate('staff_order_history');
+  String get staffNavTasks => translate('staff_nav_tasks');
+  String get staffNavOrders => translate('staff_nav_orders');
+  String get staffNavInventory => translate('staff_nav_inventory');
+  String get staffNavChat => translate('staff_nav_chat');
 }
 
 class _AppLocalizationsDelegate

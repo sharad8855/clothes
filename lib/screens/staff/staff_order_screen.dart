@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import '../../utils/localization/localization_extension.dart';
 
 class StaffOrderScreen extends StatefulWidget {
   const StaffOrderScreen({Key? key}) : super(key: key);
@@ -128,21 +129,21 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Production',
-                      style: TextStyle(
+                      context.productionText,
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF0F1741),
                       ),
                     ),
                     Text(
-                      'Stage',
-                      style: TextStyle(
+                      context.stageText,
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF0F1741),
@@ -161,9 +162,9 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                   color: const Color(0xFFE0E7FF),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
-                  'IN PROGRESS',
-                  style: TextStyle(
+                child: Text(
+                  context.inProgressCaps,
+                  style: const TextStyle(
                     color: Color(0xFF3730A3),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -196,9 +197,9 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text(
-                      'Confirm Order',
-                      style: TextStyle(
+                  : Text(
+                      context.confirmOrder,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -239,20 +240,20 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildStep(label: 'Measurement', state: 2, icon: Icons.check),
-                  _buildStep(label: 'Fabric', state: 2, icon: Icons.check),
+                  _buildStep(label: context.stepMeasurement, state: 2, icon: Icons.check),
+                  _buildStep(label: context.stepFabric, state: 2, icon: Icons.check),
                   _buildStep(
-                    label: 'Cutting',
+                    label: context.stepCutting,
                     state: 1,
                     icon: Icons.content_cut,
                   ),
                   _buildStep(
-                    label: 'Stitching',
+                    label: context.stepStitching,
                     state: 0,
                     icon: Icons.linear_scale,
                   ),
-                  _buildStep(label: 'Fitting', state: 0, icon: Icons.person),
-                  _buildStep(label: 'Ready', state: 0, icon: Icons.all_inbox),
+                  _buildStep(label: context.stepFitting, state: 0, icon: Icons.person),
+                  _buildStep(label: context.stepReady, state: 0, icon: Icons.all_inbox),
                 ],
               ),
             ],
@@ -341,13 +342,13 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            children: const [
-              Icon(Icons.notes, color: Color(0xFF8B5CF6)),
-              SizedBox(width: 8),
+            children: [
+              const Icon(Icons.notes, color: Color(0xFF8B5CF6)),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Workshop Comments',
-                  style: TextStyle(
+                  context.workshopComments,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF0F1741),
@@ -363,12 +364,11 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
               color: const Color(0xFFF1F5F9),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const TextField(
+            child: TextField(
               maxLines: 4,
               decoration: InputDecoration(
-                hintText:
-                    'Describe progress, fabric nuances, or adjustments for the stitching team...',
-                hintStyle: TextStyle(color: Color(0xFF9E9E9E), fontSize: 13),
+                hintText: context.workshopCommentsHint,
+                hintStyle: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 13),
                 border: InputBorder.none,
               ),
             ),
@@ -378,9 +378,9 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _buildChip('Fabric arrived'),
-              _buildChip('Pattern completed'),
-              _buildChip('Minor delay: Thread supply'),
+              _buildChip(context.chipFabricArrived),
+              _buildChip(context.chipPatternCompleted),
+              _buildChip(context.chipMinorDelay),
             ],
           ),
           const SizedBox(height: 24),
@@ -395,25 +395,25 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Text(
-                  'Update & Notify Manager',
-                  style: TextStyle(
+                  context.updateNotifyManager,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(width: 8),
-                Icon(Icons.send, color: Colors.white, size: 16),
+                const SizedBox(width: 8),
+                const Icon(Icons.send, color: Colors.white, size: 16),
               ],
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Notifications will be sent to the Lead Manager\nand the Client via the Royal Stitch App.',
+          Text(
+            context.notificationsSentNotice,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 10,
               fontStyle: FontStyle.italic,
               color: Color(0xFF9E9E9E),
@@ -467,11 +467,11 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                 ),
               ),
               const SizedBox(width: 16),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Arthur Sterling',
                       style: TextStyle(
                         fontSize: 16,
@@ -479,10 +479,10 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                         color: Color(0xFF0F1741),
                       ),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
-                      'Premium Member • Gold Class',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF9E9E9E)),
+                      context.premiumMemberGold,
+                      style: const TextStyle(fontSize: 12, color: Color(0xFF9E9E9E)),
                     ),
                   ],
                 ),
@@ -491,19 +491,19 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
           ),
           const SizedBox(height: 24),
           _buildInfoRow(
-            'Deadline',
+            context.deadlineLabel,
             'Oct 24, 2023 (5 days left)',
             const Color(0xFFD32F2F),
           ),
           const SizedBox(height: 16),
           _buildInfoRow(
-            'Fabric',
+            context.fabricLabel,
             'Loro Piana Navy Silk-Wool',
             const Color(0xFF0F1741),
           ),
           const SizedBox(height: 16),
           _buildInfoRow(
-            'Lining',
+            context.liningLabel,
             'Royal Purple Bemberg',
             const Color(0xFF0F1741),
           ),
@@ -517,9 +517,9 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                 size: 16,
                 color: Color(0xFF0F1741),
               ),
-              label: const Text(
-                'View Full Measurement Profile',
-                style: TextStyle(
+              label: Text(
+                context.viewFullMeasurement,
+                style: const TextStyle(
                   color: Color(0xFF0F1741),
                   fontWeight: FontWeight.bold,
                 ),
@@ -584,7 +584,7 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'AI WORKSHOP SUGGEST',
+                  context.aiWorkshopSuggest,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 11,
@@ -596,9 +596,9 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Based on the fabric weight (320g), we recommend a 48-hour hang-time post-cutting to ensure drape stability before first stitching.',
-            style: TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
+          Text(
+            context.aiSuggestDesc,
+            style: const TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
           ),
           const SizedBox(height: 20),
           ElevatedButton(
@@ -611,9 +611,9 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text(
-              'Accept Adjustment',
-              style: TextStyle(
+            child: Text(
+              context.acceptAdjustment,
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
               ),
@@ -634,9 +634,9 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Order History',
-            style: TextStyle(
+          Text(
+            context.staffOrderHistory,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Color(0xFF0F1741),
@@ -719,22 +719,22 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
         children: [
           _buildNavItem(
             icon: Icons.assignment,
-            label: 'TASKS',
+            label: context.staffNavTasks,
             isActive: false,
           ),
           _buildNavItem(
             icon: Icons.shopping_bag,
-            label: 'ORDERS',
+            label: context.staffNavOrders,
             isActive: true,
           ),
           _buildNavItem(
             icon: Icons.all_inbox,
-            label: 'INVENTORY',
+            label: context.staffNavInventory,
             isActive: false,
           ),
           _buildNavItem(
             icon: Icons.chat_bubble,
-            label: 'CHAT',
+            label: context.staffNavChat,
             isActive: false,
           ),
         ],
