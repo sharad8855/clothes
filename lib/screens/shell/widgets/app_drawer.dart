@@ -86,7 +86,7 @@ class AppDrawer extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  user?.fullName ?? 'Loading...',
+                                  user?.fullName ?? context.drawerLoading,
                                   style: GoogleFonts.inter(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w800,
@@ -107,7 +107,7 @@ class AppDrawer extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  user?.status.toUpperCase() ?? 'PREMIUM TIER',
+                                  user?.status.toUpperCase() ?? context.drawerPremiumTier,
                                   style: GoogleFonts.inter(
                                     fontSize: 9,
                                     fontWeight: FontWeight.w800,
@@ -142,35 +142,35 @@ class AppDrawer extends StatelessWidget {
                   _buildNavItem(
                     context,
                     icon: Icons.history_rounded,
-                    title: 'Order History',
+                    title: context.drawerOrderHistory,
                     isSelected: false, // Push overlay, not a tab
                     onTap: () => _handleRoute(context, 1),
                   ),
                   _buildNavItem(
                     context,
                     icon: Icons.people_rounded,
-                    title: 'Customers',
+                    title: context.drawerCustomers,
                     isSelected: currentIndex == 2,
                     onTap: () => _handleRoute(context, 2),
                   ),
                   _buildNavItem(
                     context,
                     icon: Icons.assignment_ind_rounded,
-                    title: 'Staff',
+                    title: context.drawerStaff,
                     isSelected: currentIndex == 3,
                     onTap: () => _handleRoute(context, 3),
                   ),
                   _buildNavItem(
                     context,
                     icon: Icons.photo_library_rounded,
-                    title: 'Gallery',
+                    title: context.drawerGallery,
                     isSelected: currentIndex == 4,
                     onTap: () => _handleRoute(context, 4),
                   ),
                   _buildNavItem(
                     context,
                     icon: Icons.analytics_rounded,
-                    title: 'Analytics',
+                    title: context.drawerAnalytics,
                     isSelected: false,
                     onTap: () => _handleRoute(context, 5),
                   ),
@@ -191,7 +191,7 @@ class AppDrawer extends StatelessWidget {
               child: ListTile(
                 leading: const Icon(Icons.logout_rounded, color: Color(0xFFDC2626)),
                 title: Text(
-                  'Logout',
+                  context.drawerLogout,
                   style: GoogleFonts.inter(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -302,7 +302,7 @@ class AppDrawer extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      'Language',
+                      context.drawerLanguage,
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,

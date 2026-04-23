@@ -185,4 +185,21 @@ const Map<String, String> englishStrings = {
   'please_fill_required_fields': 'Please fill all required fields',
   'staff_invited_successfully': 'Staff invited successfully',
   'invite_staff': 'Invite Staff',
+
+  // ── Shell Navigation & Drawer ──
+  'drawer_order_history': 'Order History',
+  'drawer_customers': 'Customers',
+  'drawer_staff': 'Staff',
+  'drawer_gallery': 'Gallery',
+  'drawer_analytics': 'Analytics',
+  'drawer_language': 'Language',
+  'drawer_logout': 'Logout',
+  'drawer_loading': 'Loading...',
+  'drawer_premium_tier': 'PREMIUM TIER',
+  
+  'nav_home': 'HOME',
+  'nav_orders': 'ORDERS',
+  'nav_customers': 'CUSTOMERS',
+  'nav_staff': 'STAFF',
+  'nav_gallery': 'GALLERY',
 };

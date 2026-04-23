@@ -781,6 +781,23 @@ class AppLocalizations {
   String get lowStockUpper => translate('low_stock_upper');
   String get clientLabel => translate('client_label');
   String get dueLabel => translate('due_label');
+
+  // ── Shell Navigation & Drawer ──
+  String get drawerOrderHistory => translate('drawer_order_history');
+  String get drawerCustomers => translate('drawer_customers');
+  String get drawerStaff => translate('drawer_staff');
+  String get drawerGallery => translate('drawer_gallery');
+  String get drawerAnalytics => translate('drawer_analytics');
+  String get drawerLanguage => translate('drawer_language');
+  String get drawerLogout => translate('drawer_logout');
+  String get drawerLoading => translate('drawer_loading');
+  String get drawerPremiumTier => translate('drawer_premium_tier');
+  
+  String get navHome => translate('nav_home');
+  String get navOrders => translate('nav_orders');
+  String get navCustomers => translate('nav_customers');
+  String get navStaff => translate('nav_staff');
+  String get navGallery => translate('nav_gallery');
 }
 
 class _AppLocalizationsDelegate

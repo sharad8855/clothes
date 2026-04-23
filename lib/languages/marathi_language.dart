@@ -185,4 +185,21 @@ const Map<String, String> marathiStrings = {
   'please_fill_required_fields': 'कृपया सर्व आवश्यक फील्ड भरा',
   'staff_invited_successfully': 'कर्मचारी यशस्वीरित्या आमंत्रित केला',
   'invite_staff': 'कर्मचारी आमंत्रित करा',
+
+  // ── Shell Navigation & Drawer ──
+  'drawer_order_history': 'ऑर्डर इतिहास',
+  'drawer_customers': 'ग्राहक',
+  'drawer_staff': 'कर्मचारी',
+  'drawer_gallery': 'गॅलरी',
+  'drawer_analytics': 'विश्लेषण',
+  'drawer_language': 'भाषा',
+  'drawer_logout': 'लॉग आउट',
+  'drawer_loading': 'लोड होत आहे...',
+  'drawer_premium_tier': 'प्रीमियम टियर',
+  
+  'nav_home': 'होम',
+  'nav_orders': 'ऑर्डर्स',
+  'nav_customers': 'ग्राहक',
+  'nav_staff': 'कर्मचारी',
+  'nav_gallery': 'गॅलरी',
 };

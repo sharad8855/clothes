@@ -13,6 +13,7 @@ import '../gallery/gallery_screen.dart';
 import '../../providers/business_provider.dart';
 import '../../providers/order_management_provider.dart';
 import '../../providers/clients_provider.dart';
+import '../../utils/localization/localization_extension.dart';
 
 /// MainShell is the single Scaffold that owns the app's bottom navigation bar.
 /// All top-level screens (Home, Orders, Customers, Staff, Profile) render
@@ -87,31 +88,31 @@ class _ShellBottomNav extends StatelessWidget {
 
   const _ShellBottomNav({required this.currentIndex, required this.onTap});
 
-  static const _items = [
+  List<_NavDef> _items(BuildContext context) => [
     _NavDef(
       icon: Icons.dashboard_rounded,
       outlined: Icons.dashboard_outlined,
-      label: 'HOME',
+      label: context.navHome,
     ),
     _NavDef(
       icon: Icons.receipt_long_rounded,
       outlined: Icons.receipt_long_outlined,
-      label: 'ORDERS',
+      label: context.navOrders,
     ),
     _NavDef(
       icon: Icons.people_rounded,
       outlined: Icons.people_outline_rounded,
-      label: 'CUSTOMERS',
+      label: context.navCustomers,
     ),
     _NavDef(
       icon: Icons.person_pin_circle_rounded,
       outlined: Icons.person_pin_circle_outlined,
-      label: 'STAFF',
+      label: context.navStaff,
     ),
     _NavDef(
       icon: Icons.photo_library_rounded,
       outlined: Icons.photo_library_outlined,
-      label: 'GALLERY',
+      label: context.navGallery,
     ),
   ];
 
@@ -134,8 +135,8 @@ class _ShellBottomNav extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(_items.length, (i) {
-              final item = _items[i];
+            children: List.generate(_items(context).length, (i) {
+              final item = _items(context)[i];
               final isSelected = i == currentIndex;
               return GestureDetector(
                 onTap: () => onTap(i),
