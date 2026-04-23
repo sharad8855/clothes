@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
+import '../../models/business_model.dart';
 import '../../providers/business_provider.dart';
 import '../shell/main_shell.dart';
 import 'business_creation_step1.dart';
@@ -10,10 +11,12 @@ class BusinessSelectionScreen extends StatefulWidget {
   const BusinessSelectionScreen({super.key});
 
   @override
-  State<BusinessSelectionScreen> createState() => _BusinessSelectionScreenState();
+  State<BusinessSelectionScreen> createState() =>
+      _BusinessSelectionScreenState();
 }
 
-class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with SingleTickerProviderStateMixin {
+class _BusinessSelectionScreenState extends State<BusinessSelectionScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
 
   @override
@@ -23,9 +26,11 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     )..forward();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<BusinessProvider>().fetchUserBusinesses();
+      if (mounted) {
+        context.read<BusinessProvider>().fetchUserBusinesses();
+      }
     });
   }
 
@@ -35,7 +40,7 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
     super.dispose();
   }
 
-  void _onBusinessSelected(dynamic business) async {
+  Future<void> _onBusinessSelected(BusinessModel business) async {
     await context.read<BusinessProvider>().handleSelectBusiness(business);
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
@@ -46,10 +51,10 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB), // Matching Splash background
+      backgroundColor: const Color(0xFFF9FAFB),
       body: Stack(
         children: [
-          // Background architectural lines
+          // Background pattern
           Positioned.fill(
             child: Opacity(
               opacity: 0.5,
@@ -58,7 +63,7 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
               ),
             ),
           ),
-          
+
           SafeArea(
             child: Consumer<BusinessProvider>(
               builder: (context, provider, _) {
@@ -69,6 +74,8 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
                       _buildAppBar(provider),
+                      if (provider.errorMessage != null)
+                        _buildErrorBannerSliver(provider.errorMessage!),
                       if (provider.isLoading && provider.businesses.isEmpty)
                         const SliverFillRemaining(
                           child: Center(child: CircularProgressIndicator()),
@@ -89,6 +96,7 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
     );
   }
 
+  // ── App Bar ────────────────────────────────────────────────────────────────
   Widget _buildAppBar(BusinessProvider provider) {
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(24, 40, 24, 20),
@@ -142,9 +150,11 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
     );
   }
 
+  // ── Sync Icon ──────────────────────────────────────────────────────────────
   Widget _buildSyncIcon(BusinessProvider provider) {
     return InkWell(
-      onTap: provider.isLoading ? null : () => provider.fetchUserBusinesses(),
+      onTap:
+          provider.isLoading ? null : () => provider.fetchUserBusinesses(),
       borderRadius: BorderRadius.circular(50),
       child: Container(
         padding: const EdgeInsets.all(10),
@@ -168,6 +178,44 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
     );
   }
 
+  // ── Error Banner ───────────────────────────────────────────────────────────
+  Widget _buildErrorBannerSliver(String message) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFEF2F2),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFFCA5A5)),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                color: Color(0xFFEF4444),
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  message,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF991B1B),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Business List ──────────────────────────────────────────────────────────
   Widget _buildBusinessListSliver(BusinessProvider provider) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -175,8 +223,9 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
         delegate: SliverChildBuilderDelegate(
           (context, index) {
             final business = provider.businesses[index];
-            final isSelected = provider.selectedBusiness?.id == business.id;
-            
+            final isSelected =
+                provider.selectedBusiness?.id == business.id;
+
             return AnimatedBuilder(
               animation: _animationController,
               builder: (context, child) {
@@ -184,7 +233,6 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
                 final animationValue = Curves.easeOutCubic.transform(
                   (_animationController.value - delay).clamp(0.0, 1.0),
                 );
-                
                 return Transform.translate(
                   offset: Offset(0, 50 * (1 - animationValue)),
                   child: Opacity(
@@ -201,9 +249,12 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
     );
   }
 
-  Widget _buildBusinessCard(dynamic business, bool isSelected) {
+  // ── Business Card ──────────────────────────────────────────────────────────
+  Widget _buildBusinessCard(BusinessModel business, bool isSelected) {
     return GestureDetector(
-      onTap: () => _onBusinessSelected(business),
+      onTap: () {
+        _onBusinessSelected(business);
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 20),
         decoration: BoxDecoration(
@@ -225,34 +276,46 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
           borderRadius: BorderRadius.circular(24),
           child: Stack(
             children: [
-              // Subtle background accent
               Positioned(
                 right: -20,
                 top: -20,
                 child: Opacity(
                   opacity: 0.03,
-                  child: Icon(Icons.storefront_rounded, size: 120, color: AppColors.primary),
+                  child: Icon(
+                    Icons.storefront_rounded,
+                    size: 120,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
-              
               Padding(
                 padding: const EdgeInsets.all(24),
                 child: Row(
                   children: [
+                    // Business Avatar
                     Container(
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
+                          colors: [
+                            AppColors.primary,
+                            AppColors.primary.withValues(alpha: 0.8),
+                          ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(18),
                       ),
-                      child: const Icon(Icons.business_center_rounded, color: Colors.white, size: 28),
+                      child: const Icon(
+                        Icons.business_center_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
                     ),
                     const SizedBox(width: 20),
+
+                    // Business Info — from API
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,15 +332,23 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              const Icon(Icons.location_on_rounded, size: 14, color: AppColors.textSecondary),
+                              const Icon(
+                                Icons.location_on_rounded,
+                                size: 14,
+                                color: AppColors.textSecondary,
+                              ),
                               const SizedBox(width: 4),
-                              Text(
-                                (business.contactInfo?.city ?? 'New Delhi').toUpperCase(),
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textSecondary,
-                                  letterSpacing: 1.0,
+                              Expanded(
+                                child: Text(
+                                  (business.contactInfo?.city ?? '')
+                                      .toUpperCase(),
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textSecondary,
+                                    letterSpacing: 1.0,
+                                  ),
                                 ),
                               ),
                             ],
@@ -285,10 +356,20 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
                         ],
                       ),
                     ),
+
+                    // Selection indicator
                     if (isSelected)
-                      const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 28)
+                      const Icon(
+                        Icons.check_circle_rounded,
+                        color: AppColors.primary,
+                        size: 28,
+                      )
                     else
-                      const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFFE5E7EB), size: 18),
+                      const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: Color(0xFFE5E7EB),
+                        size: 18,
+                      ),
                   ],
                 ),
               ),
@@ -299,11 +380,12 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
     );
   }
 
+  // ── Empty State ────────────────────────────────────────────────────────────
   Widget _buildEmptyStateSliver() {
     return SliverFillRemaining(
       hasScrollBody: false,
       child: Padding(
-        padding: const EdgeInsets.all(48.0),
+        padding: const EdgeInsets.all(48),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -320,7 +402,11 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
                   ),
                 ],
               ),
-              child: const Icon(Icons.architecture_rounded, size: 80, color: AppColors.primary),
+              child: const Icon(
+                Icons.architecture_rounded,
+                size: 80,
+                color: AppColors.primary,
+              ),
             ),
             const SizedBox(height: 40),
             Text(
@@ -349,6 +435,7 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
     );
   }
 
+  // ── FAB — NEW ATELIER (unchanged) ──────────────────────────────────────────
   Widget _buildFab() {
     return FloatingActionButton.extended(
       onPressed: () {
@@ -357,7 +444,7 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
           MaterialPageRoute(builder: (_) => const BusinessStep1Screen()),
         );
       },
-      backgroundColor: const Color(0xFF1A1D2E), // Premium Contrast
+      backgroundColor: const Color(0xFF1A1D2E),
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       icon: const Icon(Icons.add_rounded, color: Colors.white),
@@ -374,6 +461,7 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
   }
 }
 
+// ── Background Painter ─────────────────────────────────────────────────────
 class _ArchitecturalPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -383,11 +471,18 @@ class _ArchitecturalPatternPainter extends CustomPainter {
 
     const double spacing = 48;
     for (double i = 0; i < size.width + spacing; i += spacing) {
-      canvas.drawLine(Offset(i, 0), Offset(i - size.height * 0.5, size.height), paint);
+      canvas.drawLine(
+        Offset(i, 0),
+        Offset(i - size.height * 0.5, size.height),
+        paint,
+      );
     }
-    
     for (double i = -size.height; i < size.width; i += spacing * 1.5) {
-      canvas.drawLine(Offset(i, 0), Offset(i + size.width, size.width * 0.5), paint);
+      canvas.drawLine(
+        Offset(i, 0),
+        Offset(i + size.width, size.width * 0.5),
+        paint,
+      );
     }
   }
 
