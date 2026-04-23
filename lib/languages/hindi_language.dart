@@ -185,4 +185,21 @@ const Map<String, String> hindiStrings = {
   'please_fill_required_fields': 'कृपया सभी आवश्यक फ़ील्ड भरें',
   'staff_invited_successfully': 'कर्मचारी को सफलतापूर्वक आमंत्रित किया गया',
   'invite_staff': 'कर्मचारी आमंत्रित करें',
+
+  // ── Shell Navigation & Drawer ──
+  'drawer_order_history': 'ऑर्डर इतिहास',
+  'drawer_customers': 'ग्राहक',
+  'drawer_staff': 'कर्मचारी',
+  'drawer_gallery': 'गैलरी',
+  'drawer_analytics': 'एनालिटिक्स',
+  'drawer_language': 'भाषा',
+  'drawer_logout': 'लॉग आउट',
+  'drawer_loading': 'लोड हो रहा है...',
+  'drawer_premium_tier': 'प्रीमियम टियर',
+  
+  'nav_home': 'होम',
+  'nav_orders': 'ऑर्डर्स',
+  'nav_customers': 'ग्राहक',
+  'nav_staff': 'कर्मचारी',
+  'nav_gallery': 'गैलरी',
 };

@@ -195,4 +195,21 @@ extension LocalizationExtension on BuildContext {
   String get lowStockUpper => _l10n?.lowStockUpper ?? 'LOW STOCK';
   String get clientLabel => _l10n?.clientLabel ?? 'Client: ';
   String get dueLabel => _l10n?.dueLabel ?? 'Due: ';
+
+  // ── Shell Navigation & Drawer ──
+  String get drawerOrderHistory => _l10n?.drawerOrderHistory ?? 'Order History';
+  String get drawerCustomers => _l10n?.drawerCustomers ?? 'Customers';
+  String get drawerStaff => _l10n?.drawerStaff ?? 'Staff';
+  String get drawerGallery => _l10n?.drawerGallery ?? 'Gallery';
+  String get drawerAnalytics => _l10n?.drawerAnalytics ?? 'Analytics';
+  String get drawerLanguage => _l10n?.drawerLanguage ?? 'Language';
+  String get drawerLogout => _l10n?.drawerLogout ?? 'Logout';
+  String get drawerLoading => _l10n?.drawerLoading ?? 'Loading...';
+  String get drawerPremiumTier => _l10n?.drawerPremiumTier ?? 'PREMIUM TIER';
+
+  String get navHome => _l10n?.navHome ?? 'HOME';
+  String get navOrders => _l10n?.navOrders ?? 'ORDERS';
+  String get navCustomers => _l10n?.navCustomers ?? 'CUSTOMERS';
+  String get navStaff => _l10n?.navStaff ?? 'STAFF';
+  String get navGallery => _l10n?.navGallery ?? 'GALLERY';
 }
