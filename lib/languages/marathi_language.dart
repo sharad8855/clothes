@@ -202,4 +202,18 @@ const Map<String, String> marathiStrings = {
   'nav_customers': 'ग्राहक',
   'nav_staff': 'कर्मचारी',
   'nav_gallery': 'गॅलरी',
+
+  // ── Select Customer Screen ──
+  'select_customer_title': 'ग्राहक निवडा',
+  'step_1_order_flow': 'पायरी 1 — ऑर्डर प्रवाह',
+  'who_is_this_order_for': 'ही ऑर्डर कोणासाठी आहे?',
+  'choose_existing_customer_desc': 'त्यांची बिस्पोक ऑर्डर तयार करण्यासाठी\nविद्यमान ग्राहक निवडा.',
+  'search_by_name_or_phone': 'नाव किंवा फोनद्वारे शोधा...',
+  'add_new_customer': 'नवीन ग्राहक जोडा',
+  'create_profile_first_time': 'पहिल्यांदा आलेल्या क्लायंटसाठी प्रोफाइल तयार करा',
+  'all_customers': 'सर्व ग्राहक',
+  'selected_for_this_order': 'या ऑर्डरसाठी निवडले',
+  'change': 'बदला',
+  'proceed_to_order': 'ऑर्डरकडे जा',
+  'no_customers_found': 'कोणतेही ग्राहक आढळले नाहीत',
 };

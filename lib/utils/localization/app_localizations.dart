@@ -798,6 +798,20 @@ class AppLocalizations {
   String get navCustomers => translate('nav_customers');
   String get navStaff => translate('nav_staff');
   String get navGallery => translate('nav_gallery');
+
+  // ── Select Customer Screen ──
+  String get selectCustomerTitle => translate('select_customer_title');
+  String get step1OrderFlow => translate('step_1_order_flow');
+  String get whoIsThisOrderFor => translate('who_is_this_order_for');
+  String get chooseExistingCustomerDesc => translate('choose_existing_customer_desc');
+  String get searchByNameOrPhone => translate('search_by_name_or_phone');
+  String get addNewCustomer => translate('add_new_customer');
+  String get createProfileFirstTime => translate('create_profile_first_time');
+  String get allCustomers => translate('all_customers');
+  String get selectedForThisOrder => translate('selected_for_this_order');
+  String get changeText => translate('change');
+  String get proceedToOrder => translate('proceed_to_order');
+  String get noCustomersFound => translate('no_customers_found');
 }
 
 class _AppLocalizationsDelegate

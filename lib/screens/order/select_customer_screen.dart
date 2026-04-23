@@ -8,6 +8,7 @@ import '../../providers/package_provider.dart';
 import '../../models/customer_list_response.dart';
 import '../package/package_screen.dart';
 import '../customer/add_customer_screen.dart';
+import '../../utils/localization/localization_extension.dart';
 
 class SelectCustomerScreen extends StatefulWidget {
   const SelectCustomerScreen({super.key});
@@ -63,7 +64,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
               const SizedBox(height: 8),
               _buildAddCustomerButton(context),
               const SizedBox(height: 8),
-              _buildSectionLabel('All Customers', provider.totalCount),
+              _buildSectionLabel(context.allCustomers, provider.totalCount),
               Expanded(
                 child: provider.isLoading && customers.isEmpty
                     ? const Center(child: CircularProgressIndicator())
@@ -91,7 +92,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
       title: Column(
         children: [
           Text(
-            'Select Customer',
+            context.selectCustomerTitle,
             style: GoogleFonts.inter(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -99,7 +100,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
             ),
           ),
           Text(
-            'Step 1 — Order Flow',
+            context.step1OrderFlow,
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w500,
@@ -118,7 +119,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Who is this order for?',
+            context.whoIsThisOrderFor,
             style: GoogleFonts.inter(
               fontSize: 22,
               fontWeight: FontWeight.w800,
@@ -127,7 +128,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Choose an existing customer to begin creating\ntheir bespoke order.',
+            context.chooseExistingCustomerDesc,
             style: GoogleFonts.inter(
               fontSize: 13,
               color: AppColors.textSecondary,
@@ -164,7 +165,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
             color: AppColors.textPrimary,
           ),
           decoration: InputDecoration(
-            hintText: 'Search by name or phone...',
+            hintText: context.searchByNameOrPhone,
             prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textHint, size: 20),
             suffixIcon: provider.searchQuery.isNotEmpty
                 ? IconButton(
@@ -229,7 +230,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
             const Icon(Icons.search_off_rounded, size: 48, color: AppColors.border),
             const SizedBox(height: 12),
             Text(
-              'No customers found',
+              context.noCustomersFound,
               style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -417,7 +418,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                         ),
                       ),
                       Text(
-                        'Selected for this order',
+                        context.selectedForThisOrder,
                         style: GoogleFonts.inter(fontSize: 10, color: AppColors.textSecondary),
                       ),
                     ],
@@ -431,7 +432,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Text(
-                    'Change',
+                    context.changeText,
                     style: GoogleFonts.inter(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
@@ -466,7 +467,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Proceed to Order',
+                    context.proceedToOrder,
                     style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(width: 8),
@@ -513,7 +514,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Add New Customer',
+                      context.addNewCustomer,
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -521,7 +522,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                       ),
                     ),
                     Text(
-                      'Create a profile for a first-time client',
+                      context.createProfileFirstTime,
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         color: const Color(0xFF0EA5E9),

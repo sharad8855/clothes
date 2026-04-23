@@ -202,4 +202,18 @@ const Map<String, String> englishStrings = {
   'nav_customers': 'CUSTOMERS',
   'nav_staff': 'STAFF',
   'nav_gallery': 'GALLERY',
+
+  // ── Select Customer Screen ──
+  'select_customer_title': 'Select Customer',
+  'step_1_order_flow': 'Step 1 — Order Flow',
+  'who_is_this_order_for': 'Who is this order for?',
+  'choose_existing_customer_desc': 'Choose an existing customer to begin creating\ntheir bespoke order.',
+  'search_by_name_or_phone': 'Search by name or phone...',
+  'add_new_customer': 'Add New Customer',
+  'create_profile_first_time': 'Create a profile for a first-time client',
+  'all_customers': 'All Customers',
+  'selected_for_this_order': 'Selected for this order',
+  'change': 'Change',
+  'proceed_to_order': 'Proceed to Order',
+  'no_customers_found': 'No customers found',
 };
