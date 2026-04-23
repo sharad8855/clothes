@@ -226,4 +226,36 @@ extension LocalizationExtension on BuildContext {
   String get changeText => _l10n?.changeText ?? 'Change';
   String get proceedToOrder => _l10n?.proceedToOrder ?? 'Proceed to Order';
   String get noCustomersFound => _l10n?.noCustomersFound ?? 'No customers found';
+
+  // ── Staff Order Screen ──
+  String get productionText => _l10n?.productionText ?? 'Production';
+  String get stageText => _l10n?.stageText ?? 'Stage';
+  String get inProgressCaps => _l10n?.inProgressCaps ?? 'IN PROGRESS';
+  String get confirmOrder => _l10n?.confirmOrder ?? 'Confirm Order';
+  String get stepMeasurement => _l10n?.stepMeasurement ?? 'Measurement';
+  String get stepFabric => _l10n?.stepFabric ?? 'Fabric';
+  String get stepCutting => _l10n?.stepCutting ?? 'Cutting';
+  String get stepStitching => _l10n?.stepStitching ?? 'Stitching';
+  String get stepFitting => _l10n?.stepFitting ?? 'Fitting';
+  String get stepReady => _l10n?.stepReady ?? 'Ready';
+  String get workshopComments => _l10n?.workshopComments ?? 'Workshop Comments';
+  String get workshopCommentsHint => _l10n?.workshopCommentsHint ?? 'Describe progress, fabric nuances, or adjustments for the stitching team...';
+  String get chipFabricArrived => _l10n?.chipFabricArrived ?? 'Fabric arrived';
+  String get chipPatternCompleted => _l10n?.chipPatternCompleted ?? 'Pattern completed';
+  String get chipMinorDelay => _l10n?.chipMinorDelay ?? 'Minor delay: Thread supply';
+  String get updateNotifyManager => _l10n?.updateNotifyManager ?? 'Update & Notify Manager';
+  String get notificationsSentNotice => _l10n?.notificationsSentNotice ?? 'Notifications will be sent to the Lead Manager\nand the Client via the Royal Stitch App.';
+  String get premiumMemberGold => _l10n?.premiumMemberGold ?? 'Premium Member • Gold Class';
+  String get deadlineLabel => _l10n?.deadlineLabel ?? 'Deadline';
+  String get fabricLabel => _l10n?.fabricLabel ?? 'Fabric';
+  String get liningLabel => _l10n?.liningLabel ?? 'Lining';
+  String get viewFullMeasurement => _l10n?.viewFullMeasurement ?? 'View Full Measurement Profile';
+  String get aiWorkshopSuggest => _l10n?.aiWorkshopSuggest ?? 'AI WORKSHOP SUGGEST';
+  String get aiSuggestDesc => _l10n?.aiSuggestDesc ?? 'Based on the fabric weight (320g), we recommend a 48-hour hang-time post-cutting to ensure drape stability before first stitching.';
+  String get acceptAdjustment => _l10n?.acceptAdjustment ?? 'Accept Adjustment';
+  String get staffOrderHistory => _l10n?.staffOrderHistory ?? 'Order History';
+  String get staffNavTasks => _l10n?.staffNavTasks ?? 'TASKS';
+  String get staffNavOrders => _l10n?.staffNavOrders ?? 'ORDERS';
+  String get staffNavInventory => _l10n?.staffNavInventory ?? 'INVENTORY';
+  String get staffNavChat => _l10n?.staffNavChat ?? 'CHAT';
 }

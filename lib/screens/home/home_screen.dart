@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Consumer<ProfileProvider>(
-                        builder: (context, profileProvider, child) {
+                        builder: (context, profileProvider, child) {  
                           final firstName = profileProvider.userProfile?.firstName ?? home.tailorName;
                           return Text(
                             '${context.hello}, $firstName',
