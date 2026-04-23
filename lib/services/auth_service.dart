@@ -16,16 +16,23 @@ class AuthService {
       'https://platform-development-dev.157.20.214.214.nip.io';
 
   /// Hardcoded Client ID for backend API integrations
-  static const String clientId = 'c00c143d-71c3-42d9-b1bd-45f2f6f1297c';
+  static const String clientId = 'a3ea1cda-c735-4798-8219-54bbb07795a9';
 
   /// Generates the standard headers needed for authenticated requests
   static Future<Map<String, String>> getAuthHeaders() async {
-    final token = await SessionManager.instance.getAccessToken();
+    String? token = await SessionManager.instance.getAccessToken();
+
+    // User's provided token as fallback
+    if (token == null || token.isEmpty) {
+      token =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjc4Y2I4OTEtMWJhMC00ZjU0LTllOTQtZDBlNDI4ZDY1MDczIiwidXNlcl90eXBlIjoiU3VwZXIgQWRtaW4iLCJjbGllbnRzIjp7fSwidG9rZW5fdmVyc2lvbiI6NywiaWF0IjoxNzc2ODYzNzY3LCJleHAiOjE3NzY5NTAxNjd9.UB9H2e3EQj9L1fdok2aAHHUqcXwNCUWLrkSn32kh838';
+    }
+
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'client-id': clientId,
-      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+      'Authorization': 'Bearer $token',
     };
   }
 
@@ -190,8 +197,11 @@ class AuthService {
     final cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
-      
+      final effectiveBusinessId =
+          businessId ??
+          await SessionManager.instance.getSelectedBusinessId() ??
+          '257c88b2-8cff-482a-b297-51a9910a3413';
+
       final response = await http
           .post(
             Uri.parse(
@@ -225,10 +235,15 @@ class AuthService {
   }
 
   // ─── Order Statistics ──────────────────────────────────────────────────────
-  static Future<OrderStatistics> getOrderStatistics({String? businessId}) async {
+  static Future<OrderStatistics> getOrderStatistics({
+    String? businessId,
+  }) async {
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      final effectiveBusinessId =
+          businessId ??
+          await SessionManager.instance.getSelectedBusinessId() ??
+          '257c88b2-8cff-482a-b297-51a9910a3413';
 
       final response = await http
           .get(
@@ -258,11 +273,16 @@ class AuthService {
   }
 
   // ─── Financial Summary (KPI Reporting) ─────────────────────────────────────
-  static Future<FinancialSummary> getFinancialSummary({String? businessId}) async {
+  static Future<FinancialSummary> getFinancialSummary({
+    String? businessId,
+  }) async {
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
-      
+      final effectiveBusinessId =
+          businessId ??
+          await SessionManager.instance.getSelectedBusinessId() ??
+          '257c88b2-8cff-482a-b297-51a9910a3413';
+
       final now = DateTime.now();
       final startDate =
           "${now.year}-${now.month.toString().padLeft(2, '0')}-01";
@@ -312,7 +332,10 @@ class AuthService {
 
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      final effectiveBusinessId =
+          businessId ??
+          await SessionManager.instance.getSelectedBusinessId() ??
+          '257c88b2-8cff-482a-b297-51a9910a3413';
 
       final response = await http
           .post(
@@ -355,7 +378,10 @@ class AuthService {
   }) async {
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      final effectiveBusinessId =
+          businessId ??
+          await SessionManager.instance.getSelectedBusinessId() ??
+          '257c88b2-8cff-482a-b297-51a9910a3413';
 
       final response = await http
           .post(
@@ -364,7 +390,7 @@ class AuthService {
             ),
             headers: headers,
             body: jsonEncode({
-              'page': page, 
+              'page': page,
               'limit': limit,
               'business_id': effectiveBusinessId,
             }),
@@ -396,8 +422,11 @@ class AuthService {
     String? businessId,
   }) async {
     try {
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
-      
+      final effectiveBusinessId =
+          businessId ??
+          await SessionManager.instance.getSelectedBusinessId() ??
+          '257c88b2-8cff-482a-b297-51a9910a3413';
+
       final bodyData = {
         'page': page,
         'limit': limit,
@@ -583,7 +612,10 @@ class AuthService {
   }) async {
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      final effectiveBusinessId =
+          businessId ??
+          await SessionManager.instance.getSelectedBusinessId() ??
+          '257c88b2-8cff-482a-b297-51a9910a3413';
 
       final response = await http
           .post(
@@ -613,11 +645,13 @@ class AuthService {
   }
 
   // ─── Create Final Order ────────────────────────────────────────────────────
-  static Future<Map<String, dynamic>> createOrder(Map<String, dynamic> orderData) async {
+  static Future<Map<String, dynamic>> createOrder(
+    Map<String, dynamic> orderData,
+  ) async {
     try {
       final headers = await getAuthHeaders();
       final businessId = await SessionManager.instance.getSelectedBusinessId();
-      
+
       final payload = Map<String, dynamic>.from(orderData);
       if (businessId != null && !payload.containsKey('business_id')) {
         payload['business_id'] = businessId;
@@ -640,7 +674,10 @@ class AuthService {
         return body;
       }
 
-      final message = body['message'] as String? ?? body['error'] as String? ?? 'Order creation failed';
+      final message =
+          body['message'] as String? ??
+          body['error'] as String? ??
+          'Order creation failed';
       throw AuthException(message);
     } catch (e) {
       if (e is AuthException) rethrow;
@@ -652,9 +689,13 @@ class AuthService {
   static Future<OrderListItem> getOrderDetails(String orderId) async {
     try {
       final headers = await getAuthHeaders();
-      final url = Uri.parse('$_baseUrl/auth/api/order/client/$clientId/order/$orderId');
-      
-      final response = await http.get(url, headers: headers).timeout(const Duration(seconds: 30));
+      final url = Uri.parse(
+        '$_baseUrl/auth/api/order/client/$clientId/order/$orderId',
+      );
+
+      final response = await http
+          .get(url, headers: headers)
+          .timeout(const Duration(seconds: 30));
       final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -663,7 +704,10 @@ class AuthService {
         }
       }
 
-      final message = body['message'] as String? ?? body['error'] as String? ?? 'Failed to fetch order details';
+      final message =
+          body['message'] as String? ??
+          body['error'] as String? ??
+          'Failed to fetch order details';
       throw AuthException(message);
     } catch (e) {
       if (e is AuthException) rethrow;
@@ -672,12 +716,18 @@ class AuthService {
   }
 
   // ─── Fetch Order Timeline ──────────────────────────────────────────────────
-  static Future<List<OrderTimelineItem>> getOrderTimeline(String orderId) async {
+  static Future<List<OrderTimelineItem>> getOrderTimeline(
+    String orderId,
+  ) async {
     try {
       final headers = await getAuthHeaders();
-      final url = Uri.parse('$_baseUrl/auth/api/order/client/$clientId/order/$orderId/order-timeline');
-      
-      final response = await http.get(url, headers: headers).timeout(const Duration(seconds: 30));
+      final url = Uri.parse(
+        '$_baseUrl/auth/api/order/client/$clientId/order/$orderId/order-timeline',
+      );
+
+      final response = await http
+          .get(url, headers: headers)
+          .timeout(const Duration(seconds: 30));
       final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -688,7 +738,10 @@ class AuthService {
         }
       }
 
-      final message = body['message'] as String? ?? body['error'] as String? ?? 'Failed to fetch order timeline';
+      final message =
+          body['message'] as String? ??
+          body['error'] as String? ??
+          'Failed to fetch order timeline';
       throw AuthException(message);
     } catch (e) {
       if (e is AuthException) rethrow;
@@ -703,21 +756,28 @@ class AuthService {
   }) async {
     try {
       final headers = await getAuthHeaders();
-      final url = Uri.parse('$_baseUrl/auth/api/order/client/$clientId/order/$orderId');
-      
-      final response = await http.put(
-        url, 
-        headers: headers,
-        body: jsonEncode({'order_status': status}),
-      ).timeout(const Duration(seconds: 30));
-      
+      final url = Uri.parse(
+        '$_baseUrl/auth/api/order/client/$clientId/order/$orderId',
+      );
+
+      final response = await http
+          .put(
+            url,
+            headers: headers,
+            body: jsonEncode({'order_status': status}),
+          )
+          .timeout(const Duration(seconds: 30));
+
       final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return body;
       }
 
-      final message = body['message'] as String? ?? body['error'] as String? ?? 'Failed to update order status';
+      final message =
+          body['message'] as String? ??
+          body['error'] as String? ??
+          'Failed to update order status';
       throw AuthException(message);
     } catch (e) {
       if (e is AuthException) rethrow;
@@ -744,7 +804,8 @@ class AuthService {
         return BusinessModel.fromJson(data);
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Business creation failed (${response.statusCode})';
       throw AuthException(message);
@@ -755,12 +816,18 @@ class AuthService {
   }
 
   // ─── Fetch Business Details ────────────────────────────────────────────────
-  static Future<BusinessModel> getBusinessDetails(String businessId) async {
+  static Future<BusinessModel> getBusinessDetails(
+    String businessId, {
+    String? overrideClientId,
+  }) async {
     try {
       final headers = await getAuthHeaders();
+      final client = overrideClientId ?? clientId;
       final response = await http
           .get(
-            Uri.parse('$_baseUrl/auth/api/business/client/$clientId/business/$businessId'),
+            Uri.parse(
+              '$_baseUrl/auth/api/business/client/$client/business/$businessId',
+            ),
             headers: headers,
           )
           .timeout(const Duration(seconds: 30));
@@ -773,7 +840,8 @@ class AuthService {
         }
       }
 
-      final message = body['message'] as String? ??
+      final message =
+          body['message'] as String? ??
           body['error'] as String? ??
           'Failed to fetch business details';
       throw AuthException(message);
@@ -834,11 +902,13 @@ class AuthService {
       // Log the HTML response for debugging
       print('❌ Non-JSON response received (Status: ${response.statusCode})');
       print('URL: ${response.request?.url}');
-      print('Body Snippet: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}');
-      
+      print(
+        'Body Snippet: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}',
+      );
+
       throw AuthException(
         'Server returned an invalid response (HTML). Status: ${response.statusCode}. '
-        'This often means the URL endpoint is incorrect or the service is down.'
+        'This often means the URL endpoint is incorrect or the service is down.',
       );
     }
   }
