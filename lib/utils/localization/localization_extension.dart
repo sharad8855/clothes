@@ -212,4 +212,18 @@ extension LocalizationExtension on BuildContext {
   String get navCustomers => _l10n?.navCustomers ?? 'CUSTOMERS';
   String get navStaff => _l10n?.navStaff ?? 'STAFF';
   String get navGallery => _l10n?.navGallery ?? 'GALLERY';
+
+  // ── Select Customer Screen ──
+  String get selectCustomerTitle => _l10n?.selectCustomerTitle ?? 'Select Customer';
+  String get step1OrderFlow => _l10n?.step1OrderFlow ?? 'Step 1 — Order Flow';
+  String get whoIsThisOrderFor => _l10n?.whoIsThisOrderFor ?? 'Who is this order for?';
+  String get chooseExistingCustomerDesc => _l10n?.chooseExistingCustomerDesc ?? 'Choose an existing customer to begin creating\ntheir bespoke order.';
+  String get searchByNameOrPhone => _l10n?.searchByNameOrPhone ?? 'Search by name or phone...';
+  String get addNewCustomer => _l10n?.addNewCustomer ?? 'Add New Customer';
+  String get createProfileFirstTime => _l10n?.createProfileFirstTime ?? 'Create a profile for a first-time client';
+  String get allCustomers => _l10n?.allCustomers ?? 'All Customers';
+  String get selectedForThisOrder => _l10n?.selectedForThisOrder ?? 'Selected for this order';
+  String get changeText => _l10n?.changeText ?? 'Change';
+  String get proceedToOrder => _l10n?.proceedToOrder ?? 'Proceed to Order';
+  String get noCustomersFound => _l10n?.noCustomersFound ?? 'No customers found';
 }
