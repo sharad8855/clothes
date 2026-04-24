@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
@@ -230,6 +231,16 @@ class _BusinessStep2ScreenState extends State<BusinessStep2Screen> {
                     hint: '9359775489',
                     icon: Icons.phone_android_rounded,
                     keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
+                    validator: (v) {
+                      if (v == null || v.isEmpty) return 'Required';
+                      if (v.length != 10) return 'Must be 10 digits';
+                      return null;
+                    },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                   ),
                   const SizedBox(height: 16),
                   _buildTextField(
@@ -320,6 +331,8 @@ class _BusinessStep2ScreenState extends State<BusinessStep2Screen> {
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
+    List<TextInputFormatter>? inputFormatters,
+    AutovalidateMode? autovalidateMode,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,6 +352,8 @@ class _BusinessStep2ScreenState extends State<BusinessStep2Screen> {
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
+          autovalidateMode: autovalidateMode,
           style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
           validator: validator,
           decoration: InputDecoration(

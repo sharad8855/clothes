@@ -171,13 +171,25 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           const SizedBox(height: 8),
           TextFormField(
             keyboardType: TextInputType.number,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             onChanged: provider.setPhoneNumber,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(10),
+            ],
             decoration: InputDecoration(
               hintText: context.enter10DigitNumber,
               prefixIcon: const Icon(Icons.phone, size: 18),
-              errorText: provider.phoneError,
             ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return context.pleaseFillRequiredFields;
+              }
+              if (value.length != 10) {
+                return context.phoneMustBe10Digits;
+              }
+              return null;
+            },
           ),
           const SizedBox(height: 16),
           Text(

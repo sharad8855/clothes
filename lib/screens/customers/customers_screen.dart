@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/home_provider.dart';
+
 import '../shell/widgets/app_drawer.dart';
 import '../../providers/clients_provider.dart';
 import '../../models/customer_list_response.dart';
@@ -113,11 +115,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
       backgroundColor: const Color(0xFFF8F9FC),
       elevation: 0,
       scrolledUnderElevation: 0,
-      leading: Builder(
-        builder: (ctx) => IconButton(
-          icon: const Icon(Icons.menu_rounded, color: Color(0xFF1E3A8A)),
-          onPressed: () => Scaffold.of(ctx).openDrawer(),
-        ),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Color(0xFF1E3A8A)),
+        onPressed: () => context.read<HomeProvider>().setNavIndex(0),
       ),
       centerTitle: true,
       title: Text(
