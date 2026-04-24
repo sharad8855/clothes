@@ -106,10 +106,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               color: AppColors.inputBg,
-              image: hasImage ? DecorationImage(
-                image: NetworkImage(user.profileImage!),
-                fit: BoxFit.cover,
-              ) : null,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),
@@ -117,6 +113,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   offset: const Offset(0, 4),
                 ),
               ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: hasImage
+                  ? Image.network(
+                      user.profileImage!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Icon(Icons.person_rounded, size: 40, color: AppColors.textHint),
+                        );
+                      },
+                    )
+                  : const Center(
+                      child: Icon(Icons.person_rounded, size: 40, color: AppColors.textHint),
+                    ),
             ),
           ),
           const SizedBox(height: 20),

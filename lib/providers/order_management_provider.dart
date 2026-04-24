@@ -49,13 +49,28 @@ class OrderManagementProvider extends ChangeNotifier {
     }
   }
 
+  String _selectedStatusFilter = 'All';
+  String get selectedStatusFilter => _selectedStatusFilter;
+
+  void setStatusFilter(String status) {
+    _selectedStatusFilter = status;
+    notifyListeners();
+  }
+
   double get dailyEfficiency => 94.0;
   int get readyItemsCount => _orders.where((o) => o.orderStatus.toLowerCase() == 'ready').length;
 
   List<OrderListItem> get filteredOrders {
-    if (_searchQuery.isEmpty) return _orders;
+    List<OrderListItem> result = _orders;
+
+    if (_selectedStatusFilter != 'All') {
+      result = result.where((o) => o.orderStatus.toLowerCase() == _selectedStatusFilter.toLowerCase()).toList();
+    }
+
+    if (_searchQuery.isEmpty) return result;
+    
     final q = _searchQuery.toLowerCase();
-    return _orders.where((o) =>
+    return result.where((o) =>
       o.customerName.toLowerCase().contains(q) ||
       o.billNumber.toLowerCase().contains(q) ||
       o.firstItemName.toLowerCase().contains(q)

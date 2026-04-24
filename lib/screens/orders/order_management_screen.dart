@@ -228,17 +228,53 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
           ),
         ),
         const SizedBox(width: 12),
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF1F5F9),
+        PopupMenuButton<String>(
+          offset: const Offset(0, 55),
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Icon(
-            Icons.filter_list_rounded,
-            color: Color(0xFF1E3A8A),
-            size: 22,
+          onSelected: (String result) {
+            provider.setStatusFilter(result);
+            setState(() {});
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            const PopupMenuItem<String>(
+              value: 'All',
+              child: Text('All'),
+            ),
+            PopupMenuItem<String>(
+              value: 'Pending',
+              child: Text(context.pendingLabel),
+            ),
+            const PopupMenuItem<String>(
+              value: 'Confirmed',
+              child: Text('Confirmed'),
+            ),
+            const PopupMenuItem<String>(
+              value: 'Ready',
+              child: Text('Ready'),
+            ),
+            PopupMenuItem<String>(
+              value: 'Delivered',
+              child: Text(context.deliveredLabel),
+            ),
+          ],
+          child: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: provider.selectedStatusFilter != 'All' 
+                  ? const Color(0xFF1E3A8A) 
+                  : const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.filter_list_rounded,
+              color: provider.selectedStatusFilter != 'All'
+                  ? Colors.white
+                  : const Color(0xFF1E3A8A),
+              size: 22,
+            ),
           ),
         ),
       ],
