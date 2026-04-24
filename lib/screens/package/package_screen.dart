@@ -46,8 +46,7 @@ class _PackageScreenState extends State<PackageScreen> {
       scrolledUnderElevation: 0,
       centerTitle: true,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_rounded,
-            color: AppColors.primaryDark, size: 20),
+        icon: const Icon(Icons.arrow_back, color: AppColors.primaryDark),
         onPressed: () => Navigator.pop(context),
       ),
       title: Column(
