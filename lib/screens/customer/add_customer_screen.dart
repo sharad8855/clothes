@@ -172,7 +172,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           TextFormField(
             keyboardType: TextInputType.number,
             onChanged: provider.setPhoneNumber,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(10),
+            ],
             decoration: InputDecoration(
               hintText: context.enter10DigitNumber,
               prefixIcon: const Icon(Icons.phone, size: 18),

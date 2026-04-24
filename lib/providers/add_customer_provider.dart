@@ -52,7 +52,7 @@ class AddCustomerProvider extends ChangeNotifier {
     _phoneNumber = value;
     // Extract only digits for validation
     final digitsOnly = value.replaceAll(RegExp(r'[^0-9]'), '');
-    if (digitsOnly.length > 10) {
+    if (digitsOnly.isNotEmpty && digitsOnly.length != 10) {
       _phoneError = 'Phone number must be exactly 10 digits';
     } else {
       _phoneError = null;
