@@ -9,16 +9,13 @@ class AnalyticsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FC),
-      drawer: const AppDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF8F9FC),
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: Builder(
-          builder: (ctx) => IconButton(
-            icon: const Icon(Icons.menu_rounded, color: Color(0xFF1E3A8A)),
-            onPressed: () => Scaffold.of(ctx).openDrawer(),
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF1E3A8A)),
+          onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Royal Stitch BI',
