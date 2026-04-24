@@ -42,7 +42,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
   void _validatePhone() {
     final digits = _phoneController.text.replaceAll(RegExp(r'[^0-9]'), '');
     setState(() {
-      if (digits.length > 10) {
+      if (digits.isNotEmpty && digits.length != 10) {
         _phoneError = context.phoneMustBe10Digits;
       } else {
         _phoneError = null;
@@ -150,7 +150,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
       elevation: 0,
       scrolledUnderElevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1E3A8A)),
+        icon: const Icon(Icons.arrow_back, color: Color(0xFF1E3A8A)),
         onPressed: () => Navigator.pop(context),
       ),
       centerTitle: true,
@@ -162,6 +162,19 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
           color: const Color(0xFF1E3A8A),
         ),
       ),
+      actions: [
+        TextButton(
+          onPressed: _isLoading ? null : _handleSaveStaff,
+          child: Text(
+            context.save,
+            style: GoogleFonts.inter(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF1E3A8A),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -212,7 +225,10 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
             '',
             controller: _phoneController,
             keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(10),
+            ],
             errorText: _phoneError,
           ),
           const SizedBox(height: 16),
