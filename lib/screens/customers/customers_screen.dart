@@ -194,6 +194,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
               decoration: InputDecoration(
                 hintText: context.searchClientsHint,
                 border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                filled: false,
                 isDense: true,
                 hintStyle: GoogleFonts.inter(
                   fontSize: 14,
