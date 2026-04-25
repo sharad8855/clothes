@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -114,20 +115,25 @@ class _FabricImagePlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<FabricProvider>();
+    final File? selectedImage = provider.selectedImage;
+
     return Container(
       width: double.infinity,
       height: 280,
       decoration: BoxDecoration(
         color: AppColors.primaryDark,
         borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primaryDark.withValues(alpha: 0.8),
-            AppColors.primaryDark,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: selectedImage == null
+            ? LinearGradient(
+                colors: [
+                  AppColors.primaryDark.withValues(alpha: 0.8),
+                  AppColors.primaryDark,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
         boxShadow: [
           BoxShadow(
             color: AppColors.primaryDark.withValues(alpha: 0.3),
@@ -136,37 +142,66 @@ class _FabricImagePlaceholder extends StatelessWidget {
           ),
         ],
       ),
-      child: Center(
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: context.read<FabricProvider>().startAnalysis,
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+      child: selectedImage != null
+          ? ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  const Icon(Icons.camera_alt, color: AppColors.primaryDark, size: 28),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Update Fabric Sample',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryDark,
+                  Image.file(
+                    selectedImage,
+                    fit: BoxFit.cover,
+                  ),
+                  // Change image button (top-right)
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: GestureDetector(
+                      onTap: () => provider.pickImageFromCamera(),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                      ),
                     ),
                   ),
                 ],
               ),
+            )
+          : Center(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => provider.pickImageFromCamera(),
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.camera_alt, color: AppColors.primaryDark, size: 28),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Update Fabric Sample',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primaryDark,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }
@@ -182,7 +217,8 @@ class _ActionButtonsRow extends StatelessWidget {
       children: [
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: provider.startAnalysis,
+            // ✅ Camera button - directly opens camera
+            onPressed: () => provider.pickImageFromCamera(),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryDark,
               foregroundColor: Colors.white,
@@ -202,7 +238,8 @@ class _ActionButtonsRow extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: provider.startAnalysis,
+            // ✅ Gallery button - opens phone gallery
+            onPressed: () => provider.pickImageFromGallery(),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: AppColors.primaryDark,
