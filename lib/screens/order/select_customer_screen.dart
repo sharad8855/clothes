@@ -178,6 +178,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
+            filled: false,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textHint),
           ),

@@ -205,6 +205,7 @@ class _OrderManagementScreenState extends State<OrderManagementScreen> {
                       focusedBorder: InputBorder.none,
                       errorBorder: InputBorder.none,
                       disabledBorder: InputBorder.none,
+                      filled: false,
                       contentPadding: EdgeInsets.zero,
                       isDense: true,
                       hintStyle: GoogleFonts.inter(
