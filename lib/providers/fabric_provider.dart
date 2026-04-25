@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class FabricProvider extends ChangeNotifier {
   bool _isAnalyzing = false;
@@ -6,6 +8,10 @@ class FabricProvider extends ChangeNotifier {
 
   bool _hasAnalyzed = false;
   bool get hasAnalyzed => _hasAnalyzed;
+
+  // Selected image file
+  File? _selectedImage;
+  File? get selectedImage => _selectedImage;
 
   // AI Analyzed Fields
   String _material = '--';
@@ -30,6 +36,42 @@ class FabricProvider extends ChangeNotifier {
   // Modifier Tags Multi-Select
   final Set<String> _selectedModifiers = {'High Shine'};
   Set<String> get selectedModifiers => _selectedModifiers;
+
+  final ImagePicker _picker = ImagePicker();
+
+  /// Camera उघडतो आणि photo घेतो
+  Future<void> pickImageFromCamera() async {
+    try {
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 85,
+      );
+      if (photo != null) {
+        _selectedImage = File(photo.path);
+        notifyListeners();
+        await startAnalysis();
+      }
+    } catch (e) {
+      debugPrint('Camera error: $e');
+    }
+  }
+
+  /// Gallery उघडतो आणि image pick करतो
+  Future<void> pickImageFromGallery() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+      );
+      if (image != null) {
+        _selectedImage = File(image.path);
+        notifyListeners();
+        await startAnalysis();
+      }
+    } catch (e) {
+      debugPrint('Gallery error: $e');
+    }
+  }
 
   Future<void> startAnalysis() async {
     if (_isAnalyzing) return;
