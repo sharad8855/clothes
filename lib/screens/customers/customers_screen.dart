@@ -115,9 +115,19 @@ class _CustomersScreenState extends State<CustomersScreen> {
       backgroundColor: const Color(0xFFF8F9FC),
       elevation: 0,
       scrolledUnderElevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Color(0xFF1E3A8A)),
-        onPressed: () => context.read<HomeProvider>().setNavIndex(0),
+      leading: GestureDetector(
+        onTap: () {
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          } else {
+            context.read<HomeProvider>().setNavIndex(0, forceNotify: true);
+          }
+        },
+        child: const Icon(
+          Icons.arrow_back,
+          color: Color(0xFF1E3A8A),
+          size: 22,
+        ),
       ),
       centerTitle: true,
       title: Text(
