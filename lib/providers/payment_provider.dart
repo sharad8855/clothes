@@ -15,12 +15,30 @@ class PaymentProvider extends ChangeNotifier {
   final TextEditingController expiryController = TextEditingController();
   final TextEditingController cvvController = TextEditingController();
 
+  // Advance Payment
+  final TextEditingController advanceController = TextEditingController();
+
+  double get advanceAmount {
+    final text = advanceController.text.replaceAll(',', '').trim();
+    return double.tryParse(text) ?? 0.0;
+  }
+
+  double remainingBalance(double totalAmount) {
+    final remaining = totalAmount - advanceAmount;
+    return remaining < 0 ? 0 : remaining;
+  }
+
+  void onAdvanceChanged() {
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     cardholderController.dispose();
     cardNumberController.dispose();
     expiryController.dispose();
     cvvController.dispose();
+    advanceController.dispose();
     super.dispose();
   }
 

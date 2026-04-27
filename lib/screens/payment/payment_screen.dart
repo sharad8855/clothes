@@ -114,7 +114,9 @@ class _PaymentScreenBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
           _OrderSummaryCard(),
-          SizedBox(height: 32),
+          SizedBox(height: 20),
+          _AdvancePaymentSection(),
+          SizedBox(height: 28),
           _PaymentMethodSection(),
           SizedBox(height: 24),
           _CreditCardForm(),
@@ -273,6 +275,294 @@ class _OrderSummaryCard extends StatelessWidget {
     );
   }
 }
+
+// ─── Advance Payment Section ───────────────────────────────────────────────
+
+class _AdvancePaymentSection extends StatefulWidget {
+  const _AdvancePaymentSection();
+
+  @override
+  State<_AdvancePaymentSection> createState() => _AdvancePaymentSectionState();
+}
+
+class _AdvancePaymentSectionState extends State<_AdvancePaymentSection> {
+  @override
+  void initState() {
+    super.initState();
+    // Listen to controller changes to update the UI
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<PaymentProvider>().advanceController.addListener(_onChanged);
+    });
+  }
+
+  void _onChanged() {
+    context.read<PaymentProvider>().onAdvanceChanged();
+  }
+
+  @override
+  void dispose() {
+    // Listener is cleaned up with the controller in the provider
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<PaymentProvider>();
+    final packageProvider = context.watch<PackageProvider>();
+
+    // Parse total amount from formatted string (remove ₹, commas etc.)
+    final rawPrice = packageProvider.estPriceFormatted
+        .replaceAll(RegExp(r'[^\d.]'), '');
+    final totalAmount = double.tryParse(rawPrice) ?? 0.0;
+    final advance = provider.advanceAmount;
+    final remaining = provider.remainingBalance(totalAmount);
+    final hasAdvance = advance > 0;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.payments_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Advance Payment',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'OPTIONAL',
+                    style: GoogleFonts.inter(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Body
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'ADVANCE AMOUNT',
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textSecondary,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F4F6),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: hasAdvance
+                          ? const Color(0xFF4F46E5).withValues(alpha: 0.3)
+                          : Colors.transparent,
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Text(
+                          '₹',
+                          style: GoogleFonts.inter(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF4F46E5),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: provider.advanceController,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                          ],
+                          style: GoogleFonts.inter(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primaryDark,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: '0.00',
+                            hintStyle: GoogleFonts.inter(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.textHint,
+                            ),
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            filled: false,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (hasAdvance)
+                        GestureDetector(
+                          onTap: () {
+                            provider.advanceController.clear();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 14),
+                            child: Icon(
+                              Icons.cancel_rounded,
+                              color: AppColors.textHint,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+
+                // Remaining Balance (visible only when advance > 0)
+                if (hasAdvance) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF0FDF4),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: const Color(0xFF22C55E).withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF22C55E).withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.check_rounded,
+                            color: Color(0xFF16A34A),
+                            size: 14,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Advance Received',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF16A34A),
+                              ),
+                            ),
+                            Text(
+                              '₹${advance.toStringAsFixed(2)} paid in advance',
+                              style: GoogleFonts.inter(
+                                fontSize: 10,
+                                color: const Color(0xFF16A34A).withValues(alpha: 0.8),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'REMAINING',
+                              style: GoogleFonts.inter(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textSecondary,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            Text(
+                              '₹${remaining.toStringAsFixed(2)}',
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: remaining == 0
+                                    ? const Color(0xFF16A34A)
+                                    : AppColors.primaryDark,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Payment Method Section ──────────────────────────────────────────────────
 
 class _PaymentMethodSection extends StatelessWidget {
   const _PaymentMethodSection();
