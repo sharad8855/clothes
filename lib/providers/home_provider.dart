@@ -145,8 +145,8 @@ class HomeProvider extends ChangeNotifier {
   int _selectedNavIndex = 0;
   int get selectedNavIndex => _selectedNavIndex;
 
-  void setNavIndex(int index) {
-    if (_selectedNavIndex == index) return;
+  void setNavIndex(int index, {bool forceNotify = false}) {
+    if (_selectedNavIndex == index && !forceNotify) return;
     _selectedNavIndex = index;
     notifyListeners();
   }
