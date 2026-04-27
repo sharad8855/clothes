@@ -124,7 +124,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 160), 
+            padding: EdgeInsets.fromLTRB(20, 24, 20, MediaQuery.of(context).viewInsets.bottom + 100), 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -297,7 +297,9 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
               focusedBorder: InputBorder.none,
               errorBorder: InputBorder.none,
               focusedErrorBorder: InputBorder.none,
+              filled: false,
               isDense: true,
+              contentPadding: EdgeInsets.zero,
               hintStyle: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -323,8 +325,9 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
   }
 
   Widget _buildBottomActions() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.95),
         boxShadow: [
@@ -389,6 +392,6 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
           ),
         ],
       ),
-    );
+    ));
   }
 }

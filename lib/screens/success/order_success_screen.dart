@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../../providers/order_success_provider.dart';
 import '../../providers/package_provider.dart';
+import '../../providers/order_management_provider.dart';
 import '../orders/order_details_screen.dart';
 
 class OrderSuccessScreen extends StatefulWidget {
@@ -90,7 +91,7 @@ class _OrderSuccessScreenBody extends StatelessWidget {
           const SizedBox(height: 32),
           const _TypographySection(),
           const SizedBox(height: 32),
-          const _OrderSummarySheet(),
+          _OrderSummarySheet(orderId: orderId),
           const SizedBox(height: 32),
           _ActionButtons(orderId: orderId),
           const SizedBox(height: 60),
@@ -176,7 +177,8 @@ class _TypographySection extends StatelessWidget {
 }
 
 class _OrderSummarySheet extends StatelessWidget {
-  const _OrderSummarySheet();
+  final String orderId;
+  const _OrderSummarySheet({required this.orderId});
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +202,7 @@ class _OrderSummarySheet extends StatelessWidget {
           _SummaryRow(
             label: 'ORDER ID',
             child: Text(
-              '#ORD-8832',
+              '#ORD-${(orderId.length >= 6 ? orderId.substring(0, 6) : orderId).toUpperCase()}',
               style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -227,14 +229,14 @@ class _OrderSummarySheet extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           _SummaryRow(
-            label: 'EXPECTED DELIVERY',
+            label: 'ORDER DATE',
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Icons.calendar_today_rounded, size: 14, color: AppColors.primaryDark),
                 const SizedBox(width: 8),
                 Text(
-                  'Feb 15, 2024',
+                  _formatDate(DateTime.now()),
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -259,7 +261,7 @@ class _OrderSummarySheet extends StatelessWidget {
                   const Icon(Icons.check_circle_rounded, size: 14, color: AppColors.primaryDark),
                   const SizedBox(width: 6),
                   Text(
-                    'Advance Paid (\$1,000)',
+                    'Payment Recorded',
                     style: GoogleFonts.inter(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -273,6 +275,14 @@ class _OrderSummarySheet extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 }
 
@@ -350,6 +360,10 @@ class _ActionButtons extends StatelessWidget {
           onPressed: () {
             // Clear current order state
             context.read<PackageProvider>().clearAll();
+            
+            // Refresh orders list so the new order shows up immediately
+            context.read<OrderManagementProvider>().fetchOrders(refresh: true);
+            
             // Drop entire modal/screen stack back to root (home screen)
             Navigator.popUntil(context, (route) => route.isFirst);
           },
