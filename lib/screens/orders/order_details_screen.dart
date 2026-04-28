@@ -877,7 +877,7 @@ class _PaymentSummaryCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '\$${order.grandTotal}',
+                    '₹${order.grandTotal}',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
@@ -909,6 +909,28 @@ class _PaymentSummaryCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Advance Paid',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    '₹${order.paidAmount}',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF10B981), // Emerald green
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -927,7 +949,7 @@ class _PaymentSummaryCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '£1,350.00',
+                      '₹${(double.tryParse(order.grandTotal) ?? 0) - (double.tryParse(order.paidAmount) ?? 0)}',
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,

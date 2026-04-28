@@ -84,6 +84,7 @@ class PaymentProvider extends ChangeNotifier {
         fabricPattern: fabricPattern,
         fabricModifiers: fabricModifiers,
         paymentMethod: methodStr,
+        advanceAmount: advanceAmount,
       );
 
       _isProcessing = false;

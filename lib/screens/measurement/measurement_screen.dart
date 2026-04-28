@@ -835,68 +835,46 @@ class _BottomNavBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.scaffoldBg,
       ),
-      child: Row(
-        children: [
-          TextButton.icon(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios_rounded, size: 14, color: AppColors.textSecondary),
-            label: Text(
-              'Back',
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () async {
+            final customer = context.read<PackageProvider>().selectedCustomer;
+            if (customer == null) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a customer first')));
+              return;
+            }
+            
+            await context.read<MeasurementProvider>().submitMeasurements(context, customer.id);
+            
+            if (context.mounted) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AssignStaffWizardScreen()),
+              );
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primaryDark,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
           ),
-          const Spacer(),
-          ElevatedButton(
-              onPressed: () async {
-                final customer = context.read<PackageProvider>().selectedCustomer;
-                if (customer == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a customer first')));
-                  return;
-                }
-                
-                await context.read<MeasurementProvider>().submitMeasurements(context, customer.id);
-                
-                if (context.mounted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AssignStaffWizardScreen()),
-                  );
-                }
-              },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryDark,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Next: Assign Staff',
+                style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700),
               ),
-            ),
-            child: Row(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Next:',
-                      style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      'Assign Staff',
-                      style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 12),
-                const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-              ],
-            ),
+              const SizedBox(width: 8),
+              const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
