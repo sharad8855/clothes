@@ -96,6 +96,7 @@ class PackageProvider extends ChangeNotifier {
     required String fabricPattern,
     required List<String> fabricModifiers,
     required String paymentMethod,
+    double advanceAmount = 0.0,
   }) async {
     if (_isPlacingOrder) return null;
     _isPlacingOrder = true;
@@ -123,8 +124,8 @@ class PackageProvider extends ChangeNotifier {
         "order_date": today,
         "quotation_id": null,
         "payment_method": paymentMethod,
-        "payment_status": (paymentMethod == 'credit card' || paymentMethod == 'debit card' || paymentMethod == 'upi' || paymentMethod == 'wallet') ? 'paid' : 'pending',
-        "paid_amount": 0,
+        "payment_status": (paymentMethod == 'credit card' || paymentMethod == 'debit card' || paymentMethod == 'upi' || paymentMethod == 'wallet' || advanceAmount > 0) ? 'paid' : 'pending',
+        "paid_amount": advanceAmount,
         "gst": 0,
         "shipping_fee": 0,
         "order_status": "pending",

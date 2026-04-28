@@ -51,6 +51,7 @@ class OrderListItem {
   final OrderCustomer? customer;
   final DateTime dueDate;
   final String? notes;
+  final String paidAmount;
 
   OrderListItem({
     required this.orderId,
@@ -69,6 +70,7 @@ class OrderListItem {
     this.customer,
     required this.dueDate,
     this.notes,
+    required this.paidAmount,
   });
 
   String? _cachedCustomerName;
@@ -99,6 +101,7 @@ class OrderListItem {
           : null,
       dueDate: DateTime.parse(json['due_date'] ?? json['order_date'] ?? DateTime.now().toIso8601String()),
       notes: json['notes'] as String?,
+      paidAmount: json['paid_amount']?.toString() ?? '0.00',
     );
   }
 
