@@ -59,13 +59,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
             color: const Color(0xFF0F172A),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list_rounded, color: Color(0xFF1E3A8A)),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 8),
-        ],
+        actions: const [],
       ),
       body: RefreshIndicator(
         onRefresh: () => context.read<OrderManagementProvider>().fetchOrders(refresh: true),
