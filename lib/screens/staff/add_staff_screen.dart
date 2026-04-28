@@ -299,7 +299,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
               focusedErrorBorder: InputBorder.none,
               filled: false,
               isDense: true,
-              contentPadding: EdgeInsets.zero,
+              contentPadding: const EdgeInsets.symmetric(vertical: 13),
               hintStyle: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,

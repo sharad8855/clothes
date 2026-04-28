@@ -104,7 +104,6 @@ class OrderManagementProvider extends ChangeNotifier {
       final response = await AuthService.getOrdersList(
         page: _currentPage,
         limit: _limit,
-        userId: user?.id,
         businessId: bizId,
       );
 
@@ -141,13 +140,11 @@ class OrderManagementProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final user = await SessionManager.instance.getUser();
       final bizId = await SessionManager.instance.getSelectedBusinessId();
       
       final response = await AuthService.getOrdersList(
         page: _currentPage,
         limit: _limit,
-        userId: user?.id,
         businessId: bizId,
       );
 
