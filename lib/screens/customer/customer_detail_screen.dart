@@ -229,7 +229,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
             backgroundColor: AppColors.primaryDark,
             foregroundColor: Colors.white,
             elevation: 0,
-            minimumSize: const Size(double.infinity, 56),
+            padding: const EdgeInsets.symmetric(vertical: 18),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           ),
           child: Row(
@@ -238,12 +238,12 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
               if (provider.isLoading)
                 const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
               else ...[
-                const Icon(Icons.arrow_forward_rounded, size: 20),
-                const SizedBox(width: 8),
                 Text(
                   'Next: Verify Details',
-                  style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700),
+                  style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700),
                 ),
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward_rounded, size: 18),
               ],
             ],
           ),

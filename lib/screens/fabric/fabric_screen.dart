@@ -697,7 +697,7 @@ class _BottomNavBar extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF8B5CF6), // Matches screenshot purple exact hue action bar
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          padding: const EdgeInsets.symmetric(vertical: 18),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -709,12 +709,12 @@ class _BottomNavBar extends StatelessWidget {
             Text(
               'Next: Payment Details',
               style: GoogleFonts.inter(
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(Icons.arrow_forward, size: 18),
+            const Icon(Icons.arrow_forward_rounded, size: 18),
           ],
         ),
       ),

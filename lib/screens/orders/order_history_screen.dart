@@ -352,7 +352,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '£${order.grandTotal}',
+                  '₹${order.grandTotal}',
                   style: GoogleFonts.inter(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
