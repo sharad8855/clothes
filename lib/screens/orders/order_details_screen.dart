@@ -133,16 +133,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           color: AppColors.primaryDark,
         ),
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.share_outlined, color: AppColors.textSecondary, size: 20),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.more_vert, color: AppColors.textSecondary, size: 20),
-          onPressed: () {},
-        ),
-      ],
     );
   }
 }

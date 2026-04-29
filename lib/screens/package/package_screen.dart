@@ -693,7 +693,7 @@ class _BottomNavBar extends StatelessWidget {
             backgroundColor: AppColors.primaryDark,
             disabledBackgroundColor: AppColors.border,
             foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+            padding: const EdgeInsets.symmetric(vertical: 18),
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),

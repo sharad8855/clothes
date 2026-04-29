@@ -324,7 +324,7 @@ class _AssignStaffWizardScreenState extends State<AssignStaffWizardScreen> {
             backgroundColor: AppColors.primaryDark,
             disabledBackgroundColor: const Color(0xFFE2E8F0),
             foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 18),
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -336,15 +336,15 @@ class _AssignStaffWizardScreenState extends State<AssignStaffWizardScreen> {
               Text(
                 'Next: Fabric Sourcing',
                 style: GoogleFonts.inter(
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                 ),
               ),
               const SizedBox(width: 8),
               const Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 16,
+                Icons.arrow_forward_rounded,
+                size: 18,
                 color: Colors.white,
               ),
             ],
