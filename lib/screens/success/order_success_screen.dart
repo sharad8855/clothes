@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/app_colors.dart';
-import '../../providers/order_success_provider.dart';
 import '../../providers/package_provider.dart';
 import '../../providers/order_management_provider.dart';
 import '../orders/order_details_screen.dart';
@@ -19,13 +18,10 @@ class OrderSuccessScreen extends StatefulWidget {
 class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => OrderSuccessProvider(),
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBg,
-        appBar: _buildAppBar(context),
-        body: _OrderSuccessScreenBody(orderId: widget.orderId),
-      ),
+    return Scaffold(
+      backgroundColor: AppColors.scaffoldBg,
+      appBar: _buildAppBar(context),
+      body: _OrderSuccessScreenBody(orderId: widget.orderId),
     );
   }
 
@@ -94,8 +90,6 @@ class _OrderSuccessScreenBody extends StatelessWidget {
           _OrderSummarySheet(orderId: orderId),
           const SizedBox(height: 32),
           _ActionButtons(orderId: orderId),
-          const SizedBox(height: 60),
-          const _AiTipCard(),
           const SizedBox(height: 32),
         ],
       ),
@@ -355,7 +349,7 @@ class _ActionButtons extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         TextButton(
           onPressed: () {
             // Clear current order state
@@ -377,129 +371,6 @@ class _ActionButtons extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _AiTipCard extends StatelessWidget {
-  const _AiTipCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final provider = context.watch<OrderSuccessProvider>();
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF3F4F6),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              color: Color(0xFF8B5CF6),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'AI Tip',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primaryDark,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Would you like me to send a WhatsApp notification to the customer?',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.textSecondary,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildWhatsappAction(context, provider),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWhatsappAction(BuildContext context, OrderSuccessProvider provider) {
-    if (provider.whatsAppStatus == WhatsAppStatus.sent) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: const Color(0xFF10B981), // Green Success
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.check, color: Colors.white, size: 14),
-            const SizedBox(width: 6),
-            Text(
-              'Message Sent!',
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ElevatedButton(
-      onPressed: provider.whatsAppStatus == WhatsAppStatus.sending 
-          ? null 
-          : provider.sendWhatsAppNotification,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF8B5CF6),
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (provider.whatsAppStatus == WhatsAppStatus.sending)
-            const SizedBox(
-              width: 14,
-              height: 14,
-              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-            )
-          else ...[
-            Text(
-              'Send Now',
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(width: 4),
-            const Icon(Icons.send_rounded, size: 12),
-          ]
-        ],
-      ),
     );
   }
 }
