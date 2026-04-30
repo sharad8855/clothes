@@ -9,6 +9,7 @@ import '../models/product_model.dart';
 import '../models/business_staff_response.dart';
 import '../models/order_timeline_response.dart';
 import '../models/business_model.dart';
+import '../core/api_endpoints.dart';
 
 /// Handles all HTTP communication with the Bespoke Atelier backend.
 class AuthService {
@@ -24,7 +25,6 @@ class AuthService {
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'client-id': clientId,
       if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
     };
   }
@@ -38,11 +38,10 @@ class AuthService {
     try {
       final response = await http
           .post(
-            Uri.parse('$_baseUrl/auth/api/auth/verify-otp'),
+            Uri.parse(ApiEndpoints.verifyOtp),
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
-              'client-id': clientId,
             },
             body: jsonEncode({
               'phone': cleanPhone,
