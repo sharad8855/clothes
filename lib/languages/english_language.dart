@@ -32,7 +32,7 @@ const Map<String, String> englishStrings = {
   'join_as_partner': 'Join as a Partner',
   'bespoke_atelier': 'THE BESPOKE ATELIER',
   'dashboard': 'Dashboard',
-  'ordervhistory': 'Order History',
+  'order_history': 'Order History',
 
   // ── Home Screen ──
   'hello': 'Hello',
@@ -166,10 +166,18 @@ const Map<String, String> englishStrings = {
   'production_label': 'PRODUCTION',
   'orders_title': 'Orders',
   'search_customer_or_id': 'Search customer or ID...',
+  'search_customer_hint': 'Search by customer name or ID...',
   'no_orders_found': 'No orders found',
+  'no_matching_orders': 'No orders found matching your search.',
   'created_by': 'Created by:',
   'inv_prefix': 'INV:',
   'total_count_label': '{count} Total',
+  'loyalty_insights': 'Loyalty Insights',
+  'loyalty_insights_desc': 'Active engagement plan: Personal follow-up for high-value orders and AI-suggested bespoke loyalty rewards.',
+  'generate_suggestions': 'Generate Suggestions',
+  'recent_orders': 'Recent Orders',
+  'showing_orders_count': 'SHOWING {count} ORDERS',
+  'pending_status': 'PENDING',
 
   // ── Add Staff Screen ──
   'add_staff_title': 'Add Staff',

@@ -32,7 +32,7 @@ const Map<String, String> hindiStrings = {
   'join_as_partner': 'पाटनर म्हणून सामील व्हा',
   'bespoke_atelier': 'द बिस्पोक एटेलियर',
   'dashboard': 'डैशबोर्ड',
-  'orderhistory': 'ऑर्डर इतिहास',
+  'order_history': 'ऑर्डर इतिहास',
 
   // ── Home Screen ──
   'hello': 'नमस्ते',
@@ -166,10 +166,18 @@ const Map<String, String> hindiStrings = {
   'production_label': 'प्रोडक्शन',
   'orders_title': 'ऑर्डर',
   'search_customer_or_id': 'ग्राहक या आईडी खोजें...',
+  'search_customer_hint': 'ग्राहक का नाम या आईडी द्वारा खोजें...',
   'no_orders_found': 'कोई ऑर्डर नहीं मिला',
+  'no_matching_orders': 'आपकी खोज से मेल खाने वाला कोई ऑर्डर नहीं मिला।',
   'created_by': 'द्वारा बनाया गया:',
   'inv_prefix': 'INV:',
   'total_count_label': '{count} कुल',
+  'loyalty_insights': 'लोयल्टी इनसाइट्स',
+  'loyalty_insights_desc': 'सक्रिय सहभाग योजना: उच्च-मूल्य ऑर्डर के लिए व्यक्तिगत अनुवर्ती और एआई-सुझाए गए विशेष वफादारी पुरस्कार।',
+  'generate_suggestions': 'सुझाव उत्पन्न करें',
+  'recent_orders': 'हाल के आदेश',
+  'showing_orders_count': '{count} ऑर्डर दिखा रहा है',
+  'pending_status': 'लंबित',
 
   // ── Add Staff Screen ──
   'add_staff_title': 'कर्मचारी जोड़ें',

@@ -32,7 +32,7 @@ const Map<String, String> marathiStrings = {
   'join_as_partner': 'भागीदार म्हणून सामील व्हा',
   'bespoke_atelier': 'द बिस्पोक अटेलियर',
   'dashboard': 'डॅशबोर्ड',
-  'orderhistory': 'ऑर्डर इतिहास',
+  'order_history': 'ऑर्डर इतिहास',
 
   // ── Home Screen ──
   'hello': 'नमस्कार',
@@ -166,10 +166,18 @@ const Map<String, String> marathiStrings = {
   'production_label': 'उत्पादन',
   'orders_title': 'ऑर्डर',
   'search_customer_or_id': 'ग्राहक किंवा आयडी शोधा...',
+  'search_customer_hint': 'ग्राहक नाव किंवा आयडी द्वारे शोधा...',
   'no_orders_found': 'कोणतेही ऑर्डर आढळले नाही',
+  'no_matching_orders': 'तुमच्या शोधाशी जुळणारी कोणतीही ऑर्डर सापडली नाही.',
   'created_by': 'तयार केले:',
   'inv_prefix': 'INV:',
   'total_count_label': '{count} एकूण',
+  'loyalty_insights': 'लोयल्टी इनसाइट्स',
+  'loyalty_insights_desc': 'सक्रिय सहभाग योजना: उच्च-मूल्य ऑर्डरसाठी वैयक्तिक पाठपुरावा आणि एआय-सुचवलेले विशेष लोयल्टी रिवॉर्ड्स.',
+  'generate_suggestions': 'सूचना तयार करा',
+  'recent_orders': 'अलीकडील ऑर्डर',
+  'showing_orders_count': '{count} ऑर्डर दाखवत आहे',
+  'pending_status': 'प्रलंबित',
 
   // ── Add Staff Screen ──
   'add_staff_title': 'कर्मचारी जोडा',
