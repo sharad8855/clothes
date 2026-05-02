@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../providers/order_management_provider.dart';
 import '../../models/order_list_response.dart';
 import '../../core/app_colors.dart';
+import '../../utils/localization/app_localizations.dart';
 import 'order_details_screen.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
@@ -52,7 +53,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         ),
         centerTitle: true,
         title: Text(
-          'Order History',
+          AppLocalizations.of(context)!.orderHistory,
           style: GoogleFonts.inter(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -107,7 +108,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                 color: const Color(0xFF1E293B),
               ),
               decoration: InputDecoration(
-                hintText: 'Search by customer name or ID...',
+                hintText: AppLocalizations.of(context)!.searchCustomerHint,
                 hintStyle: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -150,7 +151,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Loyalty Insights',
+            AppLocalizations.of(context)!.loyaltyInsights,
             style: GoogleFonts.inter(
               fontSize: 18,
               fontWeight: FontWeight.w800,
@@ -160,7 +161,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Active engagement plan: Personal follow-up for high-value orders and AI-suggested bespoke loyalty rewards.',
+            AppLocalizations.of(context)!.loyaltyInsightsDesc,
             style: GoogleFonts.inter(
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -184,7 +185,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               ),
               icon: const Icon(Icons.auto_awesome_rounded, size: 18),
               label: Text(
-                'Generate Suggestions',
+                AppLocalizations.of(context)!.generateSuggestions,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -204,7 +205,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          'Recent Orders',
+          AppLocalizations.of(context)!.recentOrders,
           style: GoogleFonts.inter(
             fontSize: 20,
             fontWeight: FontWeight.w800,
@@ -214,7 +215,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         Padding(
           padding: const EdgeInsets.only(bottom: 2),
           child: Text(
-            'SHOWING ${provider.totalCount} ORDERS',
+            AppLocalizations.of(context)!
+                .showingOrdersCount
+                .replaceFirst('{count}', provider.totalCount.toString()),
             style: GoogleFonts.inter(
               fontSize: 10,
               fontWeight: FontWeight.w800,
@@ -244,7 +247,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
             child: Padding(
               padding: const EdgeInsets.all(40.0),
               child: Text(
-                'No orders found matching your search.',
+                AppLocalizations.of(context)!.noMatchingOrders,
                 style: GoogleFonts.inter(color: Colors.grey),
               ),
             ),

@@ -726,6 +726,15 @@ class AppLocalizations {
   String get createdBy => translate('created_by');
   String get invPrefix => translate('inv_prefix');
   String get totalCountLabel => translate('total_count_label');
+  String get orderHistory => translate('order_history');
+  String get searchCustomerHint => translate('search_customer_hint');
+  String get noMatchingOrders => translate('no_matching_orders');
+  String get loyaltyInsights => translate('loyalty_insights');
+  String get loyaltyInsightsDesc => translate('loyalty_insights_desc');
+  String get generateSuggestions => translate('generate_suggestions');
+  String get recentOrders => translate('recent_orders');
+  String get showingOrdersCount => translate('showing_orders_count');
+  String get pendingStatus => translate('pending_status');
 
   // ── Add Staff Screen ──
   String get addStaffTitle => translate('add_staff_title');
