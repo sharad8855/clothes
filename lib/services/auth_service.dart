@@ -17,7 +17,7 @@ class AuthService {
       'https://platform-development-dev.157.20.214.214.nip.io';
 
   /// Hardcoded Client ID for backend API integrations
-  static const String clientId = 'c00c143d-71c3-42d9-b1bd-45f2f6f1297c';
+  static const String clientId = 'a3ea1cda-c735-4798-8219-54bbb07795a9';
 
   /// Generates the standard headers needed for authenticated requests
   static Future<Map<String, String>> getAuthHeaders() async {
@@ -759,7 +759,7 @@ class AuthService {
       final headers = await getAuthHeaders();
       final response = await http
           .get(
-            Uri.parse('$_baseUrl/auth/api/business/client/$clientId/business/$businessId'),
+            Uri.parse(ApiEndpoints.getBusinessDetails(clientId, businessId)),
             headers: headers,
           )
           .timeout(const Duration(seconds: 30));
@@ -785,33 +785,11 @@ class AuthService {
   // ─── Get User Businesses ───────────────────────────────────────────────────
   static Future<List<BusinessModel>> getBusinessesList() async {
     try {
-      final headers = await getAuthHeaders();
-      // Using the get-all pattern for businesses under this client
-      final response = await http
-          .post(
-            Uri.parse('$_baseUrl/auth/api/business/client/$clientId/get-all'),
-            headers: headers,
-            body: jsonEncode({'page': 1, 'limit': 100}),
-          )
-          .timeout(const Duration(seconds: 30));
-
-      final body = _processResponse(response) as Map<String, dynamic>;
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (body['data'] != null && body['data']['items'] != null) {
-          return (body['data']['items'] as List)
-              .map((item) => BusinessModel.fromJson(item))
-              .toList();
-        }
-        // Fallback if data is directly a list
-        if (body['data'] is List) {
-          return (body['data'] as List)
-              .map((item) => BusinessModel.fromJson(item))
-              .toList();
-        }
-      }
-
-      return []; // Return empty instead of throwing if no businesses found
+      // Per requirements, fetch the specific business workspace directly to populate the UI
+      const specificBusinessId = '5308c246-9f59-4923-9c59-4e634a3fa8c8';
+      
+      final business = await getBusinessDetails(specificBusinessId);
+      return [business];
     } catch (e) {
       print('Error fetching businesses: $e');
       return [];
