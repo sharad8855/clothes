@@ -193,4 +193,14 @@ const Map<String, String> englishStrings = {
   'please_fill_required_fields': 'Please fill all required fields',
   'staff_invited_successfully': 'Staff invited successfully',
   'invite_staff': 'Invite Staff',
+
+  // ── Select Customer Screen ──
+  'select_customer': 'Select Customer',
+  'step_1_order_flow': 'Step 1 — Order Flow',
+  'who_is_this_order_for': 'Who is this order for?',
+  'choose_existing_customer_to_begin': 'Choose an existing customer to begin creating their bespoke order.',
+  'search_by_name_or_phone': 'Search by name or phone...',
+  'add_new_customer': 'Add New Customer',
+  'create_profile_first_time_client': 'Create a profile for a first-time client',
+  'all_customers': 'All Customers',
 };

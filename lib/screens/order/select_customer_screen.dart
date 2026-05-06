@@ -8,6 +8,7 @@ import '../../providers/package_provider.dart';
 import '../../models/customer_list_response.dart';
 import '../package/package_screen.dart';
 import '../customer/add_customer_screen.dart';
+import '../../utils/localization/app_localizations.dart';
 
 class SelectCustomerScreen extends StatefulWidget {
   const SelectCustomerScreen({super.key});
@@ -63,7 +64,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
               const SizedBox(height: 8),
               _buildAddCustomerButton(context),
               const SizedBox(height: 8),
-              _buildSectionLabel('All Customers', provider.totalCount),
+              _buildSectionLabel(AppLocalizations.of(context)!.translate('all_customers'), provider.totalCount),
               Expanded(
                 child: provider.isLoading && customers.isEmpty
                     ? const Center(child: CircularProgressIndicator())
@@ -91,7 +92,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
       title: Column(
         children: [
           Text(
-            'Select Customer',
+            AppLocalizations.of(context)!.translate('select_customer'),
             style: GoogleFonts.inter(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -99,7 +100,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
             ),
           ),
           Text(
-            'Step 1 — Order Flow',
+            AppLocalizations.of(context)!.translate('step_1_order_flow'),
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w500,
@@ -118,7 +119,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Who is this order for?',
+            AppLocalizations.of(context)!.translate('who_is_this_order_for'),
             style: GoogleFonts.inter(
               fontSize: 22,
               fontWeight: FontWeight.w800,
@@ -127,7 +128,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Choose an existing customer to begin creating\ntheir bespoke order.',
+            AppLocalizations.of(context)!.translate('choose_existing_customer_to_begin'),
             style: GoogleFonts.inter(
               fontSize: 13,
               color: AppColors.textSecondary,
@@ -164,7 +165,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
             color: AppColors.textPrimary,
           ),
           decoration: InputDecoration(
-            hintText: 'Search by name or phone...',
+            hintText: AppLocalizations.of(context)!.translate('search_by_name_or_phone'),
             prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textHint, size: 20),
             suffixIcon: provider.searchQuery.isNotEmpty
                 ? IconButton(
@@ -514,7 +515,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Add New Customer',
+                      AppLocalizations.of(context)!.translate('add_new_customer'),
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -522,7 +523,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                       ),
                     ),
                     Text(
-                      'Create a profile for a first-time client',
+                      AppLocalizations.of(context)!.translate('create_profile_first_time_client'),
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         color: const Color(0xFF0EA5E9),
