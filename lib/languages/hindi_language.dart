@@ -193,4 +193,14 @@ const Map<String, String> hindiStrings = {
   'please_fill_required_fields': 'कृपया सभी आवश्यक फ़ील्ड भरें',
   'staff_invited_successfully': 'कर्मचारी को सफलतापूर्वक आमंत्रित किया गया',
   'invite_staff': 'कर्मचारी आमंत्रित करें',
+
+  // ── Select Customer Screen ──
+  'select_customer': 'ग्राहक चुनें',
+  'step_1_order_flow': 'चरण 1 — ऑर्डर फ़्लो',
+  'who_is_this_order_for': 'यह ऑर्डर किसके लिए है?',
+  'choose_existing_customer_to_begin': 'उनका कस्टम ऑर्डर बनाना शुरू करने के लिए एक मौजूदा ग्राहक चुनें।',
+  'search_by_name_or_phone': 'नाम या फ़ोन से खोजें...',
+  'add_new_customer': 'नया ग्राहक जोड़ें',
+  'create_profile_first_time_client': 'पहली बार आए क्लाइंट के लिए प्रोफ़ाइल बनाएं',
+  'all_customers': 'सभी ग्राहक',
 };

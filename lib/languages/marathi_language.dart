@@ -193,4 +193,14 @@ const Map<String, String> marathiStrings = {
   'please_fill_required_fields': 'कृपया सर्व आवश्यक फील्ड भरा',
   'staff_invited_successfully': 'कर्मचारी यशस्वीरित्या आमंत्रित केला',
   'invite_staff': 'कर्मचारी आमंत्रित करा',
+
+  // ── Select Customer Screen ──
+  'select_customer': 'ग्राहक निवडा',
+  'step_1_order_flow': 'पायरी १ — ऑर्डर फ्लो',
+  'who_is_this_order_for': 'ही ऑर्डर कोणासाठी आहे?',
+  'choose_existing_customer_to_begin': 'त्यांची सानुकूल ऑर्डर तयार करण्यासाठी विद्यमान ग्राहक निवडा.',
+  'search_by_name_or_phone': 'नाव किंवा फोन नंबरने शोधा...',
+  'add_new_customer': 'नवीन ग्राहक जोडा',
+  'create_profile_first_time_client': 'पहिल्यांदा आलेल्या क्लायंटसाठी प्रोफाईल तयार करा',
+  'all_customers': 'सर्व ग्राहक',
 };
