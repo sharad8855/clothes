@@ -26,7 +26,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    
+
     // Initial fetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ClientsProvider>().fetchCustomers(refresh: true);
@@ -42,7 +42,8 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       context.read<ClientsProvider>().loadMore();
     }
   }
@@ -64,7 +65,10 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
               const SizedBox(height: 8),
               _buildAddCustomerButton(context),
               const SizedBox(height: 8),
-              _buildSectionLabel(AppLocalizations.of(context)!.translate('all_customers'), provider.totalCount),
+              _buildSectionLabel(
+                AppLocalizations.of(context)!.translate('all_customers'),
+                provider.totalCount,
+              ),
               Expanded(
                 child: provider.isLoading && customers.isEmpty
                     ? const Center(child: CircularProgressIndicator())
@@ -128,7 +132,9 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            AppLocalizations.of(context)!.translate('choose_existing_customer_to_begin'),
+            AppLocalizations.of(
+              context,
+            )!.translate('choose_existing_customer_to_begin'),
             style: GoogleFonts.inter(
               fontSize: 13,
               color: AppColors.textSecondary,
@@ -165,11 +171,21 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
             color: AppColors.textPrimary,
           ),
           decoration: InputDecoration(
-            hintText: AppLocalizations.of(context)!.translate('search_by_name_or_phone'),
-            prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textHint, size: 20),
+            hintText: AppLocalizations.of(
+              context,
+            )!.translate('search_by_name_or_phone'),
+            prefixIcon: const Icon(
+              Icons.search_rounded,
+              color: AppColors.textHint,
+              size: 20,
+            ),
             suffixIcon: provider.searchQuery.isNotEmpty
                 ? IconButton(
-                    icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textHint),
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      size: 18,
+                      color: AppColors.textHint,
+                    ),
                     onPressed: () {
                       _searchController.clear();
                       provider.setSearchQuery('');
@@ -180,8 +196,14 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
             filled: false,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textHint),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+            hintStyle: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppColors.textHint,
+            ),
           ),
         ),
       ),
@@ -222,13 +244,20 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
     );
   }
 
-  Widget _buildCustomerList(List<CustomerListItem> customers, ClientsProvider provider) {
+  Widget _buildCustomerList(
+    List<CustomerListItem> customers,
+    ClientsProvider provider,
+  ) {
     if (customers.isEmpty && !provider.isLoading) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.search_off_rounded, size: 48, color: AppColors.border),
+            const Icon(
+              Icons.search_off_rounded,
+              size: 48,
+              color: AppColors.border,
+            ),
             const SizedBox(height: 12),
             Text(
               'No customers found',
@@ -292,7 +321,9 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primaryDark : AppColors.inputBg,
+                    color: isSelected
+                        ? AppColors.primaryDark
+                        : AppColors.inputBg,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -301,7 +332,9 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: isSelected ? Colors.white : AppColors.primaryDark,
+                        color: isSelected
+                            ? Colors.white
+                            : AppColors.primaryDark,
                       ),
                     ),
                   ),
@@ -331,7 +364,11 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.mail_outline_rounded, size: 11, color: AppColors.textHint),
+                          const Icon(
+                            Icons.mail_outline_rounded,
+                            size: 11,
+                            color: AppColors.textHint,
+                          ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
@@ -356,7 +393,9 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isSelected ? AppColors.primaryDark : AppColors.border,
+                      color: isSelected
+                          ? AppColors.primaryDark
+                          : AppColors.border,
                       width: isSelected ? 7 : 2,
                     ),
                     color: Colors.white,
@@ -374,7 +413,12 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
     final selected = _selectedCustomer!;
 
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, 16 + MediaQuery.of(context).padding.bottom),
+      padding: EdgeInsets.fromLTRB(
+        20,
+        16,
+        20,
+        16 + MediaQuery.of(context).padding.bottom,
+      ),
       decoration: BoxDecoration(
         color: AppColors.scaffoldBg,
         boxShadow: [
@@ -420,7 +464,10 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                       ),
                       Text(
                         'Selected for this order',
-                        style: GoogleFonts.inter(fontSize: 10, color: AppColors.textSecondary),
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -451,7 +498,7 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
               onPressed: () {
                 // Set the selected customer in PackageProvider
                 context.read<PackageProvider>().setSelectedCustomer(selected);
-                
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const PackageScreen()),
@@ -462,14 +509,19 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Proceed to Order',
-                    style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700),
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   const Icon(Icons.arrow_forward_rounded, size: 18),
@@ -515,7 +567,9 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.translate('add_new_customer'),
+                      AppLocalizations.of(
+                        context,
+                      )!.translate('add_new_customer'),
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -523,7 +577,9 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                       ),
                     ),
                     Text(
-                      AppLocalizations.of(context)!.translate('create_profile_first_time_client'),
+                      AppLocalizations.of(
+                        context,
+                      )!.translate('create_profile_first_time_client'),
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         color: const Color(0xFF0EA5E9),
@@ -532,7 +588,11 @@ class _SelectCustomerScreenState extends State<SelectCustomerScreen> {
                   ],
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF0EA5E9)),
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: Color(0xFF0EA5E9),
+              ),
             ],
           ),
         ),
