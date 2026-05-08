@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../shell/widgets/app_drawer.dart';
+import '../../utils/localization/app_localizations.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FC),
       appBar: AppBar(
@@ -18,7 +19,7 @@ class AnalyticsScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Royal Stitch BI',
+          l.royalStitchBi,
           style: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w700,
@@ -42,35 +43,35 @@ class AnalyticsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTopMetricsBar(),
+            _buildTopMetricsBar(l),
             const SizedBox(height: 24),
-            _buildRevenueTrendCard(),
+            _buildRevenueTrendCard(l),
             const SizedBox(height: 24),
-            _buildClientRetentionCard(),
+            _buildClientRetentionCard(l),
             const SizedBox(height: 32),
-            _buildAIStrategyHeader(),
+            _buildAIStrategyHeader(l),
             const SizedBox(height: 16),
             _buildAIStrategyCard(
               icon: Icons.inventory_2_rounded,
-              tag: 'SUPPLY INSIGHT',
+              tag: l.supplyInsightTag,
               tagColor: const Color(0xFF8B5CF6),
-              titleText: 'High Demand Alert: ',
-              descText: 'Loro Piana fabrics are trending. Suggest increasing inventory by ',
-              highlightText: '20%.',
-              buttonLabel: 'Adjust Inventory',
+              titleText: l.highDemandAlertTitle,
+              descText: l.highDemandAlertDesc,
+              highlightText: l.highDemandAlertHighlight,
+              buttonLabel: l.adjustInventory,
             ),
             const SizedBox(height: 16),
             _buildAIStrategyCard(
               icon: Icons.schedule_rounded,
-              tag: 'OPS EFFICIENCY',
+              tag: l.opsEfficiencyTag,
               tagColor: const Color(0xFF8B5CF6),
-              titleText: 'Lead Time Optimization: ',
-              descText: 'Reducing bespoke lead time to 3.5 weeks could increase capacity by ',
-              highlightText: '12%.',
-              buttonLabel: 'Review Staffing',
+              titleText: l.leadTimeOptTitle,
+              descText: l.leadTimeOptDesc,
+              highlightText: l.leadTimeOptHighlight,
+              buttonLabel: l.reviewStaffing,
             ),
             const SizedBox(height: 24),
-            _buildRevenueByCategory(),
+            _buildRevenueByCategory(l),
             const SizedBox(height: 60),
           ],
         ),
@@ -78,24 +79,24 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTopMetricsBar() {
+  Widget _buildTopMetricsBar(AppLocalizations l) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       clipBehavior: Clip.none,
       child: Row(
         children: [
           _buildMetricCard(
-            title: 'Total Revenue',
+            title: l.totalRevenue,
             value: '\$142.8k',
-            trend: '↗ +14% vs last month',
+            trend: l.revenueTrendPct,
             trendColor: const Color(0xFF10B981),
             icon: Icons.payments_rounded,
           ),
           const SizedBox(width: 16),
           _buildMetricCard(
-            title: 'Active Orders',
+            title: l.activeOrdersLabel,
             value: '48',
-            trend: '7 scheduled this week',
+            trend: l.scheduledThisWeek,
             trendColor: const Color(0xFF64748B),
             icon: null,
           ),
@@ -166,7 +167,7 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRevenueTrendCard() {
+  Widget _buildRevenueTrendCard(AppLocalizations l) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -183,7 +184,7 @@ class AnalyticsScreen extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'Revenue Trend',
+                    l.revenueTrend,
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -199,7 +200,7 @@ class AnalyticsScreen extends StatelessWidget {
                       border: Border.all(color: const Color(0xFFE2E8F0)),
                     ),
                     child: Text(
-                      '6 Months',
+                      l.sixMonths,
                       style: GoogleFonts.inter(
                         fontSize: 9,
                         fontWeight: FontWeight.w600,
@@ -245,7 +246,7 @@ class AnalyticsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          // X Axis
+          // X Axis — month abbreviations are internationally understood
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map((m) {
@@ -278,7 +279,7 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildClientRetentionCard() {
+  Widget _buildClientRetentionCard(AppLocalizations l) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -299,7 +300,7 @@ class AnalyticsScreen extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Client Retention',
+              l.clientRetention,
               style: GoogleFonts.inter(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -335,7 +336,7 @@ class AnalyticsScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'LOYALTY',
+                    l.loyaltyUpper,
                     style: GoogleFonts.inter(
                       fontSize: 9,
                       fontWeight: FontWeight.w800,
@@ -358,15 +359,15 @@ class AnalyticsScreen extends StatelessWidget {
                 height: 1.5,
               ),
               children: [
-                const TextSpan(text: 'Repeat customer rate is '),
+                TextSpan(text: l.repeatCustomerPrefix),
                 TextSpan(
-                  text: 'up 4%',
+                  text: l.repeatCustomerHighlight,
                   style: GoogleFonts.inter(
                     color: const Color(0xFF7C3AED),
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const TextSpan(text: ' from Q1\nperformance.'),
+                TextSpan(text: l.repeatCustomerSuffix),
               ],
             ),
           ),
@@ -375,13 +376,13 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAIStrategyHeader() {
+  Widget _buildAIStrategyHeader(AppLocalizations l) {
     return Row(
       children: [
         const Icon(Icons.auto_awesome_rounded, color: Color(0xFF7C3AED), size: 20),
         const SizedBox(width: 8),
         Text(
-          'AI Business Strategy',
+          l.aiBusinessStrategy,
           style: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w800,
@@ -405,7 +406,7 @@ class AnalyticsScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3E8FF).withValues(alpha: 0.6), // Ultra light purple
+        color: const Color(0xFFF3E8FF).withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
@@ -486,7 +487,7 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRevenueByCategory() {
+  Widget _buildRevenueByCategory(AppLocalizations l) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -498,7 +499,7 @@ class AnalyticsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Revenue by Category',
+            l.revenueByCategory,
             style: GoogleFonts.inter(
               fontSize: 16,
               fontWeight: FontWeight.w800,
@@ -506,13 +507,13 @@ class AnalyticsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          _buildProgressBar('Bespoke Suits', '\$84,000', 0.8, const Color(0xFF02206B)),
+          _buildProgressBar(l.bespokeSuits, '\$84,000', 0.8, const Color(0xFF02206B)),
           const SizedBox(height: 16),
-          _buildProgressBar('Evening Gowns', '\$32,500', 0.5, const Color(0xFF8B5CF6)),
+          _buildProgressBar(l.eveningGowns, '\$32,500', 0.5, const Color(0xFF8B5CF6)),
           const SizedBox(height: 16),
-          _buildProgressBar('Luxury Shirts', '\$18,200', 0.35, const Color(0xFF8B5CF6)),
+          _buildProgressBar(l.luxuryShirts, '\$18,200', 0.35, const Color(0xFF8B5CF6)),
           const SizedBox(height: 16),
-          _buildProgressBar('Alterations', '\$8,100', 0.15, const Color(0xFFCBD5E1)),
+          _buildProgressBar(l.alterations, '\$8,100', 0.15, const Color(0xFFCBD5E1)),
         ],
       ),
     );

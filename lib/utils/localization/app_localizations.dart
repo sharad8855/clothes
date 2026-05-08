@@ -790,6 +790,36 @@ class AppLocalizations {
   String get lowStockUpper => translate('low_stock_upper');
   String get clientLabel => translate('client_label');
   String get dueLabel => translate('due_label');
+
+  // ── Analytics / BI Screen ──
+  String get royalStitchBi => translate('royal_stitch_bi');
+  String get totalRevenue => translate('total_revenue');
+  String get revenueTrendPct => translate('revenue_trend_pct');
+  String get activeOrdersLabel => translate('active_orders');
+  String get scheduledThisWeek => translate('scheduled_this_week');
+  String get revenueTrend => translate('revenue_trend');
+  String get sixMonths => translate('six_months');
+  String get clientRetention => translate('client_retention');
+  String get loyaltyUpper => translate('loyalty_upper');
+  String get repeatCustomerPrefix => translate('repeat_customer_prefix');
+  String get repeatCustomerHighlight => translate('repeat_customer_highlight');
+  String get repeatCustomerSuffix => translate('repeat_customer_suffix');
+  String get aiBusinessStrategy => translate('ai_business_strategy');
+  String get supplyInsightTag => translate('supply_insight_tag');
+  String get highDemandAlertTitle => translate('high_demand_alert_title');
+  String get highDemandAlertDesc => translate('high_demand_alert_desc');
+  String get highDemandAlertHighlight => translate('high_demand_alert_highlight');
+  String get adjustInventory => translate('adjust_inventory');
+  String get opsEfficiencyTag => translate('ops_efficiency_tag');
+  String get leadTimeOptTitle => translate('lead_time_opt_title');
+  String get leadTimeOptDesc => translate('lead_time_opt_desc');
+  String get leadTimeOptHighlight => translate('lead_time_opt_highlight');
+  String get reviewStaffing => translate('review_staffing');
+  String get revenueByCategory => translate('revenue_by_category');
+  String get bespokeSuits => translate('bespoke_suits');
+  String get eveningGowns => translate('evening_gowns');
+  String get luxuryShirts => translate('luxury_shirts');
+  String get alterations => translate('alterations');
 }
 
 class _AppLocalizationsDelegate

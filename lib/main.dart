@@ -21,7 +21,7 @@ import 'utils/localization/app_localizations.dart';
 import 'utils/localization/localization_manager.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();  
+  WidgetsFlutterBinding.ensureInitialized();
   await LocalizationManager().initialize();
 
   SystemChrome.setPreferredOrientations([
