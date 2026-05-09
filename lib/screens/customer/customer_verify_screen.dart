@@ -7,8 +7,8 @@ import '../../providers/add_customer_provider.dart';
 class CustomerVerifyScreen extends StatelessWidget {
   final AddCustomerProvider provider;
 
-  const CustomerVerifyScreen({super.key, required this.provider});
 
+  const CustomerVerifyScreen({super.key, required this.provider});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -209,8 +209,8 @@ class CustomerVerifyScreen extends StatelessWidget {
     return ElevatedButton(
       onPressed: () async {
         try {
-          final success = await provider.saveCustomer();
-          if (success && context.mounted) {
+          final newCustomer = await provider.saveCustomer();
+          if (newCustomer != null && context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
