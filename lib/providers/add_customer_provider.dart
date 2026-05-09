@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../core/session_manager.dart';
+import '../models/customer_list_response.dart';
 
 enum FitType { slim, regular }
 enum PriorityLevel { standard, vip }
@@ -85,22 +86,22 @@ class AddCustomerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> saveCustomer() async {
-    if (_fullName.trim().isEmpty) return false;
+  Future<CustomerListItem?> saveCustomer() async {
+    if (_fullName.trim().isEmpty) return null;
 
     // Validate phone number
     final digitsOnly = _phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
     if (digitsOnly.length != 10) {
       _phoneError = 'Phone number must be exactly 10 digits';
       notifyListeners();
-      return false;
+      return null;
     }
 
     // Validate email
     if (_emailAddress.isNotEmpty && !RegExp(r'^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$').hasMatch(_emailAddress)) {
       _emailError = 'Please enter a valid email address';
       notifyListeners();
-      return false;
+      return null;
     }
 
     _isLoading = true;
@@ -108,7 +109,7 @@ class AddCustomerProvider extends ChangeNotifier {
 
     try {
       final bizId = await SessionManager.instance.getSelectedBusinessId();
-      final success = await AuthService.createCustomer(
+      final newCustomer = await AuthService.createCustomer(
         fullName: _fullName,
         email: _emailAddress,
         phone: _phoneNumber,
@@ -117,7 +118,7 @@ class AddCustomerProvider extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
-      return success;
+      return newCustomer;
     } catch (e) {
       _isLoading = false;
       notifyListeners();

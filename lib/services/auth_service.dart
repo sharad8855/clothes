@@ -9,6 +9,7 @@ import '../models/product_model.dart';
 import '../models/business_staff_response.dart';
 import '../models/order_timeline_response.dart';
 import '../models/business_model.dart';
+import '../models/customer_list_response.dart';
 import '../core/api_endpoints.dart';
 
 /// Handles all HTTP communication with the Bespoke Atelier backend.
@@ -295,7 +296,7 @@ class AuthService {
   }
 
   // ─── Create Customer ────────────────────────────────────────────────────────
-  static Future<bool> createCustomer({
+  static Future<CustomerListItem?> createCustomer({
     required String fullName,
     required String email,
     required String phone,
@@ -332,7 +333,23 @@ class AuthService {
       final body = _processResponse(response) as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return body['success'] == true;
+        if (body['success'] == true) {
+          try {
+            if (body['data'] != null) {
+              return CustomerListItem.fromJson(body['data']);
+            }
+          } catch (_) {}
+          // Fallback if data is missing or parsing fails
+          return CustomerListItem(
+            id: DateTime.now().millisecondsSinceEpoch.toString(), // temporary ID
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phoneNumber: cleanPhone,
+            countryCode: countryCode,
+          );
+        }
+        return null;
       }
 
       final message =

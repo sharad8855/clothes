@@ -6,6 +6,7 @@ import '../../core/app_colors.dart';
 import '../../providers/add_customer_provider.dart';
 import '../../utils/localization/localization_extension.dart';
 import '../package/package_screen.dart';
+import '../../providers/package_provider.dart';
 import 'widgets/confirm_customer_bottom_sheet.dart';
 
 class AddCustomerScreen extends StatefulWidget {
@@ -271,8 +272,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     // Only proceed to save if confirmed
     if (shouldSave == true) {
       try {
-        final success = await provider.saveCustomer();
-        if (success && mounted) {
+        final newCustomer = await provider.saveCustomer();
+        if (newCustomer != null && mounted) {
+          // Select the customer globally
+          context.read<PackageProvider>().setSelectedCustomer(newCustomer);
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(context.customerAddedSuccessfully),
