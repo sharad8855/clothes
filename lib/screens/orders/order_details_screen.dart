@@ -476,7 +476,7 @@ class _ProductionProgressCard extends StatelessWidget {
     required this.date,
     required this.timeline,
   });
-
+ 
   @override
   Widget build(BuildContext context) {
     // Define the fixed steps the user requested
