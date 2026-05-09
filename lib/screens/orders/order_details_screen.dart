@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/app_colors.dart';
 import '../../models/order_list_response.dart';
 import '../../models/order_timeline_response.dart';
@@ -19,11 +21,21 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   List<OrderTimelineItem> _timeline = [];
   bool _isLoading = true;
   String? _error;
+  String? _localImagePath; // ── locally saved fabric image path
 
   @override
   void initState() {
     super.initState();
     _fetchOrderDetails();
+    _loadLocalImage();
+  }
+
+  Future<void> _loadLocalImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final path = prefs.getString('order_image_${widget.orderId}');
+    if (path != null && File(path).existsSync()) {
+      setState(() => _localImagePath = path);
+    }
   }
 
   Future<void> _fetchOrderDetails() async {
@@ -32,7 +44,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         _isLoading = true;
         _error = null;
       });
-      
+
       // Fetch both details and timeline in parallel
       final results = await Future.wait([
         AuthService.getOrderDetails(widget.orderId),
@@ -56,7 +68,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
       );
     }
 
@@ -95,10 +109,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           children: [
             _CustomerProfileCard(customer: order.customer),
             const SizedBox(height: 24),
-            _GarmentConfigurationCard(order: order),
+            _GarmentConfigurationCard(
+              order: order,
+              localImagePath: _localImagePath,
+            ),
             const SizedBox(height: 24),
             _ProductionProgressCard(
-              status: order.orderStatus, 
+              status: order.orderStatus,
               date: order.orderDate,
               timeline: _timeline,
             ),
@@ -152,7 +169,9 @@ class _SectionTitle extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 10,
             fontWeight: FontWeight.w800,
-            color: const Color(0xFF475569), // AppColors.textSecondary but darker
+            color: const Color(
+              0xFF475569,
+            ), // AppColors.textSecondary but darker
             letterSpacing: 1.0,
           ),
         ),
@@ -205,12 +224,7 @@ class _CustomerProfileCard extends StatelessWidget {
                 height: 60,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  image: const DecorationImage(
-                    image: NetworkImage(
-                      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
+                  color: const Color(0xFFE0E7FF),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.1),
@@ -218,6 +232,19 @@ class _CustomerProfileCard extends StatelessWidget {
                       offset: const Offset(0, 4),
                     ),
                   ],
+                ),
+                child: Center(
+                  child: Text(
+                    customer != null
+                        ? '${customer!.firstName.isNotEmpty ? customer!.firstName[0] : ''}${customer!.lastName.isNotEmpty ? customer!.lastName[0] : ''}'
+                              .toUpperCase()
+                        : '?',
+                    style: GoogleFonts.inter(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1E3A8A),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -227,76 +254,91 @@ class _CustomerProfileCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                          Expanded(
-                            child: Text(
-                              customer != null ? '${customer!.firstName} ${customer!.lastName}'.trim() : 'Guest Customer',
-                              style: GoogleFonts.inter(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.primaryDark,
+                        Expanded(
+                          child: Text(
+                            customer != null
+                                ? '${customer!.firstName} ${customer!.lastName}'
+                                      .trim()
+                                : 'Guest Customer',
+                            style: GoogleFonts.inter(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.primaryDark,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (customer != null &&
+                            customer!.email.contains('elite'))
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
                               ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'ELITE\nMEMBER',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
-                          if (customer != null && customer!.email.contains('elite'))
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'ELITE\nMEMBER',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                          fontSize: 8,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
+                      ],
                     ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              Text(
-                customer?.email ?? 'No email provided',
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  const Icon(Icons.phone_rounded, size: 12, color: Color(0xFF8B5CF6)),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      customer?.phoneNumber ?? 'N/A',
+                    const SizedBox(height: 6),
+                    Text(
+                      customer?.email ?? 'No email provided',
                       style: GoogleFonts.inter(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF8B5CF6),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
                       ),
                     ),
-                  ),
-                  const Icon(Icons.location_on_rounded, size: 12, color: Color(0xFF8B5CF6)),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      'Address\non File', // API doesn't return full address string easily here
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF8B5CF6),
-                      ),
-                    ),
-                  ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.phone_rounded,
+                          size: 12,
+                          color: Color(0xFF8B5CF6),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            customer?.phoneNumber ?? 'N/A',
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF8B5CF6),
+                            ),
+                          ),
+                        ),
+                        const Icon(
+                          Icons.location_on_rounded,
+                          size: 12,
+                          color: Color(0xFF8B5CF6),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            'Address\non File', // API doesn't return full address string easily here
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF8B5CF6),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -312,7 +354,8 @@ class _CustomerProfileCard extends StatelessWidget {
 
 class _GarmentConfigurationCard extends StatelessWidget {
   final OrderListItem order;
-  const _GarmentConfigurationCard({required this.order});
+  final String? localImagePath;
+  const _GarmentConfigurationCard({required this.order, this.localImagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -347,47 +390,54 @@ class _GarmentConfigurationCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-                  Text(
-                    order.firstItemName,
-                    style: GoogleFonts.inter(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.primaryDark,
+              Text(
+                order.firstItemName,
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primaryDark,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'FABRIC SELECTION',
+                style: GoogleFonts.inter(
+                  fontSize: 8,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textHint,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDE9FE),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Icon(
+                      Icons.texture_rounded,
+                      size: 10,
+                      color: Color(0xFF8B5CF6),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(width: 8),
                   Text(
-                    'FABRIC SELECTION',
+                    order.orderItems.isNotEmpty
+                        ? (order.orderItems.first.product.sku ??
+                              'Custom Selection')
+                        : 'Default Fabric',
                     style: GoogleFonts.inter(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textHint,
-                      letterSpacing: 1.0,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Container(
-                        width: 16,
-                        height: 16,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEDE9FE),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Icon(Icons.texture_rounded, size: 10, color: Color(0xFF8B5CF6)),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        order.orderItems.isNotEmpty ? (order.orderItems.first.product.sku ?? 'Custom Selection') : 'Default Fabric',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
+                ],
+              ),
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -444,18 +494,26 @@ class _GarmentConfigurationCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              // Fabric Swatch Image
-              Container(
-                height: 120,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  image: const DecorationImage(
-                    image: NetworkImage(
-                      'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=600&q=80',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
+              // ── Fabric / Style Image ──────────────────────────────────
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: SizedBox(
+                  height: 160,
+                  width: double.infinity,
+                  child: localImagePath != null
+                      ? Image.file(File(localImagePath!), fit: BoxFit.cover)
+                      : Image.network(
+                          'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=600&q=80',
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            color: const Color(0xFFEDE9FE),
+                            child: const Icon(
+                              Icons.image_outlined,
+                              size: 40,
+                              color: Color(0xFF8B5CF6),
+                            ),
+                          ),
+                        ),
                 ),
               ),
             ],
@@ -476,24 +534,36 @@ class _ProductionProgressCard extends StatelessWidget {
     required this.date,
     required this.timeline,
   });
- 
+
   @override
   Widget build(BuildContext context) {
     // Define the fixed steps the user requested
     final steps = [
-      {'id': 'pending', 'label': 'Pending', 'icon': Icons.pending_actions_rounded},
-      {'id': 'confirmed', 'label': 'Confirmed', 'icon': Icons.check_circle_outline_rounded},
+      {
+        'id': 'pending',
+        'label': 'Pending',
+        'icon': Icons.pending_actions_rounded,
+      },
+      {
+        'id': 'confirmed',
+        'label': 'Confirmed',
+        'icon': Icons.check_circle_outline_rounded,
+      },
       {'id': 'cancelled', 'label': 'Cancelled', 'icon': Icons.cancel_outlined},
     ];
 
     // Determine current status index
     int currentStepIndex = -1;
     final currentStatus = status.toLowerCase();
-    
-    if (currentStatus == 'pending') currentStepIndex = 0;
-    else if (currentStatus == 'confirmed') currentStepIndex = 1;
-    else if (currentStatus == 'cancelled') currentStepIndex = 2;
-    else if (currentStatus == 'completed') currentStepIndex = 1; // Treat completed as past confirmed
+
+    if (currentStatus == 'pending')
+      currentStepIndex = 0;
+    else if (currentStatus == 'confirmed')
+      currentStepIndex = 1;
+    else if (currentStatus == 'cancelled')
+      currentStepIndex = 2;
+    else if (currentStatus == 'completed')
+      currentStepIndex = 1; // Treat completed as past confirmed
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -517,14 +587,18 @@ class _ProductionProgressCard extends StatelessWidget {
             children: List.generate(steps.length, (index) {
               final step = steps[index];
               final stepId = step['id'] as String;
-              
+
               // Find if this step is in history
               final historyEntry = timeline.firstWhere(
                 (h) => h.status.toLowerCase() == stepId,
                 orElse: () => OrderTimelineItem(
-                  id: '', orderId: '', status: '', 
-                  timestamp: DateTime.now(), createdBy: '', 
-                  createdAt: DateTime.now(), updatedAt: DateTime.now()
+                  id: '',
+                  orderId: '',
+                  status: '',
+                  timestamp: DateTime.now(),
+                  createdBy: '',
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
                 ),
               );
 
@@ -535,27 +609,44 @@ class _ProductionProgressCard extends StatelessWidget {
               // Logic for status rendering
               if (historyEntry.id.isNotEmpty) {
                 isCompleted = true;
-                subtitle = DateFormat('MMM dd, yyyy • HH:mm').format(historyEntry.timestamp);
+                subtitle = DateFormat(
+                  'MMM dd, yyyy • HH:mm',
+                ).format(historyEntry.timestamp);
               } else if (index <= currentStepIndex) {
-                 // Even if not in timeline API yet, if main status says it's confirmed, pending is completed
-                 isCompleted = true;
-                 subtitle = index == currentStepIndex ? 'Current Status' : 'Completed';
-              } else if (index == currentStepIndex + 1 && currentStatus != 'cancelled') {
-                 isActive = true;
-                 subtitle = 'Next Phase';
+                // Even if not in timeline API yet, if main status says it's confirmed, pending is completed
+                isCompleted = true;
+                subtitle = index == currentStepIndex
+                    ? 'Current Status'
+                    : 'Completed';
+              } else if (index == currentStepIndex + 1 &&
+                  currentStatus != 'cancelled') {
+                isActive = true;
+                subtitle = 'Next Phase';
               }
 
               // Special case for Cancelled - only show if it happened or if we are there
-              if (stepId == 'cancelled' && currentStatus != 'cancelled' && historyEntry.id.isEmpty) {
+              if (stepId == 'cancelled' &&
+                  currentStatus != 'cancelled' &&
+                  historyEntry.id.isEmpty) {
                 return const SizedBox.shrink();
               }
 
               return _TimelineStep(
                 title: step['label'] as String,
                 subtitle: subtitle,
-                status: isCompleted ? _StepStatus.completed : (isActive ? _StepStatus.active : _StepStatus.pending),
+                status: isCompleted
+                    ? _StepStatus.completed
+                    : (isActive ? _StepStatus.active : _StepStatus.pending),
                 isFirst: index == 0,
-                isLast: index == steps.length - 1 || (stepId == 'confirmed' && currentStatus != 'cancelled' && !steps.any((s) => s['id'] == 'cancelled' && status.toLowerCase() == 'cancelled')),
+                isLast:
+                    index == steps.length - 1 ||
+                    (stepId == 'confirmed' &&
+                        currentStatus != 'cancelled' &&
+                        !steps.any(
+                          (s) =>
+                              s['id'] == 'cancelled' &&
+                              status.toLowerCase() == 'cancelled',
+                        )),
               );
             }).where((w) => w is! SizedBox).toList(),
           ),
@@ -623,12 +714,14 @@ class _TimelineStep extends StatelessWidget {
                   Expanded(
                     child: Container(
                       width: 1.5,
-                      color: status == _StepStatus.pending ? const Color(0xFFF3F4F6) : const Color(0xFFE5E7EB),
+                      color: status == _StepStatus.pending
+                          ? const Color(0xFFF3F4F6)
+                          : const Color(0xFFE5E7EB),
                     ),
                   )
                 else
                   const SizedBox(height: 6),
-                  
+
                 // The Node Dot
                 Container(
                   width: 20,
@@ -636,7 +729,9 @@ class _TimelineStep extends StatelessWidget {
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: status == _StepStatus.completed ? nodeColor : nodeInner,
+                    color: status == _StepStatus.completed
+                        ? nodeColor
+                        : nodeInner,
                     border: Border.all(
                       color: nodeColor,
                       width: status == _StepStatus.active ? 4.0 : 0.0,
@@ -645,24 +740,26 @@ class _TimelineStep extends StatelessWidget {
                   child: status == _StepStatus.completed
                       ? const Icon(Icons.check, size: 12, color: Colors.white)
                       : (status == _StepStatus.active
-                          ? Center(
-                              child: Container(
-                                width: 6,
-                                height: 6,
-                                decoration: BoxDecoration(
-                                  color: nodeColor,
-                                  shape: BoxShape.circle,
+                            ? Center(
+                                child: Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: nodeColor,
+                                    shape: BoxShape.circle,
+                                  ),
                                 ),
-                              ),
-                            )
-                          : null),
+                              )
+                            : null),
                 ),
 
                 if (!isLast)
                   Expanded(
                     child: Container(
                       width: 1.5,
-                      color: status == _StepStatus.pending ? const Color(0xFFF3F4F6) : const Color(0xFFE5E7EB),
+                      color: status == _StepStatus.pending
+                          ? const Color(0xFFF3F4F6)
+                          : const Color(0xFFE5E7EB),
                     ),
                   )
                 else
@@ -692,9 +789,13 @@ class _TimelineStep extends StatelessWidget {
                     subtitle,
                     style: GoogleFonts.inter(
                       fontSize: 10,
-                      fontWeight: status == _StepStatus.active ? FontWeight.w500 : FontWeight.w400,
-                      fontStyle: status == _StepStatus.active || status == _StepStatus.pending 
-                          ? FontStyle.italic 
+                      fontWeight: status == _StepStatus.active
+                          ? FontWeight.w500
+                          : FontWeight.w400,
+                      fontStyle:
+                          status == _StepStatus.active ||
+                              status == _StepStatus.pending
+                          ? FontStyle.italic
                           : FontStyle.normal,
                       color: subtitleColor,
                     ),
@@ -718,7 +819,10 @@ class _MeasurementsGridCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle('MEASUREMENTS', trailingIcon: Icons.view_sidebar_rounded),
+        const _SectionTitle(
+          'MEASUREMENTS',
+          trailingIcon: Icons.view_sidebar_rounded,
+        ),
         const SizedBox(height: 12),
         Wrap(
           spacing: 12,
@@ -893,7 +997,9 @@ class _PaymentSummaryCard extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: order.paymentStatus.toLowerCase() == 'paid' ? Colors.green : Colors.orange,
+                      color: order.paymentStatus.toLowerCase() == 'paid'
+                          ? Colors.green
+                          : Colors.orange,
                     ),
                   ),
                 ],
@@ -992,7 +1098,11 @@ class _SpecialRequestsCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.note_alt_outlined, size: 14, color: AppColors.primaryDark),
+            const Icon(
+              Icons.note_alt_outlined,
+              size: 14,
+              color: AppColors.primaryDark,
+            ),
             const SizedBox(width: 8),
             Text(
               'SPECIAL REQUESTS',
@@ -1012,9 +1122,7 @@ class _SpecialRequestsCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFE5E7EB),
-            ),
+            border: Border.all(color: const Color(0xFFE5E7EB)),
           ),
           child: Text(
             order.notes ?? "No special requests specified.",

@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/app_colors.dart';
 import '../../providers/payment_provider.dart';
@@ -922,6 +924,8 @@ class _BottomNavBar extends StatelessWidget {
     
     final customerId = packageProvider.selectedCustomer?.id ?? "unknown";
     final measurementData = measurementProvider.getMeasurementMap(customerId);
+    // Capture the selected image path BEFORE the async gap
+    final String? fabricImagePath = fabricProvider.selectedImage?.path;
 
     try {
       final orderId = await provider.processPayment(
@@ -932,22 +936,30 @@ class _BottomNavBar extends StatelessWidget {
         fabricModifiers: fabricProvider.selectedModifiers.toList(),
       );
 
-      if (orderId != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              provider.selectedMethod == PaymentMethod.payLater ? 'Order Confirmed!' : 'Payment Confirmed!',
-              style: GoogleFonts.inter(),
+      if (orderId != null) {
+        // ── Save fabric image path locally keyed by orderId ─────────────────
+        if (fabricImagePath != null && File(fabricImagePath).existsSync()) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('order_image_$orderId', fabricImagePath);
+        }
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                provider.selectedMethod == PaymentMethod.payLater ? 'Order Confirmed!' : 'Payment Confirmed!',
+                style: GoogleFonts.inter(),
+              ),
+              backgroundColor: AppColors.success,
+              behavior: SnackBarBehavior.floating,
             ),
-            backgroundColor: AppColors.success,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        // Route perfectly to Order Success!
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => OrderSuccessScreen(orderId: orderId)),
-        );
+          );
+          // Route to Order Success!
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => OrderSuccessScreen(orderId: orderId)),
+          );
+        }
       }
     } catch (e) {
       if (context.mounted) {
