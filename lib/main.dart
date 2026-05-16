@@ -31,8 +31,7 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    ),
+      statusBarIconBrightness: Brightness.dark,     ),
   );
 
   // Determine if the user already has a saved session

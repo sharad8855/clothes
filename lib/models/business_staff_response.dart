@@ -18,13 +18,31 @@ class BusinessStaffResponse {
   });
 
   factory BusinessStaffResponse.fromJson(Map<String, dynamic> json) {
+    List<BusinessStaff> parsedData = [];
+    if (json['data'] is List) {
+      for (var item in json['data']) {
+        try {
+          parsedData.add(BusinessStaff.fromJson(item as Map<String, dynamic>));
+        } catch (e, stack) {
+          print("Error parsing staff item: \$e");
+          print(stack);
+        }
+      }
+    } else if (json['data'] != null && json['data']['items'] is List) {
+      for (var item in json['data']['items']) {
+        try {
+          parsedData.add(BusinessStaff.fromJson(item as Map<String, dynamic>));
+        } catch (e, stack) {
+          print("Error parsing staff item from items: \$e");
+          print(stack);
+        }
+      }
+    }
+
     return BusinessStaffResponse(
       success: json['success'] as bool? ?? false,
       message: json['message'] as String? ?? '',
-      data: (json['data'] as List<dynamic>?)
-              ?.map((e) => BusinessStaff.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
+      data: parsedData,
       totalCount: json['total_count'] as int? ?? 0,
       currentPage: json['current_page'] as int? ?? 1,
       totalPages: json['total_pages'] as int? ?? 1,
@@ -54,11 +72,13 @@ class BusinessStaff {
 
   factory BusinessStaff.fromJson(Map<String, dynamic> json) {
     return BusinessStaff(
-      id: json['id'] as String? ?? '',
-      businessId: json['business_id'] as String? ?? '',
-      userId: json['user_id'] as String? ?? '',
-      serviceId: json['service_id'] as String?,
-      user: StaffUser.fromJson(json['user'] as Map<String, dynamic>),
+      id: json['id']?.toString() ?? '',
+      businessId: json['business_id']?.toString() ?? '',
+      userId: json['user_id']?.toString() ?? '',
+      serviceId: json['service_id']?.toString(),
+      user: json['user'] != null 
+          ? StaffUser.fromJson(json['user'] as Map<String, dynamic>)
+          : StaffUser(id: '', firstName: 'Unknown', lastName: 'Artisan', phone: '', email: ''),
       service: json['service'] != null
           ? StaffService.fromJson(json['service'] as Map<String, dynamic>)
           : null,
@@ -86,10 +106,10 @@ class StaffUser {
 
   factory StaffUser.fromJson(Map<String, dynamic> json) {
     return StaffUser(
-      id: json['id'] as String? ?? '',
+      id: json['id']?.toString() ?? '',
       firstName: json['first_name'] as String? ?? '',
       lastName: json['last_name'] as String? ?? '',
-      phone: json['phone'] as String? ?? '',
+      phone: json['phone']?.toString() ?? '',
       email: json['email'] as String? ?? '',
     );
   }
@@ -106,7 +126,7 @@ class StaffService {
 
   factory StaffService.fromJson(Map<String, dynamic> json) {
     return StaffService(
-      serviceId: json['service_id'] as String? ?? '',
+      serviceId: json['service_id']?.toString() ?? '',
       serviceName: json['service_name'] as String? ?? '',
     );
   }

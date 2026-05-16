@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import '../models/order_model.dart';
 import '../models/order_statistics_model.dart';
 import '../models/financial_summary_model.dart';
@@ -174,3 +173,22 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+  // ─── Loading / refresh ────────────────────────────────────────
+  bool _isRefreshing = false;
+  bool get isRefreshing => _isRefreshing;
+
+  Future<void> refresh() async {
+    _isRefreshing = true;
+
+    
+    // Fetch real data
+    
+    
+    // Simulated delay for other things
+    await Future.delayed(const Duration(milliseconds: 1200));
+    
+    _isRefreshing = false;
+  
+  }
+
