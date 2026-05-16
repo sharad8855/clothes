@@ -26,7 +26,7 @@ class _HelloScreenState extends State<HelloScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F4F5), // Stitch surface_container_low
+      backgroundColor: const Color(0xFFF3F4F5), 
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(

@@ -216,7 +216,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     );
   }
 
-  Widget _buildBottomButton(AddCustomerProvider provider) {
+  Widget _buildBottomButton(AddCustomerProvider provider){
     return Positioned(
       bottom: 24,
       left: 20,
