@@ -169,8 +169,6 @@ class _LoginScreenState extends State<LoginScreen>
                 const SizedBox(height: 16),
               ],
               _buildSubmitButton(login),
-              const SizedBox(height: 20),
-              _buildSignUpRow(),
             ],
           );
         },
@@ -213,27 +211,6 @@ class _LoginScreenState extends State<LoginScreen>
                 size: 18,
               ),
             ),
-            // Small badge showing detected type
-            suffixIcon: login.credential.isNotEmpty
-                ? Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: Chip(
-                      padding: EdgeInsets.zero,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      label: Text(
-                        isEmail ? 'Email' : 'Mobile',
-                        style: GoogleFonts.inter(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      backgroundColor:
-                          AppColors.primary.withValues(alpha: 0.08),
-                      side: BorderSide.none,
-                    ),
-                  )
-                : null,
             errorText: login.credentialError,
           ),
         ),
@@ -468,38 +445,4 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  // ─── Sign Up Row ──────────────────────────────────────────────
-  Widget _buildSignUpRow() {
-    return Center(
-      child: RichText(
-        textAlign: TextAlign.center,
-        text: TextSpan(
-          text: context.newToSuite + ' ',
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            color: AppColors.textSecondary,
-          ),
-          children: [
-            WidgetSpan(
-              child: GestureDetector(
-                onTap: () {
-                  // TODO: Navigate to partner registration
-                },
-                child: Text(
-                  context.joinAsPartner,
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                    decoration: TextDecoration.underline,
-                    decorationColor: AppColors.primary,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
