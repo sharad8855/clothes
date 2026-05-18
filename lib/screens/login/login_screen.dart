@@ -5,7 +5,6 @@ import '../../core/session_manager.dart';
 import '../../core/app_colors.dart';
 import '../../providers/login_provider.dart';
 import '../../utils/localization/localization_extension.dart';
-import '../shell/main_shell.dart';
 import '../home/hello_screen.dart';
 import '../business/business_selection_screen.dart';
 import 'forgot_password_screen.dart';
@@ -179,13 +178,14 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  // ─── Credential Field ─────────────────────────────────────────
+  // ─── Credential Field (auto-detect mobile / email) ────────────
   Widget _buildCredentialField(LoginProvider login) {
+    final isEmail = login.credentialType == CredentialType.email;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          context.mobileNumber,
+          'Mobile Number or Email',
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -197,15 +197,43 @@ class _LoginScreenState extends State<LoginScreen>
         TextFormField(
           controller: _credentialController,
           focusNode: _credentialFocus,
-          keyboardType: TextInputType.phone,
+          // Switch keyboard type based on detected input
+          keyboardType: isEmail
+              ? TextInputType.emailAddress
+              : TextInputType.phone,
           onChanged: login.setCredential,
           decoration: InputDecoration(
-            hintText: '+91 98765 43210',
-            prefixIcon: const Icon(
-              Icons.phone_outlined,
-              color: AppColors.textHint,
-              size: 18,
+            hintText: 'Mobile number or email address',
+            prefixIcon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                isEmail ? Icons.email_outlined : Icons.phone_outlined,
+                key: ValueKey(isEmail),
+                color: AppColors.textHint,
+                size: 18,
+              ),
             ),
+            // Small badge showing detected type
+            suffixIcon: login.credential.isNotEmpty
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: Chip(
+                      padding: EdgeInsets.zero,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      label: Text(
+                        isEmail ? 'Email' : 'Mobile',
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      backgroundColor:
+                          AppColors.primary.withValues(alpha: 0.08),
+                      side: BorderSide.none,
+                    ),
+                  )
+                : null,
             errorText: login.credentialError,
           ),
         ),
@@ -333,10 +361,10 @@ class _LoginScreenState extends State<LoginScreen>
                   // STAFF: Auto-select business and go to HelloScreen
                   final businessId = user?.firstBusinessId;
                   if (businessId != null) {
-                    await SessionManager.instance.saveSelectedBusinessId(businessId);
+                    await SessionManager.instance
+                        .saveSelectedBusinessId(businessId);
                     destination = const HelloScreen();
                   } else {
-                    // This case should ideally be handled by an error state
                     destination = const LoginScreen();
                   }
                 } else {
@@ -400,7 +428,7 @@ class _LoginScreenState extends State<LoginScreen>
                     size: 18,
                   ),
                 ],
-            ),
+              ),
       ),
     );
   }
