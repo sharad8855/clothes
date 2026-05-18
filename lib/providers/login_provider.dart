@@ -6,6 +6,9 @@ import '../core/session_manager.dart';
 /// Authentication mode: Password or OTP
 enum AuthMode { password, otp }
 
+/// Detected credential type based on user input
+enum CredentialType { mobile, email }
+
 /// State for the Login Screen
 class LoginProvider extends ChangeNotifier {
   // ─── Auth mode (Password vs OTP) ─────────────────────────────
@@ -21,23 +24,31 @@ class LoginProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── Credential (mobile / email) ─────────────────────────────
+  // ─── Credential (auto-detect mobile / email) ─────────────────
   String _credential = '';
   String get credential => _credential;
 
   String? _credentialError;
   String? get credentialError => _credentialError;
 
+  /// Returns the detected type based on what the user has typed so far.
+  /// If the input contains '@' it is treated as email, else mobile.
+  CredentialType get credentialType =>
+      _credential.contains('@') ? CredentialType.email : CredentialType.mobile;
+
   void setCredential(String value) {
     _credential = value;
     _credentialError = null;
     _apiError = null;
-    
-    final digitsOnly = _credential.replaceAll(RegExp(r'\D'), '');
-    if (digitsOnly.length > 10) {
-      _credentialError = 'Mobile number cannot exceed 10 digits';
+
+    // Live mobile-length guard (only when looks like a phone)
+    if (credentialType == CredentialType.mobile) {
+      final digitsOnly = _credential.replaceAll(RegExp(r'\D'), '');
+      if (digitsOnly.length > 10) {
+        _credentialError = 'Mobile number cannot exceed 10 digits';
+      }
     }
-    
+
     notifyListeners();
   }
 
@@ -87,16 +98,23 @@ class LoginProvider extends ChangeNotifier {
   // ─── Validation ──────────────────────────────────────────────
   bool _validate() {
     bool valid = true;
+
     if (_credential.trim().isEmpty) {
-      _credentialError = 'Please enter your mobile number';
+      _credentialError = 'Please enter your mobile number or email';
       valid = false;
-    } else {
+    } else if (credentialType == CredentialType.mobile) {
       final digitsOnly = _credential.replaceAll(RegExp(r'\D'), '');
       if (digitsOnly.length < 10) {
         _credentialError = 'Enter a valid 10-digit mobile number';
         valid = false;
       } else if (digitsOnly.length > 10) {
         _credentialError = 'Mobile number cannot exceed 10 digits';
+        valid = false;
+      }
+    } else {
+      // Email validation
+      if (!RegExp(r'^[\w.+-]+@[\w-]+\.[\w.]+').hasMatch(_credential.trim())) {
+        _credentialError = 'Enter a valid email address';
         valid = false;
       }
     }
@@ -117,7 +135,6 @@ class LoginProvider extends ChangeNotifier {
 
   // ─── Submit ──────────────────────────────────────────────────
   /// Returns true on success, false on failure.
-  /// On failure, sets [apiError], [credentialError] or [passwordError].
   Future<bool> submit() async {
     if (!_validate()) return false;
 
@@ -126,10 +143,10 @@ class LoginProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Only phone + password is supported by the API right now.
-      // OTP mode will hit the same endpoint once OTP sending is wired up.
+      final isEmail = credentialType == CredentialType.email;
       final authResponse = await AuthService.loginWithPassword(
-        phone: _credential.trim(),
+        phone: isEmail ? null : _credential.trim(),
+        email: isEmail ? _credential.trim() : null,
         password: _password,
       );
 
@@ -141,8 +158,9 @@ class LoginProvider extends ChangeNotifier {
       );
 
       // Immediately fetch the full profile to get roles and permissions
-      final detailedUser = await AuthService.getUserProfile(authResponse.user.id);
-      
+      final detailedUser =
+          await AuthService.getUserProfile(authResponse.user.id);
+
       // Update session with the detailed user profile
       await SessionManager.instance.saveSession(
         accessToken: authResponse.accessToken,

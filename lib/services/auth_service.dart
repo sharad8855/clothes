@@ -33,11 +33,24 @@ class AuthService {
 
   // ─── Password Login ────────────────────────────────────────────────────────
   static Future<AuthResponse> loginWithPassword({
-    required String phone,
+    String? phone,
+    String? email,
     required String password,
   }) async {
-    final cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
+    assert(phone != null || email != null, 'Either phone or email must be provided');
+    final cleanPhone = phone?.replaceAll(RegExp(r'\D'), '');
     try {
+      final Map<String, dynamic> payload = {
+        'password': password,
+        'captchaToken': null,
+      };
+      if (cleanPhone != null && cleanPhone.isNotEmpty) {
+        payload['phone'] = cleanPhone;
+      }
+      if (email != null && email.isNotEmpty) {
+        payload['email'] = email;
+      }
+
       final response = await http
           .post(
             Uri.parse(ApiEndpoints.verifyOtp),
@@ -45,11 +58,7 @@ class AuthService {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
             },
-            body: jsonEncode({
-              'phone': cleanPhone,
-              'password': password,
-              'captchaToken': null,
-            }),
+            body: jsonEncode(payload),
           )
           .timeout(const Duration(seconds: 30));
 
