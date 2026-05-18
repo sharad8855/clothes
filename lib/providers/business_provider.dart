@@ -37,16 +37,17 @@ class BusinessProvider with ChangeNotifier {
       final fetchedList = await AuthService.getBusinessesList();
       _businesses = fetchedList;
       
-      // Try to reload the selected business from session
       final savedId = await SessionManager.instance.getSelectedBusinessId();
       if (savedId != null && _businesses.isNotEmpty) {
-        _selectedBusiness = _businesses.firstWhere(
-          (b) => b.id == savedId,
-          orElse: () => _businesses.first,
-        );
-      } else if (_businesses.length == 1) {
-        // Auto select if only one
-        handleSelectBusiness(_businesses.first);
+        final found = _businesses.where((b) => b.id == savedId).toList();
+        if (found.isNotEmpty) {
+          _selectedBusiness = found.first;
+        } else {
+          await handleSelectBusiness(_businesses.first);
+        }
+      } else if (_businesses.isNotEmpty) {
+        // Auto select the first business if none saved
+        await handleSelectBusiness(_businesses.first);
       }
     } catch (e) {
       _errorMessage = e.toString();

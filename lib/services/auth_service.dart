@@ -192,7 +192,7 @@ class AuthService {
     final cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '62ce7cbb-5907-4f27-9490-d0b662fbf566';
       
       final response = await http
           .post(
@@ -230,7 +230,7 @@ class AuthService {
   static Future<OrderStatistics> getOrderStatistics({String? businessId}) async {
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '62ce7cbb-5907-4f27-9490-d0b662fbf566';
 
       final response = await http
           .get(
@@ -263,7 +263,7 @@ class AuthService {
   static Future<FinancialSummary> getFinancialSummary({String? businessId}) async {
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '62ce7cbb-5907-4f27-9490-d0b662fbf566';
       
       final now = DateTime.now();
       final startDate =
@@ -314,7 +314,7 @@ class AuthService {
 
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '62ce7cbb-5907-4f27-9490-d0b662fbf566';
 
       final response = await http
           .post(
@@ -373,7 +373,7 @@ class AuthService {
   }) async {
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '62ce7cbb-5907-4f27-9490-d0b662fbf566';
 
       final response = await http
           .post(
@@ -414,7 +414,7 @@ class AuthService {
     String? businessId,
   }) async {
     try {
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '62ce7cbb-5907-4f27-9490-d0b662fbf566';
       
       final bodyData = {
         'page': page,
@@ -632,7 +632,7 @@ class AuthService {
   }) async {
     try {
       final headers = await getAuthHeaders();
-      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '257c88b2-8cff-482a-b297-51a9910a3413';
+      final effectiveBusinessId = businessId ?? await SessionManager.instance.getSelectedBusinessId() ?? '62ce7cbb-5907-4f27-9490-d0b662fbf566';
 
       final response = await http
           .post(
@@ -809,7 +809,7 @@ class AuthService {
 
   static BusinessModel _getMockBusiness(BusinessModel request) {
     return BusinessModel(
-      id: 'mock-business-${DateTime.now().millisecondsSinceEpoch}',
+      id: '62ce7cbb-5907-4f27-9490-d0b662fbf566',
       name: request.name.isNotEmpty ? request.name : 'Mocked Atelier',
       description: request.description ?? 'Mock Business Description',
       officeStartTime: request.officeStartTime,
@@ -880,13 +880,13 @@ class AuthService {
   static Future<List<BusinessModel>> getBusinessesList() async {
     try {
       // Per requirements, fetch the specific business workspace directly to populate the UI
-      const specificBusinessId = '5308c246-9f59-4923-9c59-4e634a3fa8c8';
+      const specificBusinessId = '62ce7cbb-5907-4f27-9490-d0b662fbf566';
       
       final business = await getBusinessDetails(specificBusinessId);
       return [business];
     } catch (e) {
       print('Error fetching businesses: $e');
-      return [_getMockBusinessDetails('5308c246-9f59-4923-9c59-4e634a3fa8c8')];
+      return [_getMockBusinessDetails('62ce7cbb-5907-4f27-9490-d0b662fbf566')];
     }
   }
 
