@@ -30,6 +30,36 @@ class BusinessProvider with ChangeNotifier {
   BusinessModel? get selectedBusiness => _selectedBusiness;
   String? get errorMessage => _errorMessage;
 
+  bool _signUpRequire = false;
+  bool get signUpRequire => _signUpRequire;
+
+  Future<void> fetchClientSettings() async {
+    try {
+      final clientData = await AuthService.getClientDetails(AuthService.clientId);
+      if (clientData != null) {
+        if (clientData.containsKey('sign_up_require')) {
+          _signUpRequire = clientData['sign_up_require'] == true || clientData['sign_up_require'].toString().toLowerCase() == 'true';
+        } else if (clientData['custom_fields'] != null) {
+          final customFields = clientData['custom_fields'];
+          if (customFields is Map) {
+            if (customFields.containsKey('sign_up_require')) {
+              _signUpRequire = customFields['sign_up_require'] == true || customFields['sign_up_require'].toString().toLowerCase() == 'true';
+            }
+          } else if (customFields is List) {
+            for (var item in customFields) {
+              if (item is Map && item.containsKey('sign_up_require')) {
+                _signUpRequire = item['sign_up_require'] == true || item['sign_up_require'].toString().toLowerCase() == 'true';
+              }
+            }
+          }
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error checking signUpRequire: $e');
+    }
+  }
+
   Future<void> fetchUserBusinesses() async {
     _setLoading(true);
     _clearError();

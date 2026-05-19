@@ -180,6 +180,17 @@ class _BusinessStep2ScreenState extends State<BusinessStep2Screen> {
                           controller: _pincodeController,
                           hint: '422611',
                           icon: Icons.local_post_office_rounded,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(6),
+                          ],
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return 'Required';
+                            if (v.length != 6) return 'Must be 6 digits';
+                            return null;
+                          },
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                         ),
                       ),
                       const SizedBox(width: 16),

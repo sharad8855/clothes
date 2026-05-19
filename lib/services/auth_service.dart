@@ -885,16 +885,56 @@ class AuthService {
     );
   }
 
+  static Future<Map<String, dynamic>?> getClientDetails(String clientId) async {
+    try {
+      final response = await http
+          .get(
+            Uri.parse('$_baseUrl/auth/api/public/client/$clientId'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+          )
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching client details: $e');
+      return null;
+    }
+  }
+
   // ─── Get User Businesses ───────────────────────────────────────────────────
   static Future<List<BusinessModel>> getBusinessesList() async {
     try {
-      // Per requirements, fetch the specific business workspace directly to populate the UI
-      const specificBusinessId = '62ce7cbb-5907-4f27-9490-d0b662fbf566';
+      final headers = await getAuthHeaders();
+      final response = await http
+          .get(
+            Uri.parse(ApiEndpoints.getMyBusinesses(clientId)),
+            headers: headers,
+          )
+          .timeout(const Duration(seconds: 30));
+
+      final decoded = _processResponse(response);
       
-      final business = await getBusinessDetails(specificBusinessId);
-      return [business];
+      if (decoded is List) {
+        return decoded.map((item) => BusinessModel.fromJson(item)).toList();
+      } else if (decoded is Map<String, dynamic>) {
+        final data = decoded['data'] ?? decoded['businesses'] ?? decoded['my-businesses'];
+        if (data is List) {
+          return data.map((item) => BusinessModel.fromJson(item)).toList();
+        } else if (decoded['success'] == true && decoded['data'] != null) {
+          final list = decoded['data'] as List;
+          return list.map((item) => BusinessModel.fromJson(item)).toList();
+        }
+      }
+      
+      throw const AuthException('Invalid businesses response structure');
     } catch (e) {
-      print('Error fetching businesses: $e');
+      print('Error fetching businesses, falling back to mock: $e');
       return [_getMockBusinessDetails('62ce7cbb-5907-4f27-9490-d0b662fbf566')];
     }
   }

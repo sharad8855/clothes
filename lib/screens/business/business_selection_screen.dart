@@ -25,7 +25,9 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
     )..forward();
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<BusinessProvider>().fetchUserBusinesses();
+      final provider = context.read<BusinessProvider>();
+      provider.fetchUserBusinesses();
+      provider.fetchClientSettings();
     });
   }
 
@@ -349,7 +351,12 @@ class _BusinessSelectionScreenState extends State<BusinessSelectionScreen> with 
     );
   }
 
-  Widget _buildFab() {
+  Widget? _buildFab() {
+    final provider = context.watch<BusinessProvider>();
+    if (!provider.signUpRequire) {
+      return null;
+    }
+
     return FloatingActionButton.extended(
       onPressed: () {
         Navigator.push(
