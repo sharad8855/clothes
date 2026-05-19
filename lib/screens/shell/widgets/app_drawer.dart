@@ -11,6 +11,8 @@ import '../../login/login_screen.dart';
 import '../../orders/order_history_screen.dart';
 import '../../profile/profile_screen.dart';
 import '../../../providers/profile_provider.dart';
+import '../../business/business_selection_screen.dart';
+import '../../profile/my_store_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -138,6 +140,19 @@ class AppDrawer extends StatelessWidget {
                     title:context.dashboard,
                     isSelected: currentIndex == 0,
                     onTap: () => _handleRoute(context, 0),
+                  ),
+                  _buildNavItem(
+                    context,
+                    icon: Icons.storefront_rounded,
+                    title: 'My Store',
+                    isSelected: false,
+                    onTap: () {
+                      Navigator.pop(context); // Close Drawer
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MyStoreScreen()),
+                      );
+                    },
                   ),
                   _buildNavItem(
                     context,

@@ -62,7 +62,7 @@ class BusinessModel {
         },
         "contactInfo": contactInfo?.toJson() ?? {},
         "business_tags": [],
-        "business_category_ids": ["6861dee5-76bf-49ea-a9db-7a842ea86bdd"],
+        "business_category_ids": ["fc9df582-0994-4ada-90ef-d95a5439cdc4"],
         "business_sub_category_ids": [],
         "owner_details": ownerDetails != null && ownerDetails!.isNotEmpty
             ? ownerDetails!.first.toJson()
