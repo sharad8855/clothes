@@ -16,6 +16,7 @@ class ApiEndpoints {
   static String createBusiness(String clientId) => '$baseUrl/auth/api/business/client/$clientId/';
   static String getBusinessDetails(String clientId, String businessId) => '$baseUrl/auth/api/business/client/$clientId/business/$businessId';
   static String getAllBusinesses(String clientId) => '$baseUrl/auth/api/business/client/$clientId/get-all';
+  static String getMyBusinesses(String clientId) => '$baseUrl/auth/api/business/client/$clientId/my-businesses';
   static String getBusinessStaff(String clientId, String businessId) => '$baseUrl/auth/api/business/client/$clientId/business/$businessId/staff';
   static String inviteStaff(String clientId, String businessId) => '$baseUrl/auth/api/business/client/$clientId/business/$businessId/invite-staff';
 
