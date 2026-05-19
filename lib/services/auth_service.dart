@@ -19,7 +19,7 @@ class AuthService {
       'https://platform-development-dev.157.20.214.214.nip.io';
 
   /// Hardcoded Client ID for backend API integrations
-  static const String clientId = 'a3ea1cda-c735-4798-8219-54bbb07795a9';
+  static const String clientId = '81b8a67d-0afe-4907-be86-995282a348d4';
 
   /// Generates the standard headers needed for authenticated requests
   static Future<Map<String, String>> getAuthHeaders() async {
