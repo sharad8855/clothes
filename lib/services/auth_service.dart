@@ -791,7 +791,7 @@ class AuthService {
       final headers = await getAuthHeaders();
       final response = await http
           .post(
-            Uri.parse('$_baseUrl/auth/api/business/client/$clientId'),
+            Uri.parse('$_baseUrl/auth/api/business/client/$clientId/'),
             headers: headers,
             body: jsonEncode(business.toJsonForCreation()),
           )

@@ -13,7 +13,7 @@ class ApiEndpoints {
   static String userImageUpload(String userId) => '$baseUrl/auth/api/public/user/$userId/upload';
 
   // Business
-  static String createBusiness(String clientId) => '$baseUrl/auth/api/business/client/$clientId';
+  static String createBusiness(String clientId) => '$baseUrl/auth/api/business/client/$clientId/';
   static String getBusinessDetails(String clientId, String businessId) => '$baseUrl/auth/api/business/client/$clientId/business/$businessId';
   static String getAllBusinesses(String clientId) => '$baseUrl/auth/api/business/client/$clientId/get-all';
   static String getBusinessStaff(String clientId, String businessId) => '$baseUrl/auth/api/business/client/$clientId/business/$businessId/staff';
